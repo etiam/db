@@ -1,0 +1,3 @@
+[submodule "src/external/novile"]
+	path = src/external/novile
+	url = https://github.com/tucnak/novile.git

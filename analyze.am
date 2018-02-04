@@ -1,0 +1,16 @@
+# use clang's --analyze
+analyze_srcs              = $(filter %.cpp, $(ov_SOURCES))
+analyze_plists            = $(analyze_srcs:%.cpp=%.plist)
+
+MOSTLYCLEANFILES         += $(analyze_plists)
+
+AM_V_ANA = $(am__v_ANA_$(V))
+am__v_ANA_ = $(am__v_ANA_$(AM_DEFAULT_VERBOSITY))
+am__v_ANA_0 = @echo "  ANALYZE " $@;
+am__v_ANA_1 =
+
+$(analyze_plists): %.plist: %.cpp
+	$(AM_V_ANA) $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ov_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) --analyze $< -o $@
+
+.PHONY: analyze
+analyze: $(analyze_plists)

@@ -1,0 +1,30 @@
+bin_PROGRAMS             += db
+
+db_SOURCES               +=                                             \
+                            src/main/main.cpp
+
+db_CPPFLAGS              +=                                             \
+                            -fPIC                                       \
+                            -I$(abs_top_builddir)                       \
+                            -I$(top_builddir)/src/main                  \
+                            -I$(top_srcdir)/src                         \
+                            @QTCORE_CFLAGS@                             \
+                            @QTWIDGETS_CFLAGS@                          \
+                            @QTGUI_CFLAGS@                              \
+                            @QTWEBKIT_CFLAGS@                           \
+                            @QTWEBKITWIDGETS_CFLAGS@
+
+db_LDADD                  =                                             \
+                            @QTCORE_LIBS@                               \
+                            @QTWIDGETS_LIBS@                            \
+                            @QTGUI_LIBS@                                \
+                            @QTWEBKIT_LIBS@                             \
+                            @QTWEBKITWIDGETS_LIBS@
+
+db_LDFLAGS                =                                             \
+                            -fPIC -rdynamic
+
+if DO_PROFILER
+db_LDADD                 +=                                             \
+                            @GPERFPROFILER_LIBS@
+endif

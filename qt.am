@@ -1,0 +1,25 @@
+# These rule lets GNU make create any moc_*.cpp from the equivalent *.h
+%.moc : %.cpp
+	$(AM_V_GEN) moc $< -o $@
+
+moc_%.cpp : %.h
+	$(AM_V_GEN) moc $< -o $@
+
+qrc_%.cpp : %.qrc
+	$(AM_V_GEN) rcc $< -o $@
+
+ui_%.h : %.ui
+	$(AM_V_GEN) uic $< -o $@
+
+# cleanup moc 
+clean-moc-extra:
+	find . -name 'moc_*.cpp' -print0|xargs -0 rm -vf
+	find . -name '*.moc' -print0|xargs -0 rm -vf
+
+clean-qrc-extra:
+	find . -name 'qrc_*.cpp' -print0|xargs -0 rm -vf
+
+clean-uic-extra:
+	find . -name 'ui_*.h' -print0|xargs -0 rm -vf
+
+clean-local: clean-moc-extra clean-qrc-extra clean-uic-extra
