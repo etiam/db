@@ -6,7 +6,7 @@ moc_%.cpp : %.h
 	$(AM_V_GEN) moc $< -o $@
 
 qrc_%.cpp : %.qrc
-	$(AM_V_GEN) rcc $< -o $@
+	$(AM_V_GEN) rcc $< -o $@ --name $(basename $(notdir $<)) 
 
 ui_%.h : %.ui
 	$(AM_V_GEN) uic $< -o $@
