@@ -32,12 +32,21 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1517895055639</id>
+			<id>1517948738668</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-build-???-amd64</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1517948738671</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-src/external/novile/data</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

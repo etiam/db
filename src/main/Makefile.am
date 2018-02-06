@@ -5,9 +5,7 @@ db_SOURCES               +=                                             \
 
 db_CPPFLAGS              +=                                             \
                             -fPIC                                       \
-                            -I$(abs_top_builddir)                       \
                             -I$(top_builddir)/src/main                  \
-                            -I$(top_srcdir)/src                         \
                             @QTCORE_CFLAGS@                             \
                             @QTWIDGETS_CFLAGS@                          \
                             @QTGUI_CFLAGS@                              \

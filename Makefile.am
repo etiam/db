@@ -8,8 +8,7 @@ MOSTLYCLEANFILES          =
 
 db_SOURCES                = 
 db_CPPFLAGS               =                                             \
-                            -I$(abs_top_builddir)                       \
-                            -I$(abs_top_srcdir)/src
+                            -I$(top_srcdir)/src
 
 include $(top_srcdir)/src/main/Makefile.am
 include $(top_srcdir)/src/ui/Makefile.am
