@@ -41,6 +41,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::establishBaseConnects()
 {
+    /*
     connect(ui->selectDocument,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this,
@@ -71,6 +72,7 @@ void MainWindow::establishBaseConnects()
     connect(ui->checkShowIndent, &QCheckBox::stateChanged, this, &MainWindow::updateShowIndent);
 
     connect(ui->checkReadOnly, &QCheckBox::stateChanged, this, &MainWindow::updateReadOnly);
+    */
 }
 
 void MainWindow::updateHighlightActive(int checked)
@@ -119,9 +121,9 @@ void MainWindow::updateReadOnly(int checked)
 
 void MainWindow::updateDocument(int index)
 {
-    const QString documentText = documents[ ui->selectDocument->itemText(index)];
-    editor->setText(documentText);
-    editor->setCursorPosition(0, 0);
+//    const QString documentText = documents[ ui->selectDocument->itemText(index)];
+//    editor->setText(documentText);
+//    editor->setCursorPosition(0, 0);
 }
 
 void MainWindow::updateMode(int index)
@@ -136,6 +138,7 @@ void MainWindow::updateTheme(int index)
 
 void MainWindow::setupStartValues()
 {
+    /*
 //    updateDocument(0); // JavaScript document
     ui->selectDocument->setCurrentIndex(0);
 
@@ -168,10 +171,12 @@ void MainWindow::setupStartValues()
 
     updateShowPrintMargin(false);
     ui->checkShowPrintMargin->setChecked(false);
+    */
 }
 
 void MainWindow::initExampleFiles()
 {
+    /*
     QDir exampleDir(":/documents");
     QStringList exampleFiles = exampleDir.entryList(QDir::Files);
     foreach(const QString &exampleFileName, exampleFiles) {
@@ -182,6 +187,7 @@ void MainWindow::initExampleFiles()
             documents[exampleFileName] = example.readAll();
         }
     }
+    */
 }
 
 void

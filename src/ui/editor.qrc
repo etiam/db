@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ace/keybinding-vim.js</file>
+        <file>ace/theme-clouds_midnight.js</file>
+    </qresource>
+</RCC>

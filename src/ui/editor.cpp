@@ -32,10 +32,13 @@ Editor::Editor(QWidget *parent) :
 
     d->executeJavaScript("editor.setFontSize(16)");
     d->executeJavaScript("editor.setCursorStyle(\"wide\")");
-    d->executeJavaScript("editor.setKeyboardHandler(vim)");
+    d->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
     d->executeJavaScript("editor.setShowPrintMargin(false)");
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");
     d->executeJavaScript("editor.setReadOnly(true)");
+
+    setHighlightMode("c_cpp");
+    setTheme("clouds_midnight");
 }
 
 QString
@@ -109,3 +112,11 @@ Editor::setHighlightMode(const QString &name)
     d->executeJavaScript(request.arg("qrc:/ace/mode-"+name+".js").arg(name));
 }
 
+void
+Editor::setKeyboardHandler(const QString &name)
+{
+    const QString request = ""
+            "$.getScript('%1');"
+            "editor.getSession().setMode('ace/keybinding/%2');";
+    d->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
+}
