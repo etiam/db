@@ -6,7 +6,7 @@
 
 //using namespace Novile;
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -23,6 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setupStartValues();
 
     readSettings();
+
+    QFile file(filename);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream ReadFile(&file);
+    editor->setText(ReadFile.readAll());
+    editor->setCursorPosition(0, 0);
 }
 
 MainWindow::~MainWindow()
@@ -130,7 +136,7 @@ void MainWindow::updateTheme(int index)
 
 void MainWindow::setupStartValues()
 {
-    updateDocument(0); // JavaScript document
+//    updateDocument(0); // JavaScript document
     ui->selectDocument->setCurrentIndex(0);
 
     updateMode(3); // JavaScript mode

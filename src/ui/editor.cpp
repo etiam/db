@@ -9,6 +9,8 @@
 # include "config.h"
 #endif
 
+#include <iostream>
+
 #include <QObject>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -28,13 +30,12 @@ Editor::Editor(QWidget *parent) :
     d->startAceWidget();
     d->executeJavaScript("editor.focus()");
 
-//    int px=16;
-//    const QString request = "document.getElementById('editor').style.fontSize='%1px'";
-//    d->executeJavaScript(request.arg(px));
-
-    d->executeJavaScript("editor.setFontSize(14)");
+    d->executeJavaScript("editor.setFontSize(16)");
     d->executeJavaScript("editor.setCursorStyle(\"wide\")");
-    d->executeJavaScript("editor.setKeyboardHandler(\"vim\")");
+    d->executeJavaScript("editor.setKeyboardHandler(vim)");
+    d->executeJavaScript("editor.setShowPrintMargin(false)");
+    d->executeJavaScript("editor.setDisplayIndentGuides(false)");
+    d->executeJavaScript("editor.setReadOnly(true)");
 }
 
 QString
@@ -66,6 +67,7 @@ void
 Editor::setText(const QString &newText)
 {
     const QString request = "editor.getSession().setValue('%1')";
+    std::cout << newText.toStdString();
     d->executeJavaScript(request.arg(d->escape(newText)));
     int lastLine = lines()-1;
     setCursorPosition(lastLine, lineLength(lastLine));
