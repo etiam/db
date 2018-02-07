@@ -3,9 +3,8 @@
 #include <QComboBox>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "novile_debug.h"
 
-using namespace Novile;
+//using namespace Novile;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,16 +21,20 @@ MainWindow::MainWindow(QWidget *parent) :
     initExampleFiles();
     establishBaseConnects();
     setupStartValues();
+
+    readSettings();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    delete editor;
+
+    writeSettings();
 }
 
 void MainWindow::establishBaseConnects()
 {
-    connect(ui->pushAboutNovile, &QPushButton::clicked,
-            this, &MainWindow::aboutNovile);
-
-    connect(ui->pushAboutQt, &QPushButton::clicked,
-            this, &MainWindow::aboutQt);
-
     connect(ui->selectDocument,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this,
@@ -47,106 +50,82 @@ void MainWindow::establishBaseConnects()
             this,
             &MainWindow::updateTheme);
 
-    connect(ui->checkHighlightActive, &QCheckBox::stateChanged,
-            this, &MainWindow::updateHighlightActive);
+    connect(ui->checkHighlightActive, &QCheckBox::stateChanged, this, &MainWindow::updateHighlightActive);
 
-    connect(ui->checkHighlightSelected, &QCheckBox::stateChanged,
-            this, &MainWindow::updateHighlightSelected);
+    connect(ui->checkHighlightSelected, &QCheckBox::stateChanged, this, &MainWindow::updateHighlightSelected);
 
-    connect(ui->checkShowPrintMargin, &QCheckBox::stateChanged,
-            this, &MainWindow::updateShowPrintMargin);
+    connect(ui->checkShowPrintMargin, &QCheckBox::stateChanged, this, &MainWindow::updateShowPrintMargin);
 
-    connect(ui->checkFadeFold, &QCheckBox::stateChanged,
-            this, &MainWindow::updateFadeFold);
+    connect(ui->checkFadeFold, &QCheckBox::stateChanged, this, &MainWindow::updateFadeFold);
 
-    connect(ui->checkShowInvisibles, &QCheckBox::stateChanged,
-            this, &MainWindow::updateShowInvisibles);
+    connect(ui->checkShowInvisibles, &QCheckBox::stateChanged, this, &MainWindow::updateShowInvisibles);
 
-    connect(ui->checkShowGutter, &QCheckBox::stateChanged,
-            this, &MainWindow::updateShowGutter);
+    connect(ui->checkShowGutter, &QCheckBox::stateChanged, this, &MainWindow::updateShowGutter);
 
-    connect(ui->checkShowIndent, &QCheckBox::stateChanged,
-            this, &MainWindow::updateShowIndent);
+    connect(ui->checkShowIndent, &QCheckBox::stateChanged, this, &MainWindow::updateShowIndent);
 
-    connect(ui->checkReadOnly, &QCheckBox::stateChanged,
-            this, &MainWindow::updateReadOnly);
-}
-
-void MainWindow::aboutNovile()
-{
-    QMessageBox::about(this,
-                       tr("Novile Source Editor"),
-                       tr("Novile is a port of Ace editor into Qt. "
-                          "It's distributed in the light-weight shared "
-                          "library and can be used in every Qt application "
-                          "you want (if it use QtWebkit)"));
-}
-
-void MainWindow::aboutQt()
-{
-    QMessageBox::aboutQt(this);
+    connect(ui->checkReadOnly, &QCheckBox::stateChanged, this, &MainWindow::updateReadOnly);
 }
 
 void MainWindow::updateHighlightActive(int checked)
 {
-    editor->setActiveLineHighlighted(checked > 0);
+//    editor->setActiveLineHighlighted(checked > 0);
 }
 
 void MainWindow::updateHighlightSelected(int checked)
 {
-    editor->setHighlightSelectedWord(checked > 0);
+//    editor->setHighlightSelectedWord(checked > 0);
 }
 
 void MainWindow::updateShowPrintMargin(int checked)
 {
     if (checked > 0) {
-        editor->showPrintMargin();
+//        editor->showPrintMargin();
     } else {
-        editor->hidePrintMargin();
+//        editor->hidePrintMargin();
     }
 }
 
 void MainWindow::updateFadeFold(int checked)
 {
-    editor->setFadeFoldMarker(checked > 0);
+//    editor->setFadeFoldMarker(checked > 0);
 }
 
 void MainWindow::updateShowInvisibles(int checked)
 {
-    editor->setInvisiblesShown(checked > 0);
+//    editor->setInvisiblesShown(checked > 0);
 }
 
 void MainWindow::updateShowGutter(int checked)
 {
-    editor->setGutterShown(checked > 0);
+//    editor->setGutterShown(checked > 0);
 }
 
 void MainWindow::updateShowIndent(int checked)
 {
-    editor->setIndentationShown(checked > 0);
+//    editor->setIndentationShown(checked > 0);
 }
 
 void MainWindow::updateReadOnly(int checked)
 {
-    editor->setReadOnly(checked != 0);
+//    editor->setReadOnly(checked != 0);
 }
 
 void MainWindow::updateDocument(int index)
 {
-    const QString documentText = documents[
-            ui->selectDocument->itemText(index)];
+    const QString documentText = documents[ ui->selectDocument->itemText(index)];
     editor->setText(documentText);
     editor->setCursorPosition(0, 0);
 }
 
 void MainWindow::updateMode(int index)
 {
-    editor->setHighlightMode(index);
+    editor->setHighlightMode("c_cpp");
 }
 
 void MainWindow::updateTheme(int index)
 {
-    editor->setTheme(index);
+    editor->setTheme("ambiance");
 }
 
 void MainWindow::setupStartValues()
@@ -199,8 +178,20 @@ void MainWindow::initExampleFiles()
     }
 }
 
-MainWindow::~MainWindow()
+void
+MainWindow::readSettings()
 {
-    delete ui;
-    delete editor;
+    QSettings settings("db", "mainwindow");
+
+    resize(settings.value("size", QSize(720, 480)).toSize());
+    move(settings.value("pos", QPoint(10, 10)).toPoint());
+}
+
+void
+MainWindow::writeSettings()
+{
+    QSettings settings("db", "mainwindow");
+
+    settings.setValue("pos", pos());
+    settings.setValue("size", size());
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>450</height>
+    <width>206</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,20 @@
     <normaloff>:/img/icon.png</normaloff>:/img/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <layout class="QHBoxLayout" name="horisontalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -151,6 +163,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkReadOnly">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Read-only</string>
           </property>
@@ -170,22 +185,7 @@
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="controlLayout">
-          <item>
-           <widget class="QPushButton" name="pushAboutNovile">
-            <property name="text">
-             <string>About Novile...</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushAboutQt">
-            <property name="text">
-             <string>About Qt...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="controlLayout"/>
         </item>
        </layout>
       </item>

@@ -13,14 +13,14 @@
 
 #include "ui/mainwindow.h"
 
-using namespace Novile;
+//using namespace Novile;
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     MainWindow w;
-    w.showMaximized();
+    w.show();
 
     return app.exec();
 }

@@ -1,19 +1,15 @@
 db_SOURCES               +=                                             \
                             src/ui/mainwindow.cpp                       \
-                                                                        \
-                            src/external/novile/src/editor.cpp
+                            src/ui/editor.cpp
                             
 nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainwindow.cpp                   \
-                            src/ui/qrc_example.cpp                      \
-                                                                        \
-                            src/external/novile/src/moc_editor.cpp      \
-                            src/external/novile/src/moc_editor_p.cpp    \
-                            src/external/novile/data/qrc_shared.cpp
+                            src/ui/moc_editor.cpp                       \
+                            src/ui/moc_editorImpl.cpp                   \
+                            src/ui/qrc_example.cpp
 
 BUILT_SOURCES            +=                                             \
                             src/ui/ui_mainwindow.h
 
 db_CPPFLAGS              +=                                             \
-                            -I$(top_builddir)/src/ui                    \
-                            -I$(top_srcdir)/src/external/novile/src
+                            -I$(top_builddir)/src/ui

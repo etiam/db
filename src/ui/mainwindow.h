@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QMainWindow>
+//#include "novile/src/editor.h"
 #include "editor.h"
 
 namespace Ui {
@@ -12,7 +13,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -20,10 +21,6 @@ public:
     // Establishers for Editor interaction
     void establishBaseConnects();
     void establishEventConnects();
-
-    // About windows
-    void aboutNovile();
-    void aboutQt();
 
     // Define additional information
     void initExampleFiles();
@@ -42,9 +39,12 @@ public:
     void updateReadOnly(int checked);
     void updateFadeFold(int checked);
 
+    void readSettings();
+    void writeSettings();
+
 private:
     Ui::MainWindow *ui;
-    Novile::Editor *editor;
+    Editor *editor;
     QMap<QString, QString> documents;
 };
 
