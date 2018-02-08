@@ -9,6 +9,7 @@
 # include "config.h"
 #endif
 
+#include <iostream>
 #include <QObject>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -20,6 +21,19 @@
 
 #include "editor.h"
 
+class MyWebPage : public QWebPage
+{
+  public:
+    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) {};
+
+  protected:
+    void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
+    {
+        std::cout << sourceID.toStdString() << ":" << lineNumber << " " << message.toStdString() << std::endl;
+    }
+
+};
+
 class EditorImpl: public QObject
 {
   Q_OBJECT
@@ -28,11 +42,16 @@ class EditorImpl: public QObject
         QObject(),
         m_parent(parent),
         m_aceView(new QWebView(parent)),
+        m_webPage(new MyWebPage(parent)),
         m_layout(new QVBoxLayout(parent))
     {
+        QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+
         m_parent->setLayout(m_layout);
         m_layout->addWidget(m_aceView);
         m_layout->setMargin(0);
+
+        m_aceView->setPage(m_webPage);
     }
 
     ~EditorImpl() {};
@@ -44,7 +63,8 @@ class EditorImpl: public QObject
      */
     QVariant executeJavaScript(const QString &code)
     {
-        return m_aceView->page()->mainFrame()->evaluateJavaScript(code);
+//        return m_aceView->page()->mainFrame()->evaluateJavaScript(code);
+        return m_webPage->mainFrame()->evaluateJavaScript(code);
     }
 
     /**
@@ -63,9 +83,18 @@ class EditorImpl: public QObject
         QWebFrame *frame = m_aceView->page()->mainFrame();
         frame->addToJavaScriptWindowObject("Novile", this);
 
+        {
         QFile listeners(":/html/wrapper.js");
         if (listeners.open(QIODevice::ReadOnly))
             executeJavaScript(listeners.readAll());
+        }
+
+        {
+        QFile listeners(":/ace/custom.js");
+        if (listeners.open(QIODevice::ReadOnly))
+            executeJavaScript(listeners.readAll());
+        }
+
     }
 
 
@@ -90,5 +119,6 @@ class EditorImpl: public QObject
   public:
     Editor *m_parent;
     QWebView *m_aceView;
+    QWebPage *m_webPage;
     QVBoxLayout *m_layout;
 };

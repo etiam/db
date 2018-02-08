@@ -41,21 +41,13 @@ Editor::Editor(QWidget *parent) :
     setTheme("clouds_midnight");
 }
 
-QString
-Editor::line(int row) const
+void
+Editor::setGutterWidth(int width)
 {
-    return d->executeJavaScript(QString("editor.getSession().getLine(%1)").arg(row)).toString();
-}
-
-int
-Editor::lines() const
-{
-    return d->executeJavaScript("property('lines')").toInt();
-}
-
-int Editor::lineLength(int row) const
-{
-    return line(row).length();
+    if (width > 0)
+    {
+        d->executeJavaScript(QString("editor.session.gutterRenderer.setWidth(%1)").arg(width));
+    }
 }
 
 void
@@ -66,11 +58,11 @@ Editor::setCursorPosition(int row, int column)
         d->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row).arg(column));
     }
 }
+
 void
 Editor::setText(const QString &newText)
 {
     const QString request = "editor.getSession().setValue('%1')";
-    std::cout << newText.toStdString();
     d->executeJavaScript(request.arg(d->escape(newText)));
     int lastLine = lines()-1;
     setCursorPosition(lastLine, lineLength(lastLine));
@@ -119,4 +111,21 @@ Editor::setKeyboardHandler(const QString &name)
             "$.getScript('%1');"
             "editor.getSession().setMode('ace/keybinding/%2');";
     d->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
+}
+
+QString
+Editor::line(int row) const
+{
+    return d->executeJavaScript(QString("editor.getSession().getLine(%1)").arg(row)).toString();
+}
+
+int
+Editor::lines() const
+{
+    return d->executeJavaScript("property('lines')").toInt();
+}
+
+int Editor::lineLength(int row) const
+{
+    return line(row).length();
 }

@@ -25,9 +25,7 @@ class Editor : public QWidget
     explicit Editor(QWidget *parent = 0);
     ~Editor() {};
 
-    QString line(int row) const;
-    int lines() const;
-    int lineLength(int row) const;
+    void setGutterWidth(int width);
 
     void setCursorPosition(int row, int column);
     void setText(const QString &newText);
@@ -40,8 +38,12 @@ class Editor : public QWidget
 
     void setKeyboardHandler(const QString &name);
 
-  protected:
+  private:
+    QString line(int row) const;
+    int lines() const;
+    int lineLength(int row) const;
 
+  protected:
     EditorImpl* d;
 };
 

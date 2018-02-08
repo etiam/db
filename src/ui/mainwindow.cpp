@@ -1,3 +1,4 @@
+#include <iostream>
 #include <QMessageBox>
 #include <QtCore>
 #include <QComboBox>
@@ -25,10 +26,18 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     readSettings();
 
     QFile file(filename);
+    QTextStream stream(&file);
+
     file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream ReadFile(&file);
-    editor->setText(ReadFile.readAll());
+    auto text = stream.readAll();
+    auto numlines = text.count("\n");
+
+    auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
+    std::cout << numlines << " " << numdigits << std::endl;
+
+    editor->setText(text);
     editor->setCursorPosition(0, 0);
+    editor->setGutterWidth(numdigits - 1);
 }
 
 MainWindow::~MainWindow()

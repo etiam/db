@@ -16,6 +16,19 @@ PKG_CHECK_MODULES([QTGUI], [Qt5Gui  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKIT], [Qt5WebKit  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
 
+# remove autoconf's "-g -O2" defaults
+CFLAGS=`echo $CFLAGS | sed 's/-O.//g'`
+CFLAGS=`echo $CFLAGS | sed 's/-g.//g'`
+CFLAGS=`echo $CFLAGS | sed 's/-O//g'`
+CFLAGS=`echo $CFLAGS | sed 's/-g//g'`
+CXXFLAGS=`echo $CXXFLAGS | sed 's/-O.//g'`
+CXXFLAGS=`echo $CXXFLAGS | sed 's/-g.//g'`
+CXXFLAGS=`echo $CXXFLAGS | sed 's/-O//g'`
+CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//g'`
+
+CFLAGS="${CFLAGS} -fno-strict-aliasing -Wall -Werror"
+CXXFLAGS="${CXXFLAGS} -fno-strict-aliasing -Wall -Werror -std=c++14"
+
 # --enable-profile
 AC_ARG_ENABLE([profile],
   [  --enable-profile    turn on compiler profiling],
