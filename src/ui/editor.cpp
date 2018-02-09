@@ -31,7 +31,6 @@ Editor::Editor(QWidget *parent) :
     d->executeJavaScript("editor.focus()");
 
     d->executeJavaScript("editor.setFontSize(16)");
-    d->executeJavaScript("editor.setCursorStyle(\"wide\")");
     d->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
     d->executeJavaScript("editor.setShowPrintMargin(false)");
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");

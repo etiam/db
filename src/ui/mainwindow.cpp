@@ -33,7 +33,6 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     auto numlines = text.count("\n");
 
     auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
-    std::cout << numlines << " " << numdigits << std::endl;
 
     editor->setText(text);
     editor->setCursorPosition(0, 0);

@@ -29,6 +29,50 @@ CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//g'`
 CFLAGS="${CFLAGS} -fno-strict-aliasing -Wall -Werror"
 CXXFLAGS="${CXXFLAGS} -fno-strict-aliasing -Wall -Werror -std=c++14"
 
+# --enable-debug
+AC_ARG_ENABLE([debug],
+  [  --enable-debug    turn on compiler/opengl debugging],
+  [case "${enableval}" in
+    yes) debug=true ;;
+    no)  debug=false ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+  esac],[debug=false])
+if test "x$debug" != xfalse; then
+      CFLAGS="-O0 -g3 -fno-inline ${CFLAGS} -rdynamic"
+      CXXFLAGS="-O0 -g3 -fno-inline ${CXXFLAGS} -rdynamic"
+      AC_DEFINE(DEBUG_ENABLED,1,[turn on compiler/opengl debugging])
+fi
+AM_CONDITIONAL([DO_DEBUG], [test x$debug = xtrue]) 
+
+# --enable-coverage
+AC_ARG_ENABLE([coverage],
+  [  --enable-coverage    turn on gcov/lcov support],
+  [case "${enableval}" in
+    yes) coverage=true ;;
+    no)  coverage=false ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-coverage]) ;;
+  esac],[coverage=false])
+if test "x$coverage" != xfalse; then
+      CFLAGS="${CFLAGS} --coverage"
+      CXXFLAGS="${CXXFLAGS} --coverage"
+fi
+
+# --enable-opt
+AC_ARG_ENABLE([opt],
+  [  --enable-opt    turn on compiler optging],
+  [case "${enableval}" in
+    yes) opt=true ;;
+    no)  opt=false ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-opt]) ;;
+  esac],[opt=false])
+if test "x$opt" != xfalse; then
+      CFLAGS="-O3 ${CFLAGS}"
+      CXXFLAGS="-O3 ${CXXFLAGS}"
+fi
+if test "x$opt" != xfalse; then
+      AC_DEFINE(NDEBUG,1,[strip out asserts])
+fi
+
 # --enable-profile
 AC_ARG_ENABLE([profile],
   [  --enable-profile    turn on compiler profiling],

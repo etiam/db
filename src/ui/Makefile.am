@@ -6,8 +6,8 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainwindow.cpp                   \
                             src/ui/moc_editor.cpp                       \
                             src/ui/moc_editorImpl.cpp                   \
-                            src/ui/qrc_editor.cpp                       \
-                            src/ui/qrc_example.cpp
+                            src/ui/qrc_shared.cpp                       \
+                            src/ui/qrc_editor.cpp
 
 BUILT_SOURCES            +=                                             \
                             src/ui/ui_mainwindow.h

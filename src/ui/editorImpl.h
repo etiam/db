@@ -29,7 +29,7 @@ class MyWebPage : public QWebPage
   protected:
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
     {
-        std::cout << sourceID.toStdString() << ":" << lineNumber << " " << message.toStdString() << std::endl;
+        std::cerr << sourceID.toStdString() << ":" << lineNumber << " " << message.toStdString() << std::endl;
     }
 
 };
@@ -83,11 +83,11 @@ class EditorImpl: public QObject
         QWebFrame *frame = m_aceView->page()->mainFrame();
         frame->addToJavaScriptWindowObject("Novile", this);
 
-        {
-        QFile listeners(":/html/wrapper.js");
-        if (listeners.open(QIODevice::ReadOnly))
-            executeJavaScript(listeners.readAll());
-        }
+//        {
+//        QFile listeners(":/ace/wrapper.js");
+//        if (listeners.open(QIODevice::ReadOnly))
+//            executeJavaScript(listeners.readAll());
+//        }
 
         {
         QFile listeners(":/ace/custom.js");

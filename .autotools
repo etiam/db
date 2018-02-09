@@ -76,7 +76,7 @@
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
-<option id="user" value="-C --enable-silent-rules "/>
+<option id="user" value="-C --enable-silent-rules --enable-debug"/>
 <option id="autogen" value="autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
