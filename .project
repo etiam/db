@@ -32,7 +32,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1518134913132</id>
+			<id>1518157312067</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
@@ -41,21 +41,21 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1518134913135</id>
-			<name></name>
-			<type>30</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-src/external/novile/data/ace</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1518134913139</id>
+			<id>1518157312072</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-projectRelativePath-matches-false-false-src/external/ace-builds/src*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1518157312081</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-.git*</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
