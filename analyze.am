@@ -1,5 +1,5 @@
 # use clang's --analyze
-analyze_srcs              = $(filter %.cpp, $(ov_SOURCES))
+analyze_srcs              = $(filter %.cpp, $(db_SOURCES))
 analyze_plists            = $(analyze_srcs:%.cpp=%.plist)
 
 MOSTLYCLEANFILES         += $(analyze_plists)

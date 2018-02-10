@@ -8,6 +8,8 @@ AM_MAINTAINER_MODE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
 AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_RANLIB
 
 # qt
 PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.2.1], [])
@@ -15,6 +17,17 @@ PKG_CHECK_MODULES([QTWIDGETS], [Qt5Widgets >= 5.2.1], [])
 PKG_CHECK_MODULES([QTGUI], [Qt5Gui  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKIT], [Qt5WebKit  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
+
+# cmake
+AC_CHECK_PROG([CMAKE_CHECK], [cmake], [yes])
+if test x"$CMAKE_CHECK" != x"yes" ; then
+    AC_MSG_ERROR([Please install cmake before installing.])
+else
+    ${MKDIR_P} ${ac_pwd}/src/external/cppast/build;
+    cd ${ac_pwd}/src/external/cppast/build;
+    cmake ${ac_dir}/src/external/cppast -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS:STRING="" -DCMAKE_CXX_FLAGS:STRING="" -DCPPAST_BUILD_EXAMPLE:BOOL="OFF" -DCXXOPTS_BUILD_EXAMPLES:BOOL="OFF" -DCPPAST_BUILD_TEST:BOOL="OFF" -DCPPAST_BUILD_TOOL:BOOL="OFF";
+    cd ${ac_pwd};
+fi
 
 # remove autoconf's "-g -O2" defaults
 CFLAGS=`echo $CFLAGS | sed 's/-O.//g'`
