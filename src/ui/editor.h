@@ -22,7 +22,7 @@ class Editor : public QWidget
   Q_OBJECT
 
   public:
-    explicit Editor(QWidget *parent = 0);
+    explicit Editor(QWidget *parent=0);
     ~Editor() {};
 
     void setGutterWidth(int width);

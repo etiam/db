@@ -92,6 +92,10 @@ class EditorImpl: public QObject
         return escaped;
     }
 
+  public slots:
+      void onLinesChanged(int lines) { std::cout << lines << std::endl; };
+      void onMouseMove(long x, long y) { std::cout << x << ", " << y << std::endl; };
+
   public:
     Editor *        m_parent;
     QWebView *      m_webView;
