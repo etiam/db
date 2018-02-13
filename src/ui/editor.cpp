@@ -43,6 +43,7 @@ Editor::Editor(QWidget *parent) :
 void
 Editor::setGutterWidth(int width)
 {
+    std::cout << "setting width to " << width << std::endl;
     if (width > 0)
     {
         d->executeJavaScript(QString("editor.session.gutterRenderer.setWidth(%1)").arg(width));

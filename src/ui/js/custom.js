@@ -44,8 +44,16 @@ function handleEvents() {
 }
 
 editor.on('mousemove', function(e) {
-    str = sprintf('%2$s %3$s a %1$s', 'cracker', 'Polly', 'wants');
-    console.log(str);
+    gw = editor.session.gutterRenderer.getWidth(0, 0, editor.renderer.layerConfig);
+    
+    cx = e.clientX / editor.renderer.layerConfig.characterWidth;
+    cy = e.clientY / editor.renderer.layerConfig.lineHeight;
+    
+    //str = sprintf('%d %d %d %d', e.clientX, e.clientY, cx, cy);
+    //console.log(str);
+    
+    console.log(e.view);
+    
 //    console.log(editor.renderer.layerConfig.characterWidth);
 //    console.log(editor.renderer.layerConfig.lineHeight);
 //    codeview.onMouseMove(e.clientX / editor.renderer.layerConfig.characterWidth, 

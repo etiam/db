@@ -93,7 +93,7 @@ class EditorImpl: public QObject
     }
 
   public slots:
-      void onLinesChanged(int lines) { std::cout << lines << std::endl; };
+      void onLinesChanged(int lines) {/* std::cout << lines << std::endl; */};
       void onMouseMove(int x, int y) {/* std::cout << x << ", " << y << std::endl; */};
 
   public:
