@@ -44,6 +44,8 @@ class Editor : public QWidget
     int lineLength(int row) const;
 
   protected:
+    bool eventFilter(QObject *object, QEvent *filteredEvent);
+
     EditorImpl* d;
 };
 

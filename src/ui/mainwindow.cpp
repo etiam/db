@@ -23,12 +23,11 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     file.open(QFile::ReadOnly | QFile::Text);
     auto text = stream.readAll();
     editor->setText(text);
+    editor->setCursorPosition(0, 0);
 
     auto numlines = text.count("\n");
     auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
     editor->setGutterWidth(numdigits - 0);
-
-    editor->setCursorPosition(0, 0);
 }
 
 MainWindow::~MainWindow()

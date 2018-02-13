@@ -48,6 +48,8 @@ class EditorImpl: public QObject
     {
         QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
+        m_webView->installEventFilter(parent);
+
         m_parent->setLayout(m_layout);
         m_layout->addWidget(m_webView);
         m_layout->setMargin(0);
@@ -94,7 +96,7 @@ class EditorImpl: public QObject
 
   public slots:
       void onLinesChanged(int lines) {/* std::cout << lines << std::endl; */};
-      void onMouseMove(int x, int y) {/* std::cout << x << ", " << y << std::endl; */};
+      void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
 
   public:
     Editor *        m_parent;

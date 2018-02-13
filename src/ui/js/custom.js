@@ -44,22 +44,19 @@ function handleEvents() {
 }
 
 editor.on('mousemove', function(e) {
-    gw = editor.session.gutterRenderer.getWidth(0, 0, editor.renderer.layerConfig);
+    gw = editor.renderer.gutterWidth;
+    cw = editor.renderer.layerConfig.characterWidth;
+    lh = editor.renderer.layerConfig.lineHeight;
+    st = editor.renderer.scrollTop;
     
-    cx = e.clientX / editor.renderer.layerConfig.characterWidth;
-    cy = e.clientY / editor.renderer.layerConfig.lineHeight;
+    cx = (e.clientX - gw) / cw + 1;
+    cy = e.clientY / lh + (st / lh) + 1;
     
-    //str = sprintf('%d %d %d %d', e.clientX, e.clientY, cx, cy);
-    //console.log(str);
+//    str = sprintf('%d %d - %d %d - %d %d', e.clientX, e.clientY, cx, cy, st, st / lh);
+//    str = sprintf('%d %d', cx, cy);
+//    console.log(str);
     
-    console.log(e.view);
-    
-//    console.log(editor.renderer.layerConfig.characterWidth);
-//    console.log(editor.renderer.layerConfig.lineHeight);
-//    codeview.onMouseMove(e.clientX / editor.renderer.layerConfig.characterWidth, 
-//                         e.clientY / editor.renderer.layerConfig.lineHeight);
-
-    codeview.onMouseMove(e.clientX, e.clientY);
+    codeview.onMouseMove(cx, cy);
 });
 
 

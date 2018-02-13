@@ -35,6 +35,8 @@ Editor::Editor(QWidget *parent) :
     d->executeJavaScript("editor.setShowPrintMargin(false)");
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");
     d->executeJavaScript("editor.setReadOnly(true)");
+    d->executeJavaScript("editor.setShowFoldWidgets(false)");
+    d->executeJavaScript("editor.setHScrollBarAlwaysVisible(false)");
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
@@ -125,7 +127,54 @@ Editor::lines() const
     return d->executeJavaScript("property('lines')").toInt();
 }
 
-int Editor::lineLength(int row) const
+int
+Editor::lineLength(int row) const
 {
     return line(row).length();
+}
+
+bool
+Editor::eventFilter(QObject *object, QEvent *filteredEvent)
+{
+    // Key press filters
+    if (filteredEvent->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *event = (QKeyEvent*) filteredEvent;
+        int key = event->key();
+
+        if (key == Qt::Key_Q)
+        {
+            QCoreApplication::quit();
+            return true;
+        }
+
+        if (key == Qt::Key_R)
+        {
+            setText("");
+
+            QFile file("/home/jasonr/workspace/ov/src/ui/mainWindow.cpp");
+            QTextStream stream(&file);
+            file.open(QFile::ReadOnly | QFile::Text);
+
+            setText(stream.readAll());
+            setCursorPosition(0, 0);
+
+            return true;
+        }
+
+        if (key == Qt::Key_W)
+        {
+            QFile file("/home/jasonr/src/novile/example/documents/marble.cpp");
+            QTextStream stream(&file);
+            file.open(QFile::ReadOnly | QFile::Text);
+
+            setText(stream.readAll());
+            setCursorPosition(0, 0);
+
+            return true;
+        }
+
+    }
+
+    return false;
 }
