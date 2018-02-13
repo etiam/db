@@ -74,9 +74,9 @@ class EditorImpl: public QObject
         QWebFrame *frame = m_webView->page()->mainFrame();
         frame->addToJavaScriptWindowObject("codeview", this);
 
-        QFile listeners(":/ace/custom.js");
-        if (listeners.open(QIODevice::ReadOnly))
-            executeJavaScript(listeners.readAll());
+        QFile custom(":/ace/custom.js");
+        if (custom.open(QIODevice::ReadOnly))
+            executeJavaScript(custom.readAll());
     }
 
     QString escape(const QString &text)
@@ -94,7 +94,7 @@ class EditorImpl: public QObject
 
   public slots:
       void onLinesChanged(int lines) { std::cout << lines << std::endl; };
-      void onMouseMove(long x, long y) { std::cout << x << ", " << y << std::endl; };
+      void onMouseMove(int x, int y) {/* std::cout << x << ", " << y << std::endl; */};
 
   public:
     Editor *        m_parent;

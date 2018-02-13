@@ -8,6 +8,7 @@
         <file alias="ace/keybinding-vim.js">../external/ace-builds/src-min/keybinding-vim.js</file>
         
         <file alias="ace/custom.js">js/custom.js</file>
-        <file alias="jquery/latest.js">js/jquery-1.9.1.min.js</file>
+        <file alias="ace/jquery.js">js/jquery-1.9.1.min.js</file>
+        <file alias="ace/sprintf.js">js/sprintf.js</file>
     </qresource>
 </RCC>

@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of the codeview Editor
  * This program is free software licensed under the GNU LGPL. You can
  * find a copy of this license in LICENSE in the top directory of
@@ -8,7 +8,6 @@
  *
  */
 
-// not sure yet
 function property(param, value) {
     if (arguments.length == 1) {
         // Get
@@ -18,6 +17,8 @@ function property(param, value) {
         sessionStorage[param] = value;
     }
 }
+
+//var sprintf = require('sprintf.jsxass').sprintf;
 
 property("lines", 1);
 property("text", "");
@@ -43,7 +44,13 @@ function handleEvents() {
 }
 
 editor.on('mousemove', function(e) {
-    console.log(e.offsetX);
+    str = sprintf('%2$s %3$s a %1$s', 'cracker', 'Polly', 'wants');
+    console.log(str);
+//    console.log(editor.renderer.layerConfig.characterWidth);
+//    console.log(editor.renderer.layerConfig.lineHeight);
+//    codeview.onMouseMove(e.clientX / editor.renderer.layerConfig.characterWidth, 
+//                         e.clientY / editor.renderer.layerConfig.lineHeight);
+
     codeview.onMouseMove(e.clientX, e.clientY);
 });
 

@@ -13,3 +13,5 @@ BUILT_SOURCES            +=                                             \
 
 db_CPPFLAGS              +=                                             \
                             -I$(top_builddir)/src/ui
+
+src/ui/qrc_editor.cpp: src/ui/js/custom.js
