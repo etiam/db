@@ -29,7 +29,9 @@ class Editor : public QWidget
     void setGutterWidth(int width);
 
     void setCursorPosition(int row, int column);
+
     void setText(const QString &newText);
+    QString getText();
 
     void setTheme(const QString &name, const QUrl &url);
     void setTheme(const QString &name);

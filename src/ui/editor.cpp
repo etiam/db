@@ -83,6 +83,13 @@ Editor::setText(const QString &newText)
     setCursorPosition(0, 0);
 }
 
+QString
+Editor::getText()
+{
+    return d->executeJavaScript(QString("editor.getSession().getValue()")).toString();
+}
+
+
 void
 Editor::setTheme(const QString &name, const QUrl &url)
 {
