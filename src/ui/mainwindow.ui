@@ -18,26 +18,30 @@
     <bool>true</bool>
    </property>
    <layout class="QHBoxLayout" name="horisontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="topMargin">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="rightMargin">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="bottomMargin">
-     <number>5</number>
+     <number>0</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="mainLayout"/>
+     <layout class="QHBoxLayout" name="mainLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+     </layout>
     </item>
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="example.qrc"/>
- </resources>
  <connections/>
 </ui>
