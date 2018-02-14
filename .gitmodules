@@ -1,6 +1,3 @@
 [submodule "src/external/ace-builds"]
 	path = src/external/ace-builds
 	url = https://github.com/ajaxorg/ace-builds.git
-[submodule "src/external/cppast"]
-	path = src/external/cppast
-	url = https://github.com/foonathan/cppast.git
