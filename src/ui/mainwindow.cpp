@@ -15,19 +15,27 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
 
     ui->mainLayout->insertWidget(1, editor, 1);
 
+//    QFile custom(":/documents/marble.cpp");
+//    if (custom.open(QIODevice::ReadOnly))
+//    {
+//        editor->setText(custom.readAll());
+//    }
+
     readSettings();
 
     QFile file(filename);
-    QTextStream stream(&file);
+//    if (file.isReadable())
+    {
+        QTextStream stream(&file);
 
-    file.open(QFile::ReadOnly | QFile::Text);
-    auto text = stream.readAll();
-    editor->setText(text);
-    editor->setCursorPosition(0, 0);
+        file.open(QFile::ReadOnly | QFile::Text);
+        auto text = stream.readAll();
+        editor->setText(text);
 
-    auto numlines = text.count("\n");
-    auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
-    editor->setGutterWidth(numdigits - 0);
+        auto numlines = text.count("\n");
+        auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
+        editor->setGutterWidth(numdigits - 0);
+    }
 }
 
 MainWindow::~MainWindow()

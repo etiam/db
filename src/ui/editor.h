@@ -16,13 +16,14 @@
 #include <QWidget>
 
 class EditorImpl;
+class QMainWindow;
 
 class Editor : public QWidget
 {
   Q_OBJECT
 
   public:
-    explicit Editor(QWidget *parent=0);
+    explicit Editor(QMainWindow *parent=0);
     ~Editor() {};
 
     void setGutterWidth(int width);
@@ -47,6 +48,9 @@ class Editor : public QWidget
     bool eventFilter(QObject *object, QEvent *filteredEvent);
 
     EditorImpl* d;
+
+  private:
+    QMainWindow* m_parent;
 };
 
 #endif // UI_EDITOR_H_

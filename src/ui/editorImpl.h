@@ -29,7 +29,8 @@ class MyWebPage : public QWebPage
   protected:
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
     {
-        std::cerr << sourceID.toStdString() << ":" << lineNumber << " " << message.toStdString() << std::endl;
+        std::cerr << "\"" << sourceID.toStdString() << "\":"
+                  << lineNumber << ": " << message.toStdString() << std::endl;
     }
 
 };
@@ -95,7 +96,6 @@ class EditorImpl: public QObject
     }
 
   public slots:
-      void onLinesChanged(int lines) {/* std::cout << lines << std::endl; */};
       void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
 
   public:

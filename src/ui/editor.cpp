@@ -23,9 +23,10 @@
 #include "editorImpl.h"
 #include "editor.h"
 
-Editor::Editor(QWidget *parent) :
+Editor::Editor(QMainWindow *parent) :
     QWidget(parent),
-    d(new EditorImpl(this))
+    d(new EditorImpl(this)),
+    m_parent(parent)
 {
     d->startAceWidget();
     d->executeJavaScript("editor.focus()");
@@ -36,7 +37,6 @@ Editor::Editor(QWidget *parent) :
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");
     d->executeJavaScript("editor.setReadOnly(true)");
     d->executeJavaScript("editor.setShowFoldWidgets(false)");
-    d->executeJavaScript("editor.setHScrollBarAlwaysVisible(false)");
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
@@ -45,7 +45,6 @@ Editor::Editor(QWidget *parent) :
 void
 Editor::setGutterWidth(int width)
 {
-    std::cout << "setting width to " << width << std::endl;
     if (width > 0)
     {
         d->executeJavaScript(QString("editor.session.gutterRenderer.setWidth(%1)").arg(width));
@@ -58,6 +57,7 @@ Editor::setCursorPosition(int row, int column)
     if (lines() > row && lineLength(row) >= column)
     {
         d->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row).arg(column));
+        d->executeJavaScript("editor.renderer.scrollCursorIntoView()");
     }
 }
 
@@ -66,8 +66,21 @@ Editor::setText(const QString &newText)
 {
     const QString request = "editor.getSession().setValue('%1')";
     d->executeJavaScript(request.arg(d->escape(newText)));
-    int lastLine = lines()-1;
-    setCursorPosition(lastLine, lineLength(lastLine));
+    QPoint p(0, 0);
+    int row = 0;
+    for (const QString &line : newText.split("\n"))
+    {
+        if (line.length() > p.y())
+        {
+            p = QPoint(row, line.length());
+        }
+        ++row;
+    }
+
+    std::cout << p.x() << " " << p.y() << std::endl;
+    setCursorPosition(p.x(), p.y());
+
+    setCursorPosition(0, 0);
 }
 
 void
@@ -147,33 +160,6 @@ Editor::eventFilter(QObject *object, QEvent *filteredEvent)
             QCoreApplication::quit();
             return true;
         }
-
-        if (key == Qt::Key_R)
-        {
-            setText("");
-
-            QFile file("/home/jasonr/workspace/ov/src/ui/mainWindow.cpp");
-            QTextStream stream(&file);
-            file.open(QFile::ReadOnly | QFile::Text);
-
-            setText(stream.readAll());
-            setCursorPosition(0, 0);
-
-            return true;
-        }
-
-        if (key == Qt::Key_W)
-        {
-            QFile file("/home/jasonr/src/novile/example/documents/marble.cpp");
-            QTextStream stream(&file);
-            file.open(QFile::ReadOnly | QFile::Text);
-
-            setText(stream.readAll());
-            setCursorPosition(0, 0);
-
-            return true;
-        }
-
     }
 
     return false;
