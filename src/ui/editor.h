@@ -40,9 +40,9 @@ class Editor : public QWidget
     void setKeyboardHandler(const QString &name);
 
   private:
-    QString line(int row) const;
-    int lines() const;
-    int lineLength(int row) const;
+    QString getLineText(int row) const;
+    int getNumLines() const;
+    int getLineLength(int row) const;
 
   protected:
     bool eventFilter(QObject *object, QEvent *filteredEvent);

@@ -54,7 +54,7 @@ Editor::setGutterWidth(int width)
 void
 Editor::setCursorPosition(int row, int column)
 {
-    if (lines() > row && lineLength(row) >= column)
+    if (getNumLines() > row && getLineLength(row) >= column)
     {
         d->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row).arg(column));
         d->executeJavaScript("editor.renderer.scrollCursorIntoView()");
@@ -129,21 +129,21 @@ Editor::setKeyboardHandler(const QString &name)
 }
 
 QString
-Editor::line(int row) const
+Editor::getLineText(int row) const
 {
     return d->executeJavaScript(QString("editor.getSession().getLine(%1)").arg(row)).toString();
 }
 
 int
-Editor::lines() const
+Editor::getNumLines() const
 {
     return d->executeJavaScript("property('lines')").toInt();
 }
 
 int
-Editor::lineLength(int row) const
+Editor::getLineLength(int row) const
 {
-    return line(row).length();
+    return getLineText(row).length();
 }
 
 bool
