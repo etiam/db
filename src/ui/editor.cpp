@@ -35,7 +35,7 @@ Editor::Editor(QMainWindow *parent) :
     d->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
     d->executeJavaScript("editor.setShowPrintMargin(false)");
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");
-//    d->executeJavaScript("editor.setReadOnly(true)");
+    d->executeJavaScript("editor.setReadOnly(true)");
     d->executeJavaScript("editor.setShowFoldWidgets(false)");
 
     setHighlightMode("c_cpp");
@@ -77,7 +77,6 @@ Editor::setText(const QString &newText)
         ++row;
     }
 
-    std::cout << p.x() << " " << p.y() << std::endl;
     setCursorPosition(p.x(), p.y());
 
     setCursorPosition(0, 0);

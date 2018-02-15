@@ -86,21 +86,19 @@ class EditorImpl: public QObject
     {
         QString escaped = text;
 
+        escaped.replace(R"(\n)", R"(\\n)");
         escaped.replace("\r\n", "\n");
         escaped.replace("\r", "\n");
-        escaped.replace(R"(\n)", R"(\\n)");
         escaped.replace("\n", "\\n");
         escaped.replace("\t", "\\t");
         escaped.replace("\'", "\\'");
         escaped.replace("\"", "\\\"");
 
-        std::cout << "\"" << text.toStdString() << "\"" << std::endl;
-        std::cout << "\"" << escaped.toStdString() << "\"" << std::endl;
         return escaped;
     }
 
   public slots:
-      void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
+      void onMouseMove(int x, int y) {/* std::cout << x << ", " << y << std::endl; */};
 
   public:
     Editor *        m_parent;
