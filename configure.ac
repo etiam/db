@@ -29,6 +29,9 @@ else
     cd ${ac_pwd};
 fi
 
+# libclang
+AX_LIBCLANG([0], [37])
+
 # remove autoconf's "-g -O2" defaults
 CFLAGS=`echo $CFLAGS | sed 's/-O.//g'`
 CFLAGS=`echo $CFLAGS | sed 's/-g.//g'`
