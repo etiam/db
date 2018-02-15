@@ -85,13 +85,17 @@ class EditorImpl: public QObject
     QString escape(const QString &text)
     {
         QString escaped = text;
+
         escaped.replace("\r\n", "\n");
         escaped.replace("\r", "\n");
+        escaped.replace(R"(\n)", R"(\\n)");
         escaped.replace("\n", "\\n");
         escaped.replace("\t", "\\t");
         escaped.replace("\'", "\\'");
         escaped.replace("\"", "\\\"");
 
+        std::cout << "\"" << text.toStdString() << "\"" << std::endl;
+        std::cout << "\"" << escaped.toStdString() << "\"" << std::endl;
         return escaped;
     }
 

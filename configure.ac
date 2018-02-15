@@ -100,6 +100,9 @@ if test "x$profile" != xfalse; then
 fi
 AM_CONDITIONAL([DO_PROFILER], [test x$profile = xtrue]) 
 
+AC_SUBST(CFLAGS)
+AC_SUBST(CXXFLAGS)
+
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
 
