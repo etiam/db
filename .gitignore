@@ -36,7 +36,7 @@
 /*~
 /configure
 /aclocal.m4
-/build-*
+/build*
 /*.tga
 /*.sw?
 /GPATH
@@ -51,4 +51,3 @@ Makefile.in
 compile_commands.json
 /compile
 
-src/external/ace-builds
