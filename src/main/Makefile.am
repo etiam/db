@@ -13,7 +13,6 @@ db_CPPFLAGS              +=                                             \
                             @QTWEBKITWIDGETS_CFLAGS@
 
 db_LDADD                  =                                             \
-                            $(top_builddir)/src/external/cppast/build/src/libcppast.a \
                             @QTCORE_LIBS@                               \
                             @QTWIDGETS_LIBS@                            \
                             @QTGUI_LIBS@                                \
