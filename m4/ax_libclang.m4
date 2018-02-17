@@ -1,4 +1,4 @@
-// https://gist.github.com/codebrainz/c27839a6408bfaf773fedf473f376d40
+# https://gist.github.com/codebrainz/c27839a6408bfaf773fedf473f376d40
 
 ########################################################################
 # Usage: AX_LIBCLANG([min-abi], [min-api])                             #
