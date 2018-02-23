@@ -2,3 +2,5 @@
 
 sudo apt install autoconf g++ pkg-config 
 sudo apt install qt5-default qtbase5-dev libqt5webkit5-dev llvm-4.0-dev libclang-4.0-dev 
+
+git submodule update --init
