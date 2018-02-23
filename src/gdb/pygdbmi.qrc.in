@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="pyc/gdbcontroller.pyc">../external/pygdbmi/pygdbmi/gdbcontroller.pyc</file>
+    </qresource>
+</RCC>

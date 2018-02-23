@@ -12,7 +12,7 @@ db_CPPFLAGS              +=                                             \
                             @QTWEBKIT_CFLAGS@                           \
                             @QTWEBKITWIDGETS_CFLAGS@
 
-db_LDADD                  =                                             \
+db_LDADD                 +=                                             \
                             @QTCORE_LIBS@                               \
                             @QTWIDGETS_LIBS@                            \
                             @QTGUI_LIBS@                                \

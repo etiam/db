@@ -18,6 +18,9 @@ PKG_CHECK_MODULES([QTGUI], [Qt5Gui  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKIT], [Qt5WebKit  >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
 
+# python
+PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
+
 # libclang
 AX_LIBCLANG([0], [37])
 

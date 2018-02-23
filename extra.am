@@ -1,23 +1,13 @@
 verbose:
 	$(MAKE) all V=1
 
-GLSL2H = $(top_srcdir)/scripts/glsl2h
+# build .pyc from .py
+%.pyc: %.py 
+	$(MKDIR_P) $(@D)
+	$(AM_V_GEN) python -c "import py_compile; py_compile.compile('$<', '$@')" > /dev/null 2>&1
 
-# build shaderSource.h from shaderSource.glsl
-AM_V_GLSL2H = $(am__v_GLSL2H_$(V))
-am__v_GLSL2H_ = $(am__v_GLSL2H_$(AM_DEFAULT_VERBOSITY))
-am__v_GLSL2H_0 = @echo "  GLSL2H  " $@;
-am__v_GLSL2H_1 =
+# build .qrc from .qrc.in
+%.qrc: %.qrc.in
+#	sed -e 's/@BUILD_DIR@/$(notdir $(abs_builddir))/g' $< > $@
+	cp -f $< $@
 
-# build .h from .glsl
-%.h: %.glsl
-	$(AM_V_GLSL2H) $(GLSL2H) $< $@
-
-AM_V_OBJ2CPP = $(am__v_OBJ2CPP_$(V))
-am__v_OBJ2CPP_ = $(am__v_OBJ2CPP_$(AM_DEFAULT_VERBOSITY))
-am__v_OBJ2CPP_0 = @echo "  OBJ2CPP " $@;
-am__v_OBJ2CPP_1 =
-
-# build .cpp from .objmesh
-%.h: %.objmesh obj2cpp
-	$(AM_V_OBJ2CPP) obj2cpp -i $< -o $@ > /dev/null 2>&1

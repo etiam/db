@@ -7,11 +7,12 @@ BUILT_SOURCES             =
 MOSTLYCLEANFILES          =
 
 db_SOURCES                = 
-db_CPPFLAGS               =                                             \
-                            -I$(top_srcdir)/src
+db_CPPFLAGS               = -I$(top_srcdir)/src
+db_LDADD                  =
 
 include $(top_srcdir)/src/main/Makefile.am
 include $(top_srcdir)/src/ui/Makefile.am
+include $(top_srcdir)/src/gdb/Makefile.am
 
 EXTRA_DIST                = $(nodist_db_la_SOURCES:moc_%.cpp=%.h)
 CLEANFILES                = $(filter moc_%.cpp,$(db_la_SOURCES))
