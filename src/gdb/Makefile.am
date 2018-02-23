@@ -2,10 +2,15 @@ db_SOURCES               +=                                                     
                             src/gdb/pyGdbMiInterface.cpp
 
 db_CPPFLAGS              +=                                                     \
-                            @PYTHON_CFLAGS@
+                            @PYTHON_CFLAGS@                                     \
+                            @BOOST_CPPFLAGS@
 
 db_LDADD                 +=                                                     \
-                            @PYTHON_LIBS@
+                            @PYTHON_LIBS@                                       \
+                            -l@BOOST_PYTHON_LIB@
+                            
+db_LDFLAGS               +=                                                     \
+                            @BOOST_LDFLAGS@
 
 nodist_db_SOURCES        +=                                                     \
                             src/gdb/qrc_pygdbmi.cpp

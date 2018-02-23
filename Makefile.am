@@ -8,6 +8,7 @@ MOSTLYCLEANFILES          =
 
 db_SOURCES                = 
 db_CPPFLAGS               = -I$(top_srcdir)/src
+db_LDFLAGS                =
 db_LDADD                  =
 
 include $(top_srcdir)/src/main/Makefile.am

@@ -49,5 +49,4 @@ Makefile.in
 .gdb_history
 
 compile_commands.json
-/compile
-
+/scripts

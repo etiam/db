@@ -2,6 +2,11 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT(db, 1.0)
+AC_CONFIG_SRCDIR([src/main/main.cpp])
+AC_CONFIG_AUX_DIR([scripts])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
+AC_SUBST(VERSION)
 
 AM_INIT_AUTOMAKE([1.11 foreign -Wgnu subdir-objects])
 AM_MAINTAINER_MODE
@@ -20,6 +25,9 @@ PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
 
 # python
 PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
+
+# boost
+AX_BOOST_PYTHON
 
 # libclang
 AX_LIBCLANG([0], [37])
