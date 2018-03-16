@@ -32,7 +32,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1519335782053</id>
+			<id>1521174287526</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
@@ -41,12 +41,48 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1519335782055</id>
+			<id>1521174287530</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-projectRelativePath-matches-false-false-.git*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1521174287533</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-autom4te.cache</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1521174287537</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-.*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1521174287541</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-src/external</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1521174287546</id>
+			<name></name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-aclocal.m4</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

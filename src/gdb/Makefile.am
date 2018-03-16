@@ -17,4 +17,7 @@ nodist_db_SOURCES        +=                                                     
 
 BUILT_SOURCES            +=                                                     \
                             src/gdb/pygdbmi.qrc                                 \
-                            src/external/pygdbmi/pygdbmi/gdbcontroller.pyc
+                            src/external/pygdbmi/pygdbmi/printcolor.pyc         \
+                            src/external/pygdbmi/pygdbmi/StringStream.pyc       \
+                            src/external/pygdbmi/pygdbmi/gdbcontroller.pyc      \
+                            src/external/pygdbmi/pygdbmi/gdbmiparser.pyc

@@ -23,18 +23,23 @@ class PyGdbMiInterface
     ~PyGdbMiInterface();
 
   private:
-    void importModule(const std::string &modulename);
+    PyObject * importModule(const std::string &bytecodename, const std::string &modulename);
 
-    PyObject* createInstance(const std::string &modulename,
-                             const std::string &classname);
+    PyObject * createInstance(const std::string &modulename,
+                              const std::string &classname);
 
     void callClassFunction(const std::string &modulename,
                            const std::string &classname,
                            const std::string &functionname);
 
+    bool m_valid = true;
 
-    PyObject * m_modulesDict;
-    PyObject * m_gdbModule;
+    PyObject * m_moduleDict;
+
+    PyObject * m_gdbmiModule;
+    PyObject * m_gdbmiParserModule;
+    PyObject * m_gdbControllerModule;
+    PyObject * m_gdbmiInstance;
 };
 
 #endif // PYGDBMIINTERFACE_H_

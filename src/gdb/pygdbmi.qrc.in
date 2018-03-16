@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file alias="pyc/gdbcontroller.pyc">../external/pygdbmi/pygdbmi/gdbcontroller.pyc</file>
+        <file alias="pyc/gdbmiparser.pyc">../external/pygdbmi/pygdbmi/gdbmiparser.pyc</file>
+        <file alias="pyc/printcolor.pyc">../external/pygdbmi/pygdbmi/printcolor.pyc</file>
+        <file alias="pyc/StringStream.pyc">../external/pygdbmi/pygdbmi/StringStream.pyc</file>
     </qresource>
 </RCC>
