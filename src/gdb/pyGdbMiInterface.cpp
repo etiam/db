@@ -16,6 +16,30 @@
 
 #include "pyGdbMiInterface.h"
 
+namespace
+{
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+void
+dumpDict(PyObject *dict)
+{
+    PyObject *list = PyDict_Keys(dict);
+    Py_ssize_t n = PyList_Size(list);
+
+    for (Py_ssize_t i = 0; i < n; i++)
+    {
+        PyObject *obj = PyList_GetItem(list, i);
+        if (PyString_Check(obj))
+        {
+            std::cout << PyString_AsString(obj) << std::endl;
+        }
+    }
+}
+#pragma GCC diagnostic pop
+
+}
+
 PyGdbMiInterface::PyGdbMiInterface()
 {
     Py_Initialize();
@@ -28,9 +52,6 @@ PyGdbMiInterface::PyGdbMiInterface()
     {
         // add module to global module dict
         PyDict_SetItemString(m_moduleDict, "pygdbmi", m_gdbmiModule);
-
-//        PyRun_SimpleString("import sys\nprint dir(sys.modules['pygdbmi'])");
-//        PyRun_SimpleString("import sys\nprint sys.modules.keys()");
 
         // import pygdbmi submodules
         auto printcolormodule = importModule(":/pyc/printcolor.pyc", "pygdbmi.printcolor");
@@ -61,6 +82,7 @@ PyGdbMiInterface::PyGdbMiInterface()
         std::string cmd = "-file-exec-and-symbols /home/jasonr/workspace/db/build-dbg-amd64/db";
         auto value = PyObject_CallMethod(m_gdbmiInstance, (char*)"write", (char*)"(s)", cmd.c_str());
         (void)value;
+//        std::cout << PyString_AsString(PyObject_Str(value)) << std::endl;
     }
     else
         m_valid = false;
@@ -93,22 +115,6 @@ PyGdbMiInterface::importModule(const std::string &bytecodename, const std::strin
     return module;
 }
 
-void
-dumpDict(PyObject *dict)
-{
-    PyObject *list = PyDict_Keys(dict);
-    Py_ssize_t n = PyList_Size(list);
-
-    for (Py_ssize_t i = 0; i < n; i++)
-    {
-        PyObject *obj = PyList_GetItem(list, i);
-        if (PyString_Check(obj))
-        {
-            std::cout << PyString_AsString(obj) << std::endl;
-        }
-    }
-}
-
 PyObject *
 PyGdbMiInterface::createInstance(const std::string &modulename, const std::string &classname)
 {
@@ -121,31 +127,13 @@ PyGdbMiInterface::createInstance(const std::string &modulename, const std::strin
         auto klass = PyDict_GetItemString(dict, classname.c_str());
         if (PyCallable_Check(klass))
         {
-            instance = PyObject_CallFunction(klass, NULL);
-//            instance = PyObject_CallFunction(klass, (char*)"(s)", "verbose=True");
-        }
-    }
+            dict = Py_BuildValue("{s:p}", "verbose", true);
+            instance = PyObject_Call(klass, NULL, dict);
 
-    return instance;
-}
-
-void
-PyGdbMiInterface::callClassFunction(const std::string &modulename,
-                                    const std::string &classname,
-                                    const std::string &functionname)
-{
-    auto module = PyDict_GetItemString(m_moduleDict, modulename.c_str());
-
-    if (module)
-    {
-        auto dict = PyModule_GetDict(module);
-
-        auto klass = PyDict_GetItemString(dict, classname.c_str());
-        if (PyCallable_Check(klass))
-        {
-            auto pInstance = PyObject_CallObject(klass, NULL);
-            auto pValue = PyObject_CallMethod(pInstance, const_cast<char*>(functionname.c_str()), (char*)"");
-            (void)pValue;
+            if (!instance || !PyInstance_Check(instance))
+            {
+                PyErr_Print();
+            }
         }
         else
         {
@@ -156,4 +144,36 @@ PyGdbMiInterface::callClassFunction(const std::string &modulename,
     {
         PyErr_Print();
     }
+
+    return instance;
+}
+
+PyObject *
+PyGdbMiInterface::callClassFunction(const std::string &modulename,
+                                    const std::string &classname,
+                                    const std::string &functionname)
+{
+    PyObject *result = nullptr;
+
+    auto module = PyDict_GetItemString(m_moduleDict, modulename.c_str());
+    if (module)
+    {
+        auto dict = PyModule_GetDict(module);
+        auto klass = PyDict_GetItemString(dict, classname.c_str());
+        if (PyCallable_Check(klass))
+        {
+            auto instance = PyObject_CallObject(klass, nullptr);
+            result = PyObject_CallMethod(instance, const_cast<char*>(functionname.c_str()), (char*)"");
+        }
+        else
+        {
+            PyErr_Print();
+        }
+    }
+    else
+    {
+        PyErr_Print();
+    }
+
+    return result;
 }

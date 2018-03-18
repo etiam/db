@@ -28,9 +28,9 @@ class PyGdbMiInterface
     PyObject * createInstance(const std::string &modulename,
                               const std::string &classname);
 
-    void callClassFunction(const std::string &modulename,
-                           const std::string &classname,
-                           const std::string &functionname);
+    PyObject * callClassFunction(const std::string &modulename,
+                                 const std::string &classname,
+                                 const std::string &functionname);
 
     bool m_valid = true;
 
