@@ -33,10 +33,8 @@ class Editor : public QWidget
     void setText(const QString &newText);
     QString getText();
 
-    void setTheme(const QString &name, const QUrl &url);
     void setTheme(const QString &name);
 
-    void setHighlightMode(const QString &name, const QUrl &url);
     void setHighlightMode(const QString &name);
 
     void setKeyboardHandler(const QString &name);

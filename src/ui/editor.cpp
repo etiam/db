@@ -32,7 +32,7 @@ Editor::Editor(QMainWindow *parent) :
     d->executeJavaScript("editor.focus()");
 
     d->executeJavaScript("editor.setFontSize(16)");
-    d->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
+//    d->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
     d->executeJavaScript("editor.setShowPrintMargin(false)");
     d->executeJavaScript("editor.setDisplayIndentGuides(false)");
     d->executeJavaScript("editor.setReadOnly(true)");
@@ -41,6 +41,7 @@ Editor::Editor(QMainWindow *parent) :
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
 }
+
 
 void
 Editor::setGutterWidth(int width)
@@ -88,16 +89,6 @@ Editor::getText()
     return d->executeJavaScript(QString("editor.getSession().getValue()")).toString();
 }
 
-
-void
-Editor::setTheme(const QString &name, const QUrl &url)
-{
-    const QString request = ""
-            "$.getScript('%1');"
-            "editor.setTheme('ace/theme/%2');";
-    d->executeJavaScript(request.arg(url.toString()).arg(name));
-}
-
 void
 Editor::setTheme(const QString &name)
 {
@@ -105,15 +96,6 @@ Editor::setTheme(const QString &name)
             "$.getScript('%1');"
             "editor.setTheme('ace/theme/%2');";
     d->executeJavaScript(request.arg("qrc:/ace/theme-"+name+".js").arg(name));
-}
-
-void
-Editor::setHighlightMode(const QString &name, const QUrl &url)
-{
-    const QString request = ""
-            "$.getScript('%1');"
-            "editor.getSession().setMode('ace/mode/%2');";
-    d->executeJavaScript(request.arg(url.toString()).arg(name));
 }
 
 void
@@ -155,25 +137,23 @@ Editor::getLineLength(int row) const
 bool
 Editor::eventFilter(QObject *object, QEvent *filteredEvent)
 {
+    bool result = false;
+
     // Key press filters
     if (filteredEvent->type() == QEvent::KeyPress)
     {
         QKeyEvent *event = (QKeyEvent*) filteredEvent;
         int key = event->key();
 
-        if (key == Qt::Key_Q)
+        switch (key)
         {
-            QCoreApplication::quit();
-            return true;
-        }
+            case Qt::Key_Q:
+                QCoreApplication::quit();
+                result = true;
+                break;
 
-        else if (key == Qt::Key_W)
-        {
-            QFile file("/home/jasonr/test.txt");
-            QTextStream stream(&file);
-            file.open(QFile::WriteOnly | QFile::Text);
-            stream << getText();
-            file.close();
+            default:
+                break;
         }
     }
 
