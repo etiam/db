@@ -6,14 +6,14 @@
 
 MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    m_ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     setWindowTitle("db " + filename);
 
-    editor = new Editor(this);
+    m_editor = new Editor(this);
 
-    ui->mainLayout->insertWidget(1, editor, 1);
+    m_ui->mainLayout->insertWidget(1, m_editor, 1);
 
     readSettings();
 
@@ -24,18 +24,20 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
 
         file.open(QFile::ReadOnly | QFile::Text);
         auto text = stream.readAll();
-        editor->setText(text);
+        m_editor->setText(text);
 
         auto numlines = text.count("\n");
-        auto numdigits = numlines > 0 ? (int) log10 ((double) numlines) + 1 : 1;
-        editor->setGutterWidth(numdigits);
+        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+        m_editor->setGutterWidth(numdigits);
+
+        m_ast.parseFile(filename.toStdString());
     }
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-    delete editor;
+    delete m_ui;
+    delete m_editor;
 
     writeSettings();
 }

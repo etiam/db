@@ -3,6 +3,8 @@
 
 #include <QMap>
 #include <QMainWindow>
+
+#include "ast/ast.h"
 #include "editor.h"
 
 namespace Ui
@@ -22,8 +24,9 @@ public:
     void writeSettings();
 
 private:
-    Ui::MainWindow *    ui;
-    Editor *            editor;
+    Ui::MainWindow *    m_ui;
+    Editor *            m_editor;
+    Ast                 m_ast;
 };
 
 #endif // MAINWINDOW_H

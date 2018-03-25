@@ -98,7 +98,7 @@ class EditorImpl: public QObject
     }
 
   public slots:
-      void onMouseMove(int x, int y) {/* std::cout << x << ", " << y << std::endl; */};
+      void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
 
   public:
     Editor *        m_parent;
