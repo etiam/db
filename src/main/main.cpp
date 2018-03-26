@@ -1,20 +1,20 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <QtCore>
-#include <QApplication>
+/*
+ * main.cpp
+ *
+ *  Created on: Feb 6, 2018
+ *      Author: jasonr
+ */
 
-#include "gdb/pyGdbMiInterface.h"
-#include "ui/mainwindow.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <memory>
+
+#include "ui/main.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-
-    PyGdbMiInterface gdb;
-
-    MainWindow w(argv[1]);
-    w.show();
-
-    return app.exec();
+    auto mainwindow = std::make_unique<Ui::Main>(argc, argv);
+    mainwindow->run();
 }

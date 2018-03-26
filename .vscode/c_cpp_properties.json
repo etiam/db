@@ -36,7 +36,11 @@
                 "/usr/include",
                 "${workspaceRoot}",
                 "/usr/include/x86_64-linux-gnu/qt5/QtCore",
-                "/usr/include/x86_64-linux-gnu/qt5"
+                "/usr/include/x86_64-linux-gnu/qt5",
+                "${workspaceRoot}/src",
+                "/usr/include/x86_64-linux-gnu/qt5/QtWidgets",
+                "/usr/include/x86_64-linux-gnu/qt5/QtWebKit",
+                "/usr/include/x86_64-linux-gnu/qt5/QtWebKitWidgets"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",

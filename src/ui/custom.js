@@ -29,7 +29,7 @@ editor.on('change', function()
 editor.on('mousemove', function(e) 
 {
     sc = editor.renderer.pixelToScreenCoordinates(e.clientX, e.clientY);
-    codeview.onMouseMove(sc.row + 1, sc.column + 1);
+//    codeview.onMouseMove(sc.row + 1, sc.column + 1);
 });
 
 // callback for keypress

@@ -1,22 +1,50 @@
 #include <iostream>
-#include <QtCore>
+#include <QFile>
+#include <QTextStream>
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QSettings>
 
+#include "ast/ast.h"
+#include "gdb/pyGdbMiInterface.h"
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+
+namespace Ui
+{
 
 MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     QMainWindow(parent),
-    m_ui(new Ui::MainWindow)
+    m_ast(std::make_unique<Ast>()),
+    m_gdb(std::make_unique<PyGdbMiInterface>())
 {
-    m_ui->setupUi(this);
     setWindowTitle("db " + filename);
+
+    // gui setup
+    auto centralWidget = new QWidget(this);
+    centralWidget->setObjectName(QStringLiteral("centralWidget"));
+    centralWidget->setEnabled(true);
+
+    auto horizontalLayout = new QHBoxLayout(centralWidget);
+    horizontalLayout->setSpacing(0);
+    horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+    horizontalLayout->setContentsMargins(0, 0, 0, 0);
+
+    auto mainLayout = new QHBoxLayout();
+    mainLayout->setSpacing(0);
+    mainLayout->setObjectName(QStringLiteral("mainLayout"));
+
+    horizontalLayout->addLayout(mainLayout);
+
+    setCentralWidget(centralWidget);
 
     m_editor = new Editor(this);
 
-    m_ui->mainLayout->insertWidget(1, m_editor, 1);
+    mainLayout->insertWidget(1, m_editor, 1);
 
+    // settings
     readSettings();
 
+    // read file into editor
     if (!filename.isEmpty())
     {
         QFile file(filename);
@@ -30,15 +58,12 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
         auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
         m_editor->setGutterWidth(numdigits);
 
-        m_ast.parseFile(filename.toStdString());
+        m_ast->parseFile(filename.toStdString());
     }
 }
 
 MainWindow::~MainWindow()
 {
-    delete m_ui;
-    delete m_editor;
-
     writeSettings();
 }
 
@@ -58,4 +83,6 @@ MainWindow::writeSettings()
 
     settings.setValue("pos", pos());
     settings.setValue("size", size());
+}
+
 }

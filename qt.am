@@ -11,7 +11,7 @@ qrc_%.cpp : %.qrc
 ui_%.h : %.ui
 	$(AM_V_GEN) uic $< -o $@
 
-# cleanup moc 
+# cleanup  
 clean-moc-extra:
 	find . -name 'moc_*.cpp' -print0|xargs -0 rm -vf
 	find . -name '*.moc' -print0|xargs -0 rm -vf

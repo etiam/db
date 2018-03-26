@@ -5,15 +5,16 @@
  *      Author: jasonr
  */
 
-#ifndef AST_H_
-#define AST_H_
+#ifndef AST_AST_H_
+#define AST_AST_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
 #include <memory>
-#include <clang-c/Index.h>
+
+class AstImpl;
 
 class Ast
 {
@@ -24,7 +25,7 @@ class Ast
     void parseFile(const std::string &filename);
 
   private:
-    CXIndex             m_index;
+    std::unique_ptr<AstImpl>    m_impl;
 };
 
-#endif // AST_H_
+#endif // AST_AST_H_

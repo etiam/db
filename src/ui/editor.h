@@ -13,6 +13,7 @@
 # include "config.h"
 #endif
 
+#include <memory>
 #include <QWidget>
 
 class EditorImpl;
@@ -24,33 +25,32 @@ class Editor : public QWidget
 
   public:
     explicit Editor(QMainWindow *parent=0);
-    ~Editor() {};
+    ~Editor();
 
-    void setGutterWidth(int width);
+    void    setGutterWidth(int width);
 
-    void setCursorPosition(int row, int column);
+    void    setCursorPosition(int row, int column);
 
-    void setText(const QString &newText);
+    void    setText(const QString &newText);
     QString getText();
 
-    void setTheme(const QString &name);
+    void    setTheme(const QString &name);
 
-    void setHighlightMode(const QString &name);
+    void    setHighlightMode(const QString &name);
 
-    void setKeyboardHandler(const QString &name);
+    void    setKeyboardHandler(const QString &name);
 
   private:
     QString getLineText(int row) const;
-    int getNumLines() const;
-    int getLineLength(int row) const;
+    int     getNumLines() const;
+    int     getLineLength(int row) const;
 
   protected:
-    bool eventFilter(QObject *object, QEvent *filteredEvent);
-
-    EditorImpl* d;
+    bool    eventFilter(QObject *object, QEvent *filteredEvent);
 
   private:
-    QMainWindow* m_parent;
+    std::unique_ptr<EditorImpl> m_impl;
+
 };
 
 #endif // UI_EDITOR_H_

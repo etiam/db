@@ -1,16 +1,21 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef UI_MAINWINDOW_H_
+#define UI_MAINWINDOW_H_
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <memory>
 #include <QMap>
 #include <QMainWindow>
 
-#include "ast/ast.h"
 #include "editor.h"
+
+class Ast;
+class PyGdbMiInterface;
 
 namespace Ui
 {
-class MainWindow;
-}
 
 class MainWindow : public QMainWindow
 {
@@ -24,9 +29,12 @@ public:
     void writeSettings();
 
 private:
-    Ui::MainWindow *    m_ui;
     Editor *            m_editor;
-    Ast                 m_ast;
+
+    std::unique_ptr<Ast>                 m_ast;
+    std::unique_ptr<PyGdbMiInterface>    m_gdb;
 };
 
-#endif // MAINWINDOW_H
+}
+
+#endif // UI_MAINWINDOW_H_

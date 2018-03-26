@@ -6,8 +6,8 @@
  */
 
 #pragma once
-#ifndef PYGDBMIINTERFACE_H_
-#define PYGDBMIINTERFACE_H_
+#ifndef GDB_PYGDBMIINTERFACE_H_
+#define GDB_PYGDBMIINTERFACE_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -42,4 +42,4 @@ class PyGdbMiInterface
     PyObject * m_gdbmiInstance;
 };
 
-#endif // PYGDBMIINTERFACE_H_
+#endif // GDB_PYGDBMIINTERFACE_H_

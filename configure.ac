@@ -30,7 +30,7 @@ PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
 AX_BOOST_PYTHON
 
 # libclang
-AX_LIBCLANG([0], [37])
+AX_LIBCLANG([0], [35])
 
 # remove autoconf's "-g -O2" defaults
 CFLAGS=`echo $CFLAGS | sed 's/-O.//g'`

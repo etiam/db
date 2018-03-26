@@ -5,6 +5,9 @@
  *      Author: jasonr
  */
 
+#ifndef UI_EDITORIMPL_H
+#define UI_EDITORIMPL_H
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -14,10 +17,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QtWebKit>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtWebKitWidgets>
-#endif
 
 #include "editor.h"
 
@@ -71,7 +71,7 @@ class EditorImpl: public QObject
 
         QObject::connect(m_webView, SIGNAL(loadFinished(bool)), &loop, SLOT(quit()));
 
-        m_webView->load(QUrl("qrc:/html/ace.html"));
+        m_webView->load(QUrl("qrc:/ace/ace.html"));
         loop.exec();
 
         QWebFrame *frame = m_webView->page()->mainFrame();
@@ -106,3 +106,5 @@ class EditorImpl: public QObject
     QWebPage *      m_webPage;
     QVBoxLayout *   m_layout;
 };
+
+#endif
