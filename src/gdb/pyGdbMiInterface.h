@@ -22,6 +22,8 @@ class PyGdbMiInterface
     PyGdbMiInterface();
     ~PyGdbMiInterface();
 
+    void executeCommand(const std::string &command);
+
   private:
     PyObject * importModule(const std::string &bytecodename, const std::string &modulename);
 

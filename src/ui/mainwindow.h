@@ -29,10 +29,8 @@ public:
     void writeSettings();
 
 private:
-    Editor *            m_editor;
-
-    std::unique_ptr<Ast>                 m_ast;
-    std::unique_ptr<PyGdbMiInterface>    m_gdb;
+    Editor *                m_editor;
+    std::unique_ptr<Ast>    m_ast;
 };
 
 }

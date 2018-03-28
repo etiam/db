@@ -6,7 +6,6 @@
 #include <QSettings>
 
 #include "ast/ast.h"
-#include "gdb/pyGdbMiInterface.h"
 #include "mainwindow.h"
 
 namespace Ui
@@ -14,8 +13,7 @@ namespace Ui
 
 MainWindow::MainWindow(const QString &filename, QWidget *parent) :
     QMainWindow(parent),
-    m_ast(std::make_unique<Ast>()),
-    m_gdb(std::make_unique<PyGdbMiInterface>())
+    m_ast(std::make_unique<Ast>())
 {
     setWindowTitle("db " + filename);
 

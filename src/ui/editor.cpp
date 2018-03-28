@@ -32,7 +32,7 @@ Editor::Editor(QMainWindow *parent) :
     m_impl->executeJavaScript("editor.setReadOnly(true)");
     m_impl->executeJavaScript("editor.setShowFoldWidgets(false)");
 
-    m_impl->executeJavaScript("editor.setOptions({ fontFamily: \"Hack\", fontSize: \"14pt\" })");
+    m_impl->executeJavaScript("editor.setOptions({ fontFamily: \"Hack\", fontSize: \"12pt\" })");
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");

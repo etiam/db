@@ -13,18 +13,20 @@
 #include <iostream>
 #include <unordered_map>
 #include <tuple>
+#include <boost/filesystem/operations.hpp>
 
 #include <clang-c/Index.h>
+#include <clang-c/CXCompilationDatabase.h>
 
 #include "ast.h"
 
-std::ostream &
-operator<<(std::ostream &stream, const CXString &str)
-{
-    stream << clang_getCString(str);
-    clang_disposeString(str);
-    return stream;
-}
+//std::ostream &
+//operator<<(std::ostream &stream, const CXString &str)
+//{
+//    stream << clang_getCString(str);
+//    clang_disposeString(str);
+//    return stream;
+//}
 
 struct ReferenceLocation
 {
@@ -71,6 +73,7 @@ class AstImpl
     ~AstImpl();
 
     void                        parseFile(const std::string &filename);
+    void                        loadCompilationDatabase(const std::string &filename);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
     static CXChildVisitResult   visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data);
@@ -83,8 +86,9 @@ class AstImpl
 
     using References = std::unordered_map<ReferenceLocation, ReferenceData>;
 
-    References          m_references;
-    CXIndex             m_index;
+    References              m_references;
+    CXIndex                 m_index = nullptr;
+    CXCompilationDatabase   m_compdb = nullptr;
 };
 
 
@@ -97,11 +101,14 @@ AstImpl::AstImpl()
 AstImpl::~AstImpl()
 {
     clang_disposeIndex(m_index);
-}
 
+    if (m_compdb)
+        clang_CompilationDatabase_dispose(m_compdb);
+}
 
 void AstImpl::parseFile(const std::string &filename)
 {
+    loadCompilationDatabase(filename);
     auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
     if (unit == nullptr)
@@ -117,6 +124,15 @@ void AstImpl::parseFile(const std::string &filename)
     clang_disposeTranslationUnit(unit);
 }
 
+void
+AstImpl::loadCompilationDatabase(const std::string &filename)
+{
+    auto pathname = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path());
+
+    CXCompilationDatabase_Error errorcode;
+
+    clang_CompilationDatabase_fromDirectory(pathname.c_str(), &errorcode);
+}
 
 CXChildVisitResult
 AstImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)

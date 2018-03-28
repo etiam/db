@@ -7,6 +7,7 @@ db_CPPFLAGS              +=                                             \
                             -fPIC                                       \
                             -I$(abs_builddir)                           \
                             -I$(top_builddir)/src/main                  \
+                            @BOOST_CPPFLAGS@                            \
                             @QTCORE_CFLAGS@                             \
                             @QTWIDGETS_CFLAGS@                          \
                             @QTGUI_CFLAGS@                              \
@@ -14,6 +15,10 @@ db_CPPFLAGS              +=                                             \
                             @QTWEBKITWIDGETS_CFLAGS@
 
 db_LDADD                 +=                                             \
+                            @BOOST_LDFLAGS@                             \
+                            @BOOST_SYSTEM_LIB@                          \
+                            @BOOST_FILESYSTEM_LIB@                      \
+                            @BOOST_PROGRAM_OPTIONS_LIB@                 \
                             @QTCORE_LIBS@                               \
                             @QTWIDGETS_LIBS@                            \
                             @QTGUI_LIBS@                                \
@@ -21,7 +26,7 @@ db_LDADD                 +=                                             \
                             @QTWEBKITWIDGETS_LIBS@
 
 db_LDFLAGS                =                                             \
-                            -fPIC -rdynamic
+                            -pthread -fPIC -rdynamic
 
 if DO_PROFILER
 db_LDADD                 +=                                             \

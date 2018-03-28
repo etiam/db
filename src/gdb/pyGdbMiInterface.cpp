@@ -79,10 +79,6 @@ PyGdbMiInterface::PyGdbMiInterface()
             m_valid = false;
 
         m_gdbmiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
-        std::string cmd = "-file-exec-and-symbols /home/jasonr/workspace/db/build-dbg-amd64/db";
-        auto value = PyObject_CallMethod(m_gdbmiInstance, (char*)"write", (char*)"(s)", cmd.c_str());
-        (void)value;
-//        std::cout << PyString_AsString(PyObject_Str(value)) << std::endl;
     }
     else
         m_valid = false;
@@ -95,6 +91,17 @@ PyGdbMiInterface::~PyGdbMiInterface()
 {
     Py_Finalize();
 }
+
+void
+PyGdbMiInterface::executeCommand(const std::string &command)
+{
+//    std::string cmd = "-file-exec-and-symbols /home/jasonr/workspace/db/build-dbg-amd64/db";
+    auto value = PyObject_CallMethod(m_gdbmiInstance, (char*)"write", (char*)"(s)", command.c_str());
+
+    dumpDict(value);
+//    std::cout << PyString_AsString(PyObject_Str(value)) << std::endl;
+}
+
 
 PyObject *
 PyGdbMiInterface::importModule(const std::string &bytecodename, const std::string &modulename)
