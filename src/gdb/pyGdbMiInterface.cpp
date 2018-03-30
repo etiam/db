@@ -10,7 +10,9 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 #include <QFile>
+#include <boost/format.hpp>
 #include <Python.h>
 #include <marshal.h>
 
@@ -45,6 +47,16 @@ PyGdbMiInterface::PyGdbMiInterface()
     Py_Initialize();
 
     m_moduleDict = PyImport_GetModuleDict();
+
+    auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
+    auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", 0));
+    if (result)
+    {
+        std::cout << PyString_AsString(PyObject_Str(result)) << std::endl;
+
+        using map = std::map<std::string, boost::any>;
+        auto r = boost::any_cast<map>(parseMessage(result));
+    }
 
     // create blank module named 'pygdbmi'
     m_gdbmiModule = PyModule_New("pygdbmi");
@@ -95,11 +107,10 @@ PyGdbMiInterface::~PyGdbMiInterface()
 void
 PyGdbMiInterface::executeCommand(const std::string &command)
 {
-//    std::string cmd = "-file-exec-and-symbols /home/jasonr/workspace/db/build-dbg-amd64/db";
     auto value = PyObject_CallMethod(m_gdbmiInstance, (char*)"write", (char*)"(s)", command.c_str());
 
-    dumpDict(value);
-//    std::cout << PyString_AsString(PyObject_Str(value)) << std::endl;
+    Py_ssize_t n = PyList_Size(value);
+    (void)n;
 }
 
 
@@ -156,26 +167,15 @@ PyGdbMiInterface::createInstance(const std::string &modulename, const std::strin
 }
 
 PyObject *
-PyGdbMiInterface::callClassFunction(const std::string &modulename,
-                                    const std::string &classname,
-                                    const std::string &functionname)
+PyGdbMiInterface::callFunction(PyObject *module, const std::string &functionname, PyObject *args)
 {
     PyObject *result = nullptr;
 
-    auto module = PyDict_GetItemString(m_moduleDict, modulename.c_str());
-    if (module)
+    auto dict = PyModule_GetDict(module);
+    auto function = PyDict_GetItemString(dict, functionname.c_str());
+    if (function && PyCallable_Check(function))
     {
-        auto dict = PyModule_GetDict(module);
-        auto klass = PyDict_GetItemString(dict, classname.c_str());
-        if (PyCallable_Check(klass))
-        {
-            auto instance = PyObject_CallObject(klass, nullptr);
-            result = PyObject_CallMethod(instance, const_cast<char*>(functionname.c_str()), (char*)"");
-        }
-        else
-        {
-            PyErr_Print();
-        }
+        result = PyObject_CallObject(function, args);
     }
     else
     {
@@ -183,4 +183,53 @@ PyGdbMiInterface::callClassFunction(const std::string &modulename,
     }
 
     return result;
+}
+
+boost::any
+PyGdbMiInterface::parseMessage(PyObject *object)
+{
+    if (PyLong_Check(object))
+        return PyLong_AsLong(object);
+
+    if (PyFloat_Check(object))
+        return PyFloat_AsDouble(object);
+
+    if (PyString_Check(object) || PyUnicode_Check(object))
+        return PyString_AsString(object);
+
+    if (PyList_Check(object))
+    {
+        auto n = PyList_Size(object);
+        std::vector<boost::any> list(n);
+
+        for (auto i=0; i < n; i++)
+        {
+            list[i] = parseMessage(PyList_GetItem(object, i));
+        }
+
+        return list;
+    }
+
+    if (PyDict_Check(object))
+    {
+        auto list = PyDict_Keys(object);
+        auto n = PyList_Size(list);
+        std::map<std::string, boost::any> map;
+
+        for (auto i=0; i < n; i++)
+        {
+            auto key = PyList_GetItem(list, i);
+            auto val = PyDict_GetItem(object, key);
+            map[PyString_AsString(key)] = parseMessage(val);
+        }
+
+        return map;
+    }
+
+    if (object == Py_None)
+        return nullptr;
+
+    std::stringstream errmsg;
+    errmsg << "ParseObject(): un-handled type " << PyString_AsString(PyObject_Str(object));
+    throw std::runtime_error(errmsg.str().c_str());
 }
