@@ -11,9 +11,6 @@
 
 #include "editor.h"
 
-class Ast;
-class PyGdbMiInterface;
-
 namespace Ui
 {
 
@@ -30,7 +27,6 @@ public:
 
 private:
     Editor *                m_editor;
-    std::unique_ptr<Ast>    m_ast;
 };
 
 }

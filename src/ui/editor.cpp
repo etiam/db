@@ -144,5 +144,5 @@ Editor::eventFilter(QObject *object, QEvent *filteredEvent)
         }
     }
 
-    return false;
+    return result;
 }

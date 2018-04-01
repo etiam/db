@@ -13,6 +13,7 @@
 #include <memory>
 #include <boost/program_options.hpp>
 
+#include "ast/ast.h"
 #include "gdb/pyGdbMiInterface.h"
 #include "ui/main.h"
 
@@ -60,13 +61,16 @@ int main(int argc, char *argv[])
         std::exit(0);
     }
 
-    auto gdbInt = std::make_unique<PyGdbMiInterface>();
-
     // load prog
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
-        gdbInt->executeCommand("-file-exec-and-symbols " + filename);
+
+        auto ast = std::make_unique<Ast>(filename);
+        auto gdb = std::make_unique<PyGdbMiInterface>(filename);
+
+//        ast->parseFile(filename);
+        gdb->executeCommand("-file-exec-and-symbols " + filename);
     }
 
     auto main = std::make_unique<Ui::Main>(argc, argv);

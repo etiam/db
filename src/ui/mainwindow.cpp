@@ -5,15 +5,13 @@
 #include <QHBoxLayout>
 #include <QSettings>
 
-#include "ast/ast.h"
 #include "mainwindow.h"
 
 namespace Ui
 {
 
 MainWindow::MainWindow(const QString &filename, QWidget *parent) :
-    QMainWindow(parent),
-    m_ast(std::make_unique<Ast>())
+    QMainWindow(parent)
 {
     setWindowTitle("db " + filename);
 
@@ -55,8 +53,6 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
         auto numlines = text.count("\n");
         auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
         m_editor->setGutterWidth(numdigits);
-
-        m_ast->parseFile(filename.toStdString());
     }
 }
 

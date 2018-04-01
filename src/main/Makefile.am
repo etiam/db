@@ -25,7 +25,7 @@ db_LDADD                 +=                                             \
                             @QTWEBKIT_LIBS@                             \
                             @QTWEBKITWIDGETS_LIBS@
 
-db_LDFLAGS                =                                             \
+db_LDFLAGS               +=                                             \
                             -pthread -fPIC -rdynamic
 
 if DO_PROFILER
