@@ -17,37 +17,80 @@
 #include <boost/any.hpp>
 #include <Python.h>
 
-//struct GdbMiResult
-//{
-//    std::string message;
-//    Payload 'payload': {u'thread-id': u'all'},
-//    Stream      stream;
-//    Token       token;
-//    Type        type;
-//
-//};
+struct Payload
+{
+    enum class Type : char
+    {
+        STRING,
+        DICT,
+        NONE
+    };
+
+    using Dict = std::map<std::string, boost::any>;
+
+    Type            type;
+    std::string     string;
+    Dict            dict;
+};
+
+enum class Stream : char
+{
+    STDOUT,
+    NONE
+};
+
+enum class Token : char
+{
+    NONE,
+};
+
+enum class Type : char
+{
+    RESULT,
+    NOTIFY,
+    OUTPUT,
+    CONSOLE,
+    NONE,
+};
+
+struct GdbMiResult
+{
+    std::string message;
+    Payload     payload;
+    Stream      stream;
+    Token       token;
+    Type        type;
+};
 
 class PyGdbMiInterface
 {
   public:
-    PyGdbMiInterface();
+    PyGdbMiInterface(const std::string &filename);
     ~PyGdbMiInterface();
 
-    void executeCommand(const std::string &command);
+    void            executeCommand(const std::string &command);
 
   private:
-    PyObject *  importModule(const std::string &bytecodename, const std::string &modulename);
-    PyObject *  createInstance(const std::string &modulename, const std::string &classname);
-    PyObject *  callFunction(PyObject *module, const std::string &functionname, PyObject *args);
-    boost::any  parseMessage(PyObject *object);
+    PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
+    PyObject *      createInstance(const std::string &modulename, const std::string &classname);
+    PyObject *      callFunction(PyObject *module, const std::string &functionname, PyObject *args);
 
-    bool        m_valid = true;
+    GdbMiResult     parseResult(PyObject *object);
+    std::string     parseMessage(PyObject *object);
+    Payload         parsePayload(PyObject *object);
+    Stream          parseStream(PyObject *object);
+    Token           parseToken(PyObject *object);
+    Type            parseType(PyObject *object);
+    boost::any      parseObject(PyObject *object);
 
-    PyObject *  m_moduleDict;
-    PyObject *  m_gdbmiModule;
-    PyObject *  m_gdbmiParserModule;
-    PyObject *  m_gdbControllerModule;
-    PyObject *  m_gdbmiInstance;
+    bool            m_valid = true;
+
+    PyObject *      m_moduleDict;
+
+    PyObject *      m_gdbMiModule;
+    PyObject *      m_gdbMiParserModule;
+    PyObject *      m_gdbControllerModule;
+    PyObject *      m_gdbMiInstance;
 };
 
 #endif // GDB_PYGDBMIINTERFACE_H_

@@ -42,55 +42,63 @@ dumpDict(PyObject *dict)
 
 }
 
-PyGdbMiInterface::PyGdbMiInterface()
+std::ostream &
+operator<<(std::ostream &stream, const GdbMiResult &str)
+{
+    stream << "{}";
+    return stream;
+}
+
+PyGdbMiInterface::PyGdbMiInterface(const std::string &filename)
 {
     Py_Initialize();
 
     m_moduleDict = PyImport_GetModuleDict();
 
     auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
-    auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", 0));
+    for (auto n=0; n < 32; ++n)
+    {
+    auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
     if (result)
     {
-        std::cout << PyString_AsString(PyObject_Str(result)) << std::endl;
-
-        using map = std::map<std::string, boost::any>;
-        auto r = boost::any_cast<map>(parseMessage(result));
+        auto r = parseResult(result);
+        std::cout << r << std::endl;
+    }
     }
 
     // create blank module named 'pygdbmi'
-    m_gdbmiModule = PyModule_New("pygdbmi");
-    if (m_gdbmiModule && PyModule_Check(m_gdbmiModule))
+    m_gdbMiModule = PyModule_New("pygdbmi");
+    if (m_gdbMiModule && PyModule_Check(m_gdbMiModule))
     {
         // add module to global module dict
-        PyDict_SetItemString(m_moduleDict, "pygdbmi", m_gdbmiModule);
+        PyDict_SetItemString(m_moduleDict, "pygdbmi", m_gdbMiModule);
 
         // import pygdbmi submodules
         auto printcolormodule = importModule(":/pyc/printcolor.pyc", "pygdbmi.printcolor");
         if (printcolormodule && PyModule_Check(printcolormodule))
-            PyModule_AddObject(m_gdbmiModule, "printcolor", printcolormodule);
+            PyModule_AddObject(m_gdbMiModule, "printcolor", printcolormodule);
         else
             m_valid = false;
 
         auto stringstreammodule = importModule(":/pyc/StringStream.pyc", "pygdbmi.StringStream");
         if (stringstreammodule && PyModule_Check(stringstreammodule))
-            PyModule_AddObject(m_gdbmiModule, "StringStream", stringstreammodule);
+            PyModule_AddObject(m_gdbMiModule, "StringStream", stringstreammodule);
         else
             m_valid = false;
 
-        m_gdbmiParserModule = importModule(":/pyc/gdbmiparser.pyc", "pygdbmi.gdbmiparser");
-        if (m_gdbmiParserModule && PyModule_Check(m_gdbmiParserModule))
-            PyModule_AddObject(m_gdbmiModule, "gdbmiparser", m_gdbmiParserModule);
+        m_gdbMiParserModule = importModule(":/pyc/gdbmiparser.pyc", "pygdbmi.gdbmiparser");
+        if (m_gdbMiParserModule && PyModule_Check(m_gdbMiParserModule))
+            PyModule_AddObject(m_gdbMiModule, "gdbmiparser", m_gdbMiParserModule);
         else
             m_valid = false;
 
         m_gdbControllerModule = importModule(":/pyc/gdbcontroller.pyc", "pygdbmi.gdbcontroller");
         if (m_gdbControllerModule && PyModule_Check(m_gdbControllerModule))
-            PyModule_AddObject(m_gdbmiModule, "gdbcontroller", m_gdbmiParserModule);
+            PyModule_AddObject(m_gdbMiModule, "gdbcontroller", m_gdbMiParserModule);
         else
             m_valid = false;
 
-        m_gdbmiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
+        m_gdbMiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
     }
     else
         m_valid = false;
@@ -107,12 +115,11 @@ PyGdbMiInterface::~PyGdbMiInterface()
 void
 PyGdbMiInterface::executeCommand(const std::string &command)
 {
-    auto value = PyObject_CallMethod(m_gdbmiInstance, (char*)"write", (char*)"(s)", command.c_str());
+    auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", command.c_str());
 
     Py_ssize_t n = PyList_Size(value);
     (void)n;
 }
-
 
 PyObject *
 PyGdbMiInterface::importModule(const std::string &bytecodename, const std::string &modulename)
@@ -185,8 +192,148 @@ PyGdbMiInterface::callFunction(PyObject *module, const std::string &functionname
     return result;
 }
 
-boost::any
+GdbMiResult
+PyGdbMiInterface::parseResult(PyObject *object)
+{
+    if (!PyDict_Check(object))
+    {
+        std::stringstream errmsg;
+        errmsg << "ParseMessage(): invalid data : " << PyString_AsString(PyObject_Str(object));
+        throw std::runtime_error(errmsg.str().c_str());
+    }
+
+    GdbMiResult result;
+
+    auto list = PyDict_Keys(object);
+    auto n = PyList_Size(list);
+    std::map<std::string, boost::any> map;
+
+    for (auto i=0; i < n; i++)
+    {
+        auto key = std::string(PyString_AsString(PyList_GetItem(list, i)));
+        auto val = PyDict_GetItem(object, PyList_GetItem(list, i));
+
+        if (key == "message")
+        {
+            result.message = parseMessage(val);
+        }
+        else if (key == "payload")
+        {
+            result.payload = parsePayload(val);
+        }
+        else if (key == "stream")
+        {
+            result.stream = parseStream(val);
+        }
+        else if (key == "token")
+        {
+            result.token = parseToken(val);
+        }
+        else if (key == "type")
+        {
+            result.type = parseType(val);
+        }
+        else
+        {
+            std::cerr << "ParseMessage(): unknown key : " << key << std::endl;
+        }
+    }
+
+    return result;
+}
+
+std::string
 PyGdbMiInterface::parseMessage(PyObject *object)
+{
+    std::string message;
+
+    if (PyString_Check(object) || PyUnicode_Check(object))
+        message = PyString_AsString(object);
+
+    if (object == Py_None)
+        message = "None";
+
+    return message;
+}
+
+Payload
+PyGdbMiInterface::parsePayload(PyObject* object)
+{
+    Payload payload;
+
+    if (object == Py_None)
+    {
+        payload.type = Payload::Type::NONE;
+    }
+    else if (PyString_Check(object) || PyUnicode_Check(object))
+    {
+        payload.type = Payload::Type::STRING;
+        payload.string = PyString_AsString(object);
+    }
+    else if (PyDict_Check(object))
+    {
+        payload.type = Payload::Type::DICT;
+        payload.dict = boost::any_cast<Payload::Dict>(parseObject(object));
+    }
+
+    return payload;
+}
+
+Stream
+PyGdbMiInterface::parseStream(PyObject* object)
+{
+    Stream stream = Stream::NONE;
+
+    if (PyString_Check(object) || PyUnicode_Check(object))
+    {
+        auto string = std::string(PyString_AsString(object));
+        if (string == "stdout")
+            stream = Stream::STDOUT;
+        else
+            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+    }
+
+    return stream;
+}
+
+Token
+PyGdbMiInterface::parseToken(PyObject* object)
+{
+    Token token = Token::NONE;
+
+    if (object != Py_None)
+    {
+        std::cerr << "parseToken(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+    }
+
+    return token;
+}
+
+Type
+PyGdbMiInterface::parseType(PyObject* object)
+{
+    Type type = Type::NONE;
+
+    if (PyString_Check(object) || PyUnicode_Check(object))
+    {
+        auto string = std::string(PyString_AsString(object));
+        if (string == "result")
+            type = Type::RESULT;
+        else if (string == "notify")
+            type = Type::NOTIFY;
+        else if (string == "output")
+            type = Type::OUTPUT;
+        else if (string == "console")
+            type = Type::CONSOLE;
+        else
+            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+    }
+
+    return type;
+}
+
+boost::any
+PyGdbMiInterface::parseObject(PyObject *object)
 {
     if (PyLong_Check(object))
         return PyLong_AsLong(object);
@@ -204,7 +351,7 @@ PyGdbMiInterface::parseMessage(PyObject *object)
 
         for (auto i=0; i < n; i++)
         {
-            list[i] = parseMessage(PyList_GetItem(object, i));
+            list[i] = parseObject(PyList_GetItem(object, i));
         }
 
         return list;
@@ -220,7 +367,7 @@ PyGdbMiInterface::parseMessage(PyObject *object)
         {
             auto key = PyList_GetItem(list, i);
             auto val = PyDict_GetItem(object, key);
-            map[PyString_AsString(key)] = parseMessage(val);
+            map[PyString_AsString(key)] = parseObject(val);
         }
 
         return map;
