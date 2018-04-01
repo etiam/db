@@ -19,7 +19,7 @@ class AstImpl;
 class Ast
 {
   public:
-    Ast();
+    Ast(const std::string &buildpath);
     ~Ast();
 
     void parseFile(const std::string &filename);

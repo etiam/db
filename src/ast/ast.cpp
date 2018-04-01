@@ -20,14 +20,6 @@
 
 #include "ast.h"
 
-//std::ostream &
-//operator<<(std::ostream &stream, const CXString &str)
-//{
-//    stream << clang_getCString(str);
-//    clang_disposeString(str);
-//    return stream;
-//}
-
 struct ReferenceLocation
 {
     unsigned int line, colstart, colend;
@@ -69,11 +61,10 @@ struct hash<ReferenceLocation>
 class AstImpl
 {
   public:
-    AstImpl();
+    AstImpl(const std::string &buildpath);
     ~AstImpl();
 
-    void                        parseFile(const std::string &filename);
-    void                        loadCompilationDatabase(const std::string &filename);
+    void                        parseFile(const std::string &buildpath);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
     static CXChildVisitResult   visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data);
@@ -91,10 +82,13 @@ class AstImpl
     CXCompilationDatabase   m_compdb = nullptr;
 };
 
-
-
-AstImpl::AstImpl()
+AstImpl::AstImpl(const std::string &buildpath)
 {
+    auto pathname = boost::filesystem::absolute(boost::filesystem::path(buildpath).parent_path());
+
+    CXCompilationDatabase_Error errorcode;
+    m_compdb = clang_CompilationDatabase_fromDirectory(pathname.c_str(), &errorcode);
+
     m_index = clang_createIndex(0, 0);
 }
 
@@ -106,14 +100,13 @@ AstImpl::~AstImpl()
         clang_CompilationDatabase_dispose(m_compdb);
 }
 
-void AstImpl::parseFile(const std::string &filename)
+void AstImpl::parseFile(const std::string &buildpath)
 {
-    loadCompilationDatabase(filename);
-    auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
+    auto unit = clang_parseTranslationUnit(m_index, buildpath.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
     if (unit == nullptr)
     {
-        std::cerr << "Ast::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
+        std::cerr << "Ast::parseFile(): unable to parse \"" << buildpath << "\"." << std::endl;
     }
     else
     {
@@ -122,16 +115,6 @@ void AstImpl::parseFile(const std::string &filename)
     }
 
     clang_disposeTranslationUnit(unit);
-}
-
-void
-AstImpl::loadCompilationDatabase(const std::string &filename)
-{
-    auto pathname = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path());
-
-    CXCompilationDatabase_Error errorcode;
-
-    clang_CompilationDatabase_fromDirectory(pathname.c_str(), &errorcode);
 }
 
 CXChildVisitResult
@@ -177,8 +160,8 @@ AstImpl::addReference(CXCursor cursor, CXCursor parent)
     }
 }
 
-Ast::Ast() :
-    m_impl(std::make_unique<AstImpl>())
+Ast::Ast(const std::string &buildpath) :
+    m_impl(std::make_unique<AstImpl>(buildpath))
 {
 }
 
