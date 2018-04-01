@@ -11,7 +11,7 @@ verbose:
 	cp -f $< $@
 
 # concat all generated compile_command json files together
-all: $(BUILT_SOURCES) config.h
+compilecommands: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
-	$(AM_V_GEN) rm -f $(abs_builddir)/compile_commands.json
-	$(AM_V_GEN) sed -e '1s/^/[\n/' -e '$$s/,$$/\n]/' `find $(abs_builddir) -name '*.o.json'` > $(abs_builddir)/compile_commands.json
+	$(AM_V_at) rm -f $(abs_builddir)/compile_commands.json
+	$(AM_V_at) sed -e '1s/^/[\n/' -e '$$s/,$$/\n]/' `find $(abs_builddir) -name '*.o.json'` > $(abs_builddir)/compile_commands.json
