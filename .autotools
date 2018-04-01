@@ -72,7 +72,7 @@
 <option id="env_vars" value=""/>
 <option id="enable-maintainer-mode" value="true"/>
 <flag id="CFLAGS" value="CFLAGS|CXXFLAGS">
-<flagvalue id="cflags-debug" value="true"/>
+<flagvalue id="cflags-debug" value="false"/>
 <flagvalue id="cflags-gprof" value="false"/>
 <flagvalue id="cflags-gcov" value="false"/>
 </flag>
