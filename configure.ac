@@ -16,6 +16,10 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_RANLIB
 
+AC_LANG([C])
+AC_LANG([C++])
+AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
+
 # qt
 PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.2.1], [])
 PKG_CHECK_MODULES([QTWIDGETS], [Qt5Widgets >= 5.2.1], [])
