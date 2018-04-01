@@ -7,7 +7,7 @@ BUILT_SOURCES             =
 MOSTLYCLEANFILES          =
 
 db_SOURCES                = 
-db_CPPFLAGS               = -I$(top_srcdir)/src
+db_CPPFLAGS               = -I$(top_srcdir)/src -MJ $@.json
 db_LDFLAGS                =
 db_LDADD                  =
 
