@@ -5,10 +5,18 @@ compiler:
 - clang
 os:
 - linux
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    packages:
+      - llvm-5.0-dev
 before_install:
 - echo $LANG
 - echo $LC_ALL
-- sudo apt-cache pkgnames
+llvm-config 
+#- sudo apt-cache pkgnames
 - ./dependencies.sh
 script:
 - ./autogen.sh && ./configure && make
