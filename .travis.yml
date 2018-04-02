@@ -6,12 +6,12 @@ compiler:
 os:
 - linux
 before_install:
-- echo $LANG
-- echo $LC_ALL
 - ./dependencies.sh
-- llvm-config --version
 script:
-- ./autogen.sh && ./configure && make
+- ./autogen.sh
+cat ./autogen.sh
+- ./configure
+- make
 branches:
   only:
   - master
