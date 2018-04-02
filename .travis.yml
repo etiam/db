@@ -10,7 +10,7 @@ before_install:
 - echo $LC_ALL
 - if [ $TRAVIS_OS_NAME == linux ]; then ./dependencies.sh; fi
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then ./configure && make; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then ./autogen && ./configure && make; fi
 branches:
   only:
   - master
