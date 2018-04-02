@@ -8,8 +8,8 @@ os:
 before_install:
 - echo $LANG
 - echo $LC_ALL
-- llvm-config --version
 - ./dependencies.sh
+- llvm-config --version
 script:
 - ./autogen.sh && ./configure && make
 branches:
