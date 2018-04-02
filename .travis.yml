@@ -6,11 +6,12 @@ compiler:
 os:
 - linux
 before_install:
-- echo $LANG
-- echo $LC_ALL
-- if [ $TRAVIS_OS_NAME == linux ]; then ./dependencies.sh; fi
+- ./dependencies.sh
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then ./autogen.sh && ./configure && make; fi
+- ./autogen.sh
+- cat ./configure
+- ./configure
+- make
 branches:
   only:
   - master

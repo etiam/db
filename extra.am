@@ -11,6 +11,7 @@ verbose:
 	cp -f $< $@
 
 # concat all generated compile_command json files together
+# from https://sarcasm.github.io/notes/dev/compilation-database.html
 compilecommands: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 	$(AM_V_at) rm -f $(abs_builddir)/compile_commands.json

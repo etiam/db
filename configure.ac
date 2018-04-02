@@ -21,17 +21,17 @@ AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
 
 # qt
-PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.2.1], [])
-PKG_CHECK_MODULES([QTWIDGETS], [Qt5Widgets >= 5.2.1], [])
-PKG_CHECK_MODULES([QTGUI], [Qt5Gui  >= 5.2.1], [])
-PKG_CHECK_MODULES([QTWEBKIT], [Qt5WebKit  >= 5.2.1], [])
-PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
+PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.1.1], [])
+PKG_CHECK_MODULES([QTWIDGETS], [Qt5Widgets >= 5.1.1], [])
+PKG_CHECK_MODULES([QTGUI], [Qt5Gui  >= 5.1.1], [])
+PKG_CHECK_MODULES([QTWEBKIT], [Qt5WebKit  >= 5.1.1], [])
+PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.1.1], [])
 
 # python
 PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
 
 # boost
-AX_BOOST_BASE([1.55],, [AC_MSG_ERROR([db needs Boost, but it was not found in your system])])
+AX_BOOST_BASE([1.54],, AC_MSG_ERROR([db needs Boost, but it was not found in your system]))
 AX_BOOST_SYSTEM
 AX_BOOST_PYTHON
 AX_BOOST_FILESYSTEM
