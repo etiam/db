@@ -9,7 +9,7 @@ before_install:
 - ./dependencies.sh
 script:
 - ./autogen.sh
-- cat ./aclocal.m4
+- cat ./configure
 - ./configure
 - make
 branches:
