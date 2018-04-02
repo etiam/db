@@ -31,7 +31,7 @@ PKG_CHECK_MODULES([QTWEBKITWIDGETS], [Qt5WebKitWidgets  >= 5.2.1], [])
 PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
 
 # boost
-AX_BOOST_BASE([1.55],, [AC_MSG_ERROR([db needs Boost, but it was not found in your system])])
+AX_BOOST_BASE([1.55],, AC_MSG_ERROR([db needs Boost, but it was not found in your system]))
 AX_BOOST_SYSTEM
 AX_BOOST_PYTHON
 AX_BOOST_FILESYSTEM
