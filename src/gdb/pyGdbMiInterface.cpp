@@ -43,9 +43,87 @@ dumpDict(PyObject *dict)
 }
 
 std::ostream &
-operator<<(std::ostream &stream, const GdbMiResult &str)
+operator <<(std::ostream &out, Payload payload)
 {
-    stream << "{}";
+    return out;
+}
+
+
+std::ostream &
+operator <<(std::ostream &out, Stream stream)
+{
+    switch (stream)
+    {
+    case Stream::STDOUT:
+        out << "stdout";
+        break;
+
+    case Stream::NONE:
+        out << "None";
+        break;
+
+    default:
+        out << "unknown";
+        break;
+    }
+    return out;
+}
+
+std::ostream &
+operator <<(std::ostream &out, Token token)
+{
+    switch (token)
+    {
+    case Token::NONE:
+        out << "None";
+        break;
+
+    default:
+        out << "unknown";
+        break;
+    }
+    return out;
+}
+
+std::ostream &
+operator <<(std::ostream &out, Type type)
+{
+    switch (type)
+    {
+    case Type::RESULT:
+        out << "result";
+        break;
+
+    case Type::NOTIFY:
+        out << "notify";
+        break;
+
+    case Type::OUTPUT:
+        out << "output";
+        break;
+
+    case Type::CONSOLE:
+        out << "console";
+        break;
+
+    case Type::NONE:
+        out << "None";
+        break;
+
+    default:
+        out << "unknown";
+        break;
+    }
+    return out;
+}
+
+std::ostream &
+operator<<(std::ostream &stream, const GdbMiResult &result)
+{
+    stream << "{'token': '" << result.token << "', "
+           <<  "'message': '" << result.message << "', "
+           <<  "'type': '" << result.type << "', "
+           <<  "'stream': '" << result.stream << "}";
     return stream;
 }
 
