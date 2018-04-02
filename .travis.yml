@@ -8,8 +8,7 @@ os:
 before_install:
 - echo $LANG
 - echo $LC_ALL
-llvm-config 
-#- sudo apt-cache pkgnames
+- llvm-config 
 - ./dependencies.sh
 script:
 - ./autogen.sh && ./configure && make
