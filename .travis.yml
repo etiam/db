@@ -1,6 +1,6 @@
 language: cpp
 sudo: required
-dist: trusty
+dist: xenial
 compiler:
 - clang
 os:
@@ -9,7 +9,6 @@ before_install:
 - ./dependencies.sh
 script:
 - ./autogen.sh && ./configure && make
-- cat ./Makefile
 branches:
   only:
   - master

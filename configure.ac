@@ -18,7 +18,7 @@ AC_PROG_RANLIB
 
 AC_LANG([C])
 AC_LANG([C++])
-AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
+AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
 
 # qt
 PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.1.1], [])
@@ -51,7 +51,7 @@ CXXFLAGS=`echo $CXXFLAGS | sed 's/-O//g'`
 CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//g'`
 
 CFLAGS="${CFLAGS} -fno-strict-aliasing -Wall -Werror"
-CXXFLAGS="${CXXFLAGS} -fno-strict-aliasing -Wall -Werror -std=c++14"
+CXXFLAGS="${CXXFLAGS} -fno-strict-aliasing -Wall -Werror"
 
 # --enable-debug
 AC_ARG_ENABLE([debug],
