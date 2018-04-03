@@ -8,10 +8,8 @@ os:
 before_install:
 - ./dependencies.sh
 script:
-- ./autogen.sh
-- cat ./configure
-- ./configure
-- make
+- ./autogen.sh && ./configure && make
+- cat ./Makefile
 branches:
   only:
   - master
