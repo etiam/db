@@ -2,7 +2,7 @@ db_SOURCES               +=                                                     
                             src/gdb/pyGdbMiInterface.cpp
 
 db_CPPFLAGS              +=                                                     \
-                            @PYTHON_CFLAGS@                                     \
+                            @PYTHON_CPPFLAGS@                                   \
                             @BOOST_CPPFLAGS@
 
 db_LDADD                 +=                                                     \
