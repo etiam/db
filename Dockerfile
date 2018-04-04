@@ -10,7 +10,5 @@ ENV LANG="en_US.UTF-8" \
     CXX="clang++" \
     CC="clang"
 
-RUN mkdir -p /home/travis
+ADD . /home/travis
 WORKDIR /home/travis
-
-CMD ["cd /home/travis"]
