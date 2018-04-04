@@ -17,6 +17,23 @@
 #include <boost/any.hpp>
 #include <Python.h>
 
+struct String
+{
+    std::string     string;
+};
+
+struct Message
+{
+    enum class Type : char
+    {
+        STRING,
+        NONE
+    };
+
+    Type            type = Type::NONE;
+    String          string;
+};
+
 struct Payload
 {
     enum class Type : char
@@ -29,8 +46,8 @@ struct Payload
     using Dict = std::map<std::string, boost::any>;
     using List = std::vector<boost::any>;
 
-    Type            type;
-    std::string     string;
+    Type            type = Type::NONE;
+    String          string;
     Dict            dict;
 };
 
@@ -56,11 +73,11 @@ enum class Type : char
 
 struct GdbMiResult
 {
-    std::string message;
+    Message     message;
     Payload     payload;
-    Stream      stream;
-    Token       token;
-    Type        type;
+    Stream      stream = Stream::NONE;
+    Token       token = Token::NONE;
+    Type        type = Type::NONE;
 };
 
 class PyGdbMiInterface
@@ -77,7 +94,7 @@ class PyGdbMiInterface
     PyObject *      callFunction(PyObject *module, const std::string &functionname, PyObject *args);
 
     GdbMiResult     parseResult(PyObject *object);
-    std::string     parseMessage(PyObject *object);
+    Message         parseMessage(PyObject *object);
     Payload         parsePayload(PyObject *object);
     Stream          parseStream(PyObject *object);
     Token           parseToken(PyObject *object);

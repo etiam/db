@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <regex>
 #include <QFile>
 #include <boost/format.hpp>
 #include <Python.h>
@@ -42,12 +43,87 @@ dumpDict(PyObject *dict)
 
 }
 
+template<typename Iterable>
+class enumerate_object
+{
+    private:
+        Iterable _iter;
+        std::size_t _size;
+        decltype(std::begin(_iter)) _begin;
+        const decltype(std::end(_iter)) _end;
+
+    public:
+        enumerate_object(Iterable iter):
+            _iter(iter),
+            _size(0),
+            _begin(std::begin(iter)),
+            _end(std::end(iter))
+        {}
+
+        const enumerate_object& begin() const { return *this; }
+        const enumerate_object& end()   const { return *this; }
+
+        bool operator!=(const enumerate_object&) const
+        {
+            return _begin != _end;
+        }
+
+        void operator++()
+        {
+            ++_begin;
+            ++_size;
+        }
+
+        auto operator*() const
+            -> std::pair<std::size_t, decltype(*_begin)>
+        {
+            return { _size, *_begin };
+        }
+};
+
+template<typename Iterable>
+auto enumerate(Iterable&& iter)
+    -> enumerate_object<Iterable>
+{
+    return { std::forward<Iterable>(iter) };
+}
+
+std::ostream & operator <<(std::ostream &out, Payload::Dict dict);
+std::ostream & operator <<(std::ostream &out, Payload::List dict);
+
+std::ostream &
+operator <<(std::ostream &out, String string)
+{
+    out << "'" << std::regex_replace(string.string, std::regex("(\n)"),"\\n") << "'";
+    return out;
+}
+
+std::ostream &
+operator <<(std::ostream &out, Message message)
+{
+    switch (message.type)
+    {
+    case Message::Type::STRING:
+        out << message.string;
+        break;
+
+    case Message::Type::NONE:
+        out << "None";
+        break;
+    }
+
+    return out;
+}
+
 std::ostream &
 operator <<(std::ostream &out, Payload::List list)
 {
     out << "[";
-    for (const auto &item : list)
+    for (auto&& a : enumerate(list))
     {
+        auto index = std::get<0>(a);
+        auto item = std::get<1>(a);
+
         try
         {
             out << "'" << boost::any_cast<char *>(item) << "'";
@@ -55,6 +131,25 @@ operator <<(std::ostream &out, Payload::List list)
         catch (boost::bad_any_cast &)
         {
         }
+
+        try
+        {
+            out << boost::any_cast<Payload::Dict>(item);
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+
+        try
+        {
+            out << boost::any_cast<Payload::List>(item);
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+
+        if (index < list.size()-1)
+            out << ", ";
     }
     out << "]";
 
@@ -65,9 +160,12 @@ std::ostream &
 operator <<(std::ostream &out, Payload::Dict dict)
 {
     out << "{";
-    for (const auto &item : dict)
+    for (auto&& a : enumerate(dict))
     {
-//        out << "'" << item.first << "': ";
+        auto index = std::get<0>(a);
+        auto item = std::get<1>(a);
+
+        out << "'" << item.first << "': ";
 
         try
         {
@@ -93,7 +191,8 @@ operator <<(std::ostream &out, Payload::Dict dict)
         {
         }
 
-        out << ", ";
+        if (index < dict.size()-1)
+            out << ", ";
     }
     out << "}";
     return out;
@@ -105,7 +204,7 @@ operator <<(std::ostream &out, Payload payload)
     switch (payload.type)
     {
     case Payload::Type::STRING:
-        out << "'" << payload.string << "'";
+        out << payload.string;
         break;
 
     case Payload::Type::DICT:
@@ -191,11 +290,11 @@ operator <<(std::ostream &out, Type type)
 std::ostream &
 operator<<(std::ostream &stream, const GdbMiResult &result)
 {
-    stream << "{'token': " << result.token << ", "
-           <<  "'message': '" << result.message << "', "
-           <<  "'type': " << result.type << ", "
+    stream << "{'token': "   << result.token << ", "
+           <<  "'message': " << result.message << ", "
+           <<  "'type': "    << result.type << ", "
            <<  "'payload': " << result.payload << ", "
-           <<  "'stream': " << result.stream << "}";
+           <<  "'stream': "  << result.stream << "}";
     return stream;
 }
 
@@ -206,7 +305,7 @@ PyGdbMiInterface::PyGdbMiInterface(const std::string &filename)
     m_moduleDict = PyImport_GetModuleDict();
 
     auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
-    for (auto n=3; n < 4; ++n)
+    for (auto n=0; n < 32; ++n)
     {
         auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
         if (result)
@@ -345,6 +444,7 @@ PyGdbMiInterface::callFunction(PyObject *module, const std::string &functionname
 GdbMiResult
 PyGdbMiInterface::parseResult(PyObject *object)
 {
+    // must be a dictionary type
     if (!PyDict_Check(object))
     {
         std::stringstream errmsg;
@@ -392,16 +492,20 @@ PyGdbMiInterface::parseResult(PyObject *object)
     return result;
 }
 
-std::string
+Message
 PyGdbMiInterface::parseMessage(PyObject *object)
 {
-    std::string message;
-
-    if (PyString_Check(object) || PyUnicode_Check(object))
-        message = PyString_AsString(object);
+    Message message;
 
     if (object == Py_None)
-        message = "None";
+    {
+        message.type = Message::Type::NONE;
+    }
+    else if (PyString_Check(object) || PyUnicode_Check(object))
+    {
+        message.type = Message::Type::STRING;
+        message.string.string = PyString_AsString(object);
+    }
 
     return message;
 }
@@ -418,7 +522,7 @@ PyGdbMiInterface::parsePayload(PyObject* object)
     else if (PyString_Check(object) || PyUnicode_Check(object))
     {
         payload.type = Payload::Type::STRING;
-        payload.string = PyString_AsString(object);
+        payload.string.string = PyString_AsString(object);
     }
     else if (PyDict_Check(object))
     {

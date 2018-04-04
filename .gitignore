@@ -50,3 +50,4 @@ Makefile.in
 
 compile_commands.json
 /scripts
+/*.pyc
