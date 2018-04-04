@@ -27,6 +27,7 @@ struct Payload
     };
 
     using Dict = std::map<std::string, boost::any>;
+    using List = std::vector<boost::any>;
 
     Type            type;
     std::string     string;

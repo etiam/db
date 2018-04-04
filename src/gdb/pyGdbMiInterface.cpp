@@ -43,11 +43,82 @@ dumpDict(PyObject *dict)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Payload payload)
+operator <<(std::ostream &out, Payload::List list)
 {
+    out << "[";
+    for (const auto &item : list)
+    {
+        try
+        {
+            out << "'" << boost::any_cast<char *>(item) << "'";
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+    }
+    out << "]";
+
     return out;
 }
 
+std::ostream &
+operator <<(std::ostream &out, Payload::Dict dict)
+{
+    out << "{";
+    for (const auto &item : dict)
+    {
+//        out << "'" << item.first << "': ";
+
+        try
+        {
+            out << "'" << boost::any_cast<char *>(item.second) << "'";
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+
+        try
+        {
+            out << boost::any_cast<Payload::Dict>(item.second);
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+
+        try
+        {
+            out << boost::any_cast<Payload::List>(item.second);
+        }
+        catch (boost::bad_any_cast &)
+        {
+        }
+
+        out << ", ";
+    }
+    out << "}";
+    return out;
+}
+
+std::ostream &
+operator <<(std::ostream &out, Payload payload)
+{
+    switch (payload.type)
+    {
+    case Payload::Type::STRING:
+        out << "'" << payload.string << "'";
+        break;
+
+    case Payload::Type::DICT:
+        out << payload.dict;
+        break;
+
+    case Payload::Type::NONE:
+        out << "None";
+        break;
+    }
+
+    return out;
+}
 
 std::ostream &
 operator <<(std::ostream &out, Stream stream)
@@ -55,7 +126,7 @@ operator <<(std::ostream &out, Stream stream)
     switch (stream)
     {
     case Stream::STDOUT:
-        out << "stdout";
+        out << "'stdout'";
         break;
 
     case Stream::NONE:
@@ -91,19 +162,19 @@ operator <<(std::ostream &out, Type type)
     switch (type)
     {
     case Type::RESULT:
-        out << "result";
+        out << "'result'";
         break;
 
     case Type::NOTIFY:
-        out << "notify";
+        out << "'notify'";
         break;
 
     case Type::OUTPUT:
-        out << "output";
+        out << "'output'";
         break;
 
     case Type::CONSOLE:
-        out << "console";
+        out << "'console'";
         break;
 
     case Type::NONE:
@@ -120,10 +191,11 @@ operator <<(std::ostream &out, Type type)
 std::ostream &
 operator<<(std::ostream &stream, const GdbMiResult &result)
 {
-    stream << "{'token': '" << result.token << "', "
+    stream << "{'token': " << result.token << ", "
            <<  "'message': '" << result.message << "', "
-           <<  "'type': '" << result.type << "', "
-           <<  "'stream': '" << result.stream << "}";
+           <<  "'type': " << result.type << ", "
+           <<  "'payload': " << result.payload << ", "
+           <<  "'stream': " << result.stream << "}";
     return stream;
 }
 
@@ -134,14 +206,14 @@ PyGdbMiInterface::PyGdbMiInterface(const std::string &filename)
     m_moduleDict = PyImport_GetModuleDict();
 
     auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
-    for (auto n=0; n < 32; ++n)
+    for (auto n=3; n < 4; ++n)
     {
-    auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
-    if (result)
-    {
-        auto r = parseResult(result);
-        std::cout << r << std::endl;
-    }
+        auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
+        if (result)
+        {
+            auto r = parseResult(result);
+            std::cout << r << std::endl;
+        }
     }
 
     // create blank module named 'pygdbmi'
@@ -425,7 +497,7 @@ PyGdbMiInterface::parseObject(PyObject *object)
     if (PyList_Check(object))
     {
         auto n = PyList_Size(object);
-        std::vector<boost::any> list(n);
+        Payload::List list(n);
 
         for (auto i=0; i < n; i++)
         {

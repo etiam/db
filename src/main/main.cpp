@@ -73,6 +73,8 @@ int main(int argc, char *argv[])
         gdb->executeCommand("-file-exec-and-symbols " + filename);
     }
 
+    return 0;
+
     auto main = std::make_unique<Ui::Main>(argc, argv);
     main->run();
 }
