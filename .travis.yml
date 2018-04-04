@@ -1,17 +1,27 @@
 language: cpp
+dist: trusty
 sudo: required
-dist: xenial
+
 compiler:
-- clang
+  - clang
+
 os:
-- linux
+  - linux
+
+services:
+  - docker
+
 before_install:
-- ./dependencies.sh
+  - docker build -t etiam/db .
+  - docker run etiam/db /bin/sh -c "cd /home/travis; ./dependencies.sh && ./autogen.sh && ./configure && make"
+
 script:
-- ./autogen.sh && ./configure && make
+  - ./autogen.sh && ./configure && make
+
 branches:
   only:
   - master
+
 env:
   global:
   - LANG="en_US.UTF-8"
