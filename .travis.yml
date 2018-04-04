@@ -11,7 +11,7 @@ os:
 services:
   - docker
 
-script:
+before_script:
   - docker build -t etiam/db .
   - docker run etiam/db /bin/sh -c "cd /home/travis; ./dependencies.sh && ./autogen.sh && ./configure && make"
 
