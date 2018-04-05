@@ -11,309 +11,59 @@
 
 #include <iostream>
 #include <sstream>
-#include <regex>
 #include <QFile>
-#include <boost/format.hpp>
 #include <Python.h>
 #include <marshal.h>
 
 #include "pyGdbMiInterface.h"
 
-namespace
+class PyGdbMiInterfaceImpl
 {
+  public:
+    PyGdbMiInterfaceImpl(const std::string &filename);
+    ~PyGdbMiInterfaceImpl();
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-void
-dumpDict(PyObject *dict)
-{
-    PyObject *list = PyDict_Keys(dict);
-    Py_ssize_t n = PyList_Size(list);
+    PyGdbMiResults  executeCommand(const std::string &command);
 
-    for (Py_ssize_t i = 0; i < n; i++)
-    {
-        PyObject *obj = PyList_GetItem(list, i);
-        if (PyString_Check(obj))
-        {
-            std::cout << PyString_AsString(obj) << std::endl;
-        }
-    }
-}
-#pragma GCC diagnostic pop
+    PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
+    PyObject *      createInstance(const std::string &modulename, const std::string &classname);
+    PyObject *      callFunction(PyObject *module, const std::string &functionname, PyObject *args);
 
-}
+    PyGdbMiResult   parseResult(PyObject *object);
+    Message         parseMessage(PyObject *object);
+    Payload         parsePayload(PyObject *object);
+    Stream          parseStream(PyObject *object);
+    Token           parseToken(PyObject *object);
+    Type            parseType(PyObject *object);
+    boost::any      parseObject(PyObject *object);
 
-template<typename Iterable>
-class enumerate_object
-{
-    private:
-        Iterable _iter;
-        std::size_t _size;
-        decltype(std::begin(_iter)) _begin;
-        const decltype(std::end(_iter)) _end;
+    bool            m_valid = true;
 
-    public:
-        enumerate_object(Iterable iter):
-            _iter(iter),
-            _size(0),
-            _begin(std::begin(iter)),
-            _end(std::end(iter))
-        {}
+    PyObject *      m_moduleDict = nullptr;
 
-        const enumerate_object& begin() const { return *this; }
-        const enumerate_object& end()   const { return *this; }
+    PyObject *      m_gdbMiModule = nullptr;
+    PyObject *      m_gdbMiParserModule = nullptr;
+    PyObject *      m_gdbControllerModule = nullptr;
 
-        bool operator!=(const enumerate_object&) const
-        {
-            return _begin != _end;
-        }
-
-        void operator++()
-        {
-            ++_begin;
-            ++_size;
-        }
-
-        auto operator*() const
-            -> std::pair<std::size_t, decltype(*_begin)>
-        {
-            return { _size, *_begin };
-        }
+    PyObject *      m_gdbMiInstance = nullptr;
 };
 
-template<typename Iterable>
-auto enumerate(Iterable&& iter)
-    -> enumerate_object<Iterable>
-{
-    return { std::forward<Iterable>(iter) };
-}
-
-std::ostream & operator <<(std::ostream &out, Payload::Dict dict);
-std::ostream & operator <<(std::ostream &out, Payload::List dict);
-
-std::ostream &
-operator <<(std::ostream &out, String string)
-{
-    out << "'" << std::regex_replace(string.string, std::regex("(\n)"),"\\n") << "'";
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Message message)
-{
-    switch (message.type)
-    {
-    case Message::Type::STRING:
-        out << message.string;
-        break;
-
-    case Message::Type::NONE:
-        out << "None";
-        break;
-    }
-
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Payload::List list)
-{
-    out << "[";
-    for (auto&& a : enumerate(list))
-    {
-        auto index = std::get<0>(a);
-        auto item = std::get<1>(a);
-
-        try
-        {
-            out << "'" << boost::any_cast<char *>(item) << "'";
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        try
-        {
-            out << boost::any_cast<Payload::Dict>(item);
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        try
-        {
-            out << boost::any_cast<Payload::List>(item);
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        if (index < list.size()-1)
-            out << ", ";
-    }
-    out << "]";
-
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Payload::Dict dict)
-{
-    out << "{";
-    for (auto&& a : enumerate(dict))
-    {
-        auto index = std::get<0>(a);
-        auto item = std::get<1>(a);
-
-        out << "'" << item.first << "': ";
-
-        try
-        {
-            out << "'" << boost::any_cast<char *>(item.second) << "'";
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        try
-        {
-            out << boost::any_cast<Payload::Dict>(item.second);
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        try
-        {
-            out << boost::any_cast<Payload::List>(item.second);
-        }
-        catch (boost::bad_any_cast &)
-        {
-        }
-
-        if (index < dict.size()-1)
-            out << ", ";
-    }
-    out << "}";
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Payload payload)
-{
-    switch (payload.type)
-    {
-    case Payload::Type::STRING:
-        out << payload.string;
-        break;
-
-    case Payload::Type::DICT:
-        out << payload.dict;
-        break;
-
-    case Payload::Type::NONE:
-        out << "None";
-        break;
-    }
-
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Stream stream)
-{
-    switch (stream)
-    {
-    case Stream::STDOUT:
-        out << "'stdout'";
-        break;
-
-    case Stream::NONE:
-        out << "None";
-        break;
-
-    default:
-        out << "unknown";
-        break;
-    }
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Token token)
-{
-    switch (token)
-    {
-    case Token::NONE:
-        out << "None";
-        break;
-
-    default:
-        out << "unknown";
-        break;
-    }
-    return out;
-}
-
-std::ostream &
-operator <<(std::ostream &out, Type type)
-{
-    switch (type)
-    {
-    case Type::RESULT:
-        out << "'result'";
-        break;
-
-    case Type::NOTIFY:
-        out << "'notify'";
-        break;
-
-    case Type::OUTPUT:
-        out << "'output'";
-        break;
-
-    case Type::CONSOLE:
-        out << "'console'";
-        break;
-
-    case Type::NONE:
-        out << "None";
-        break;
-
-    default:
-        out << "unknown";
-        break;
-    }
-    return out;
-}
-
-std::ostream &
-operator<<(std::ostream &stream, const GdbMiResult &result)
-{
-    stream << "{'token': "   << result.token << ", "
-           <<  "'message': " << result.message << ", "
-           <<  "'type': "    << result.type << ", "
-           <<  "'payload': " << result.payload << ", "
-           <<  "'stream': "  << result.stream << "}";
-    return stream;
-}
-
-PyGdbMiInterface::PyGdbMiInterface(const std::string &filename)
+PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(const std::string &filename)
 {
     Py_Initialize();
 
     m_moduleDict = PyImport_GetModuleDict();
 
-    auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
-    for (auto n=0; n < 32; ++n)
-    {
-        auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
-        if (result)
-        {
-            auto r = parseResult(result);
-            std::cout << r << std::endl;
-        }
-    }
+//    auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
+//    for (auto n=0; n < 32; ++n)
+//    {
+//        auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
+//        if (result)
+//        {
+//            auto r = parseResult(result);
+//            std::cout << r << std::endl;
+//        }
+//    }
 
     // create blank module named 'pygdbmi'
     m_gdbMiModule = PyModule_New("pygdbmi");
@@ -356,22 +106,29 @@ PyGdbMiInterface::PyGdbMiInterface(const std::string &filename)
         std::cerr << "PyGdbMiInterface::PyGdbMiInterface(): failed to initialize class" << std::endl;
 }
 
-PyGdbMiInterface::~PyGdbMiInterface()
+PyGdbMiInterfaceImpl::~PyGdbMiInterfaceImpl()
 {
     Py_Finalize();
 }
 
-void
-PyGdbMiInterface::executeCommand(const std::string &command)
+PyGdbMiResults
+PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
 {
     auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", command.c_str());
 
-    Py_ssize_t n = PyList_Size(value);
-    (void)n;
+    auto n = PyList_Size(value);
+    PyGdbMiResults results(n);
+
+    for (auto i=0; i < n; i++)
+    {
+        results[i] = parseResult(PyList_GetItem(value, i));
+    }
+
+    return results;
 }
 
 PyObject *
-PyGdbMiInterface::importModule(const std::string &bytecodename, const std::string &modulename)
+PyGdbMiInterfaceImpl::importModule(const std::string &bytecodename, const std::string &modulename)
 {
     PyObject *module = nullptr;
     QFile file(QString::fromStdString(bytecodename));
@@ -390,7 +147,7 @@ PyGdbMiInterface::importModule(const std::string &bytecodename, const std::strin
 }
 
 PyObject *
-PyGdbMiInterface::createInstance(const std::string &modulename, const std::string &classname)
+PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::string &classname)
 {
     PyObject *instance = nullptr;
 
@@ -423,7 +180,7 @@ PyGdbMiInterface::createInstance(const std::string &modulename, const std::strin
 }
 
 PyObject *
-PyGdbMiInterface::callFunction(PyObject *module, const std::string &functionname, PyObject *args)
+PyGdbMiInterfaceImpl::callFunction(PyObject *module, const std::string &functionname, PyObject *args)
 {
     PyObject *result = nullptr;
 
@@ -441,8 +198,8 @@ PyGdbMiInterface::callFunction(PyObject *module, const std::string &functionname
     return result;
 }
 
-GdbMiResult
-PyGdbMiInterface::parseResult(PyObject *object)
+PyGdbMiResult
+PyGdbMiInterfaceImpl::parseResult(PyObject *object)
 {
     // must be a dictionary type
     if (!PyDict_Check(object))
@@ -452,7 +209,7 @@ PyGdbMiInterface::parseResult(PyObject *object)
         throw std::runtime_error(errmsg.str().c_str());
     }
 
-    GdbMiResult result;
+    PyGdbMiResult result;
 
     auto list = PyDict_Keys(object);
     auto n = PyList_Size(list);
@@ -493,7 +250,7 @@ PyGdbMiInterface::parseResult(PyObject *object)
 }
 
 Message
-PyGdbMiInterface::parseMessage(PyObject *object)
+PyGdbMiInterfaceImpl::parseMessage(PyObject *object)
 {
     Message message;
 
@@ -511,7 +268,7 @@ PyGdbMiInterface::parseMessage(PyObject *object)
 }
 
 Payload
-PyGdbMiInterface::parsePayload(PyObject* object)
+PyGdbMiInterfaceImpl::parsePayload(PyObject* object)
 {
     Payload payload;
 
@@ -534,7 +291,7 @@ PyGdbMiInterface::parsePayload(PyObject* object)
 }
 
 Stream
-PyGdbMiInterface::parseStream(PyObject* object)
+PyGdbMiInterfaceImpl::parseStream(PyObject* object)
 {
     Stream stream = Stream::NONE;
 
@@ -551,7 +308,7 @@ PyGdbMiInterface::parseStream(PyObject* object)
 }
 
 Token
-PyGdbMiInterface::parseToken(PyObject* object)
+PyGdbMiInterfaceImpl::parseToken(PyObject* object)
 {
     Token token = Token::NONE;
 
@@ -564,7 +321,7 @@ PyGdbMiInterface::parseToken(PyObject* object)
 }
 
 Type
-PyGdbMiInterface::parseType(PyObject* object)
+PyGdbMiInterfaceImpl::parseType(PyObject* object)
 {
     Type type = Type::NONE;
 
@@ -587,7 +344,7 @@ PyGdbMiInterface::parseType(PyObject* object)
 }
 
 boost::any
-PyGdbMiInterface::parseObject(PyObject *object)
+PyGdbMiInterfaceImpl::parseObject(PyObject *object)
 {
     if (PyLong_Check(object))
         return PyLong_AsLong(object);
@@ -633,4 +390,19 @@ PyGdbMiInterface::parseObject(PyObject *object)
     std::stringstream errmsg;
     errmsg << "ParseObject(): un-handled type " << PyString_AsString(PyObject_Str(object));
     throw std::runtime_error(errmsg.str().c_str());
+}
+
+PyGdbMiInterface::PyGdbMiInterface(const std::string &filename) :
+    m_impl(std::make_unique<PyGdbMiInterfaceImpl>(filename))
+{
+}
+
+PyGdbMiInterface::~PyGdbMiInterface()
+{
+}
+
+PyGdbMiResults
+PyGdbMiInterface::executeCommand(const std::string &command)
+{
+    return m_impl->executeCommand(command);
 }
