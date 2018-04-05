@@ -66,11 +66,20 @@ int main(int argc, char *argv[])
     {
         auto filename = vm["prog"].as<std::string>();
 
-        auto ast = std::make_unique<Ast>(filename);
         auto gdb = std::make_unique<PyGdbMiInterface>(filename);
+        {
+        auto res = gdb->executeCommand("file-exec-and-symbols " + filename);
+        std::cout << res << std::endl;
+        }
 
+        {
+        auto res = gdb->executeCommand("break-insert main2");
+        std::cout << res << std::endl;
+        }
+
+
+//        auto ast = std::make_unique<Ast>(filename);
 //        ast->parseFile(filename);
-        gdb->executeCommand("-file-exec-and-symbols " + filename);
     }
 
     return 0;

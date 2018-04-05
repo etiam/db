@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef GDB_PYGDBMIRESULT_H_
-#define GDB_PYGDBMIRESULT_H_
+#ifndef PYGDBMIRESULT_H_
+#define PYGDBMIRESULT_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -60,9 +60,9 @@ enum class Stream : char
     NONE
 };
 
-enum class Token : char
+struct Token
 {
-    NONE,
+    int             value = -1;
 };
 
 enum class Type : char
@@ -79,11 +79,9 @@ struct PyGdbMiResult
     Message     message;
     Payload     payload;
     Stream      stream = Stream::NONE;
-    Token       token = Token::NONE;
+    Token       token;
     Type        type = Type::NONE;
 };
-
-using PyGdbMiResults = std::vector<PyGdbMiResult>;
 
 template<typename Iterable>
 class enumerate_object
@@ -290,15 +288,13 @@ inline
 std::ostream &
 operator <<(std::ostream &out, Token token)
 {
-    switch (token)
+    if (token.value == -1)
     {
-    case Token::NONE:
         out << "None";
-        break;
-
-    default:
-        out << "unknown";
-        break;
+    }
+    else
+    {
+        out << token.value;
     }
     return out;
 }
@@ -348,4 +344,4 @@ operator<<(std::ostream &stream, const PyGdbMiResult &result)
     return stream;
 }
 
-#endif // GDB_PYGDBMIRESULT_H_
+#endif // PYGDBMIRESULT_H_

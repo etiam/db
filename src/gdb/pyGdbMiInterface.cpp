@@ -23,7 +23,7 @@ class PyGdbMiInterfaceImpl
     PyGdbMiInterfaceImpl(const std::string &filename);
     ~PyGdbMiInterfaceImpl();
 
-    PyGdbMiResults  executeCommand(const std::string &command);
+    PyGdbMiResult   executeCommand(const std::string &command);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
@@ -38,6 +38,8 @@ class PyGdbMiInterfaceImpl
     boost::any      parseObject(PyObject *object);
 
     bool            m_valid = true;
+
+    int             m_token = 1;
 
     PyObject *      m_moduleDict = nullptr;
 
@@ -111,20 +113,32 @@ PyGdbMiInterfaceImpl::~PyGdbMiInterfaceImpl()
     Py_Finalize();
 }
 
-PyGdbMiResults
+PyGdbMiResult
 PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
 {
-    auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", command.c_str());
+    PyGdbMiResult result;
+    std::stringstream stream;
+    stream << m_token << "-" << command;
+
+    auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", stream.str().c_str());
 
     auto n = PyList_Size(value);
-    PyGdbMiResults results(n);
 
     for (auto i=0; i < n; i++)
     {
-        results[i] = parseResult(PyList_GetItem(value, i));
+        auto r = parseResult(PyList_GetItem(value, i));
+        if (r.token.value == m_token)
+        {
+            result = r;
+            m_token++;
+        }
+//        else
+//        {
+//            m_outofband.push_back(r);
+//        }
     }
 
-    return results;
+    return result;
 }
 
 PyObject *
@@ -310,12 +324,21 @@ PyGdbMiInterfaceImpl::parseStream(PyObject* object)
 Token
 PyGdbMiInterfaceImpl::parseToken(PyObject* object)
 {
-    Token token = Token::NONE;
+    Token token;
 
-    if (object != Py_None)
+    if (object == Py_None)
+    {
+        token.value = -1;
+    }
+    else if (PyInt_Check(object))
+    {
+        token.value = static_cast<int>(_PyInt_AsInt(object));
+    }
+    else
     {
         std::cerr << "parseToken(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
     }
+
 
     return token;
 }
@@ -346,8 +369,8 @@ PyGdbMiInterfaceImpl::parseType(PyObject* object)
 boost::any
 PyGdbMiInterfaceImpl::parseObject(PyObject *object)
 {
-    if (PyLong_Check(object))
-        return PyLong_AsLong(object);
+    if (PyInt_Check(object))
+        return _PyInt_AsInt(object);
 
     if (PyFloat_Check(object))
         return PyFloat_AsDouble(object);
@@ -401,7 +424,7 @@ PyGdbMiInterface::~PyGdbMiInterface()
 {
 }
 
-PyGdbMiResults
+PyGdbMiResult
 PyGdbMiInterface::executeCommand(const std::string &command)
 {
     return m_impl->executeCommand(command);

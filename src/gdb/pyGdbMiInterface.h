@@ -17,7 +17,7 @@
 #include <memory>
 #include <Python.h>
 
-#include <gdb/pyPyGdbMiResult.h>
+#include <gdb/pyGdbMiResult.h>
 
 class PyGdbMiInterfaceImpl;
 
@@ -27,7 +27,7 @@ class PyGdbMiInterface
     PyGdbMiInterface(const std::string &filename);
     ~PyGdbMiInterface();
 
-    PyGdbMiResults executeCommand(const std::string &command);
+    PyGdbMiResult executeCommand(const std::string &command);
 
   private:
     std::unique_ptr<PyGdbMiInterfaceImpl>   m_impl;
