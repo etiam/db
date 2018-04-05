@@ -1,5 +1,6 @@
 db_SOURCES               +=                                                     \
-                            src/gdb/pyGdbMiInterface.cpp
+                            src/gdb/pyGdbMiInterface.cpp                        \
+                            src/gdb/gdbMiResultsReaderThread.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

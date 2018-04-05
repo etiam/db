@@ -16,11 +16,12 @@
 #include <marshal.h>
 
 #include "pyGdbMiInterface.h"
+#include "gdbMiResultsReaderThread.h"
 
 class PyGdbMiInterfaceImpl
 {
   public:
-    PyGdbMiInterfaceImpl(const std::string &filename);
+    PyGdbMiInterfaceImpl();
     ~PyGdbMiInterfaceImpl();
 
     PyGdbMiResult   executeCommand(const std::string &command);
@@ -37,6 +38,8 @@ class PyGdbMiInterfaceImpl
     Type            parseType(PyObject *object);
     boost::any      parseObject(PyObject *object);
 
+    void            results();
+
     bool            m_valid = true;
 
     int             m_token = 1;
@@ -48,9 +51,12 @@ class PyGdbMiInterfaceImpl
     PyObject *      m_gdbControllerModule = nullptr;
 
     PyObject *      m_gdbMiInstance = nullptr;
+
+    using ReaderThread = std::unique_ptr<GdbMiResultsReaderThread>;
+    ReaderThread    m_readerThread;
 };
 
-PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(const std::string &filename)
+PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
 {
     Py_Initialize();
 
@@ -100,6 +106,9 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(const std::string &filename)
             m_valid = false;
 
         m_gdbMiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
+
+        m_readerThread = std::make_unique<GdbMiResultsReaderThread>("readerthread",
+                                                                    std::bind(&PyGdbMiInterfaceImpl::results, this));
     }
     else
         m_valid = false;
@@ -120,6 +129,10 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
     std::stringstream stream;
     stream << m_token << "-" << command;
 
+    // store python GIL state
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
     auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", stream.str().c_str());
 
     auto n = PyList_Size(value);
@@ -130,7 +143,6 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
         if (r.token.value == m_token)
         {
             result = r;
-            m_token++;
         }
 //        else
 //        {
@@ -138,6 +150,10 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
 //        }
     }
 
+    /* Release the thread. No Python API allowed beyond this point. */
+    PyGILState_Release(gstate);
+
+    m_token++;
     return result;
 }
 
@@ -172,7 +188,7 @@ PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::s
         auto klass = PyDict_GetItemString(dict, classname.c_str());
         if (PyCallable_Check(klass))
         {
-            dict = Py_BuildValue("{s:p}", "verbose", true);
+            dict = Py_BuildValue("{s:i}", "verbose", false);
             instance = PyObject_Call(klass, NULL, dict);
 
             if (!instance || !PyInstance_Check(instance))
@@ -415,8 +431,15 @@ PyGdbMiInterfaceImpl::parseObject(PyObject *object)
     throw std::runtime_error(errmsg.str().c_str());
 }
 
-PyGdbMiInterface::PyGdbMiInterface(const std::string &filename) :
-    m_impl(std::make_unique<PyGdbMiInterfaceImpl>(filename))
+void
+PyGdbMiInterfaceImpl::results()
+{
+    std::cout << "foo" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+}
+
+PyGdbMiInterface::PyGdbMiInterface() :
+    m_impl(std::make_unique<PyGdbMiInterfaceImpl>())
 {
 }
 

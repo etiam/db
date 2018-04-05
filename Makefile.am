@@ -12,6 +12,7 @@ db_LDFLAGS                =
 db_LDADD                  =
 
 include $(top_srcdir)/src/main/Makefile.am
+include $(top_srcdir)/src/core/Makefile.am
 include $(top_srcdir)/src/ui/Makefile.am
 include $(top_srcdir)/src/gdb/Makefile.am
 include $(top_srcdir)/src/ast/Makefile.am

@@ -17,14 +17,14 @@
 #include <memory>
 #include <Python.h>
 
-#include <gdb/pyGdbMiResult.h>
+#include "pyGdbMiResult.h"
 
 class PyGdbMiInterfaceImpl;
 
 class PyGdbMiInterface
 {
   public:
-    PyGdbMiInterface(const std::string &filename);
+    PyGdbMiInterface();
     ~PyGdbMiInterface();
 
     PyGdbMiResult executeCommand(const std::string &command);

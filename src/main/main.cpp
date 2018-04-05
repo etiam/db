@@ -61,28 +61,26 @@ int main(int argc, char *argv[])
         std::exit(0);
     }
 
+    auto gdb = std::make_unique<PyGdbMiInterface>();
+
     // load prog
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
 
-        auto gdb = std::make_unique<PyGdbMiInterface>(filename);
         {
         auto res = gdb->executeCommand("file-exec-and-symbols " + filename);
-        std::cout << res << std::endl;
+        std::cout << "* " << res << std::endl;
         }
 
         {
-        auto res = gdb->executeCommand("break-insert main2");
-        std::cout << res << std::endl;
+        auto res = gdb->executeCommand("break-insert main");
+        std::cout << "* " << res << std::endl;
         }
-
 
 //        auto ast = std::make_unique<Ast>(filename);
 //        ast->parseFile(filename);
     }
-
-    return 0;
 
     auto main = std::make_unique<Ui::Main>(argc, argv);
     main->run();
