@@ -27,7 +27,7 @@ class PyGdbMiInterface
     PyGdbMiInterface();
     ~PyGdbMiInterface();
 
-    PyGdbMiResult executeCommand(const std::string &command);
+    int executeCommand(const std::string &command);
 
   private:
     std::unique_ptr<PyGdbMiInterfaceImpl>   m_impl;

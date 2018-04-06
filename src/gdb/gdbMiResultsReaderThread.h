@@ -14,19 +14,29 @@
 #endif
 
 #include <functional>
+#include <Python.h>
 
 #include "core/workerThreadBase.h"
+
+#include "pyGdbMiResult.h"
 
 class GdbMiResultsReaderThread: public WorkerThreadBase
 {
   public:
-    GdbMiResultsReaderThread(const std::string &threadname, std::function<void()> callable);
+    GdbMiResultsReaderThread(const std::string &threadname,
+                             PyObject *getresponsemethod,
+                             std::function<void(PyGdbMiResult)> callable);
     virtual ~GdbMiResultsReaderThread();
 
-  private:
-    virtual void          process() final;
+  protected:
+    virtual void            initialize() final;
 
-    std::function<void()> m_callback;
+  private:
+    virtual void            process() final;
+
+    PyObject *              m_getResponseMethod;
+
+    std::function<void(PyGdbMiResult)>   m_callback;
 };
 
 #endif // GDBMIRESULTSREADERTHREAD_H_

@@ -68,15 +68,8 @@ int main(int argc, char *argv[])
     {
         auto filename = vm["prog"].as<std::string>();
 
-        {
-        auto res = gdb->executeCommand("file-exec-and-symbols " + filename);
-        std::cout << "* " << res << std::endl;
-        }
-
-        {
-        auto res = gdb->executeCommand("break-insert main");
-        std::cout << "* " << res << std::endl;
-        }
+        gdb->executeCommand("file-exec-and-symbols " + filename);
+//        gdb->executeCommand("break-insert main");
 
 //        auto ast = std::make_unique<Ast>(filename);
 //        ast->parseFile(filename);

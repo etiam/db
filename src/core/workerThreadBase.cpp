@@ -33,7 +33,10 @@ WorkerThreadBase::run()
     try
     {
         if (!m_initialized)
+        {
             initialize();
+            m_initialized = true;
+        }
     }
 
     catch (const std::exception &e)

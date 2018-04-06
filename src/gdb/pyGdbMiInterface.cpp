@@ -24,21 +24,13 @@ class PyGdbMiInterfaceImpl
     PyGdbMiInterfaceImpl();
     ~PyGdbMiInterfaceImpl();
 
-    PyGdbMiResult   executeCommand(const std::string &command);
+    int             executeCommand(const std::string &command);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
     PyObject *      callFunction(PyObject *module, const std::string &functionname, PyObject *args);
 
-    PyGdbMiResult   parseResult(PyObject *object);
-    Message         parseMessage(PyObject *object);
-    Payload         parsePayload(PyObject *object);
-    Stream          parseStream(PyObject *object);
-    Token           parseToken(PyObject *object);
-    Type            parseType(PyObject *object);
-    boost::any      parseObject(PyObject *object);
-
-    void            results();
+    void            results(PyGdbMiResult result);
 
     bool            m_valid = true;
 
@@ -51,6 +43,9 @@ class PyGdbMiInterfaceImpl
     PyObject *      m_gdbControllerModule = nullptr;
 
     PyObject *      m_gdbMiInstance = nullptr;
+
+    PyObject *      m_writeMethod = nullptr;
+    PyObject *      m_getResponseMethod = nullptr;
 
     using ReaderThread = std::unique_ptr<GdbMiResultsReaderThread>;
     ReaderThread    m_readerThread;
@@ -107,8 +102,16 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
 
         m_gdbMiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
 
+        m_writeMethod = PyObject_GetAttrString(m_gdbMiInstance, "write");
+        m_getResponseMethod = PyObject_GetAttrString(m_gdbMiInstance, "get_gdb_response");
+
+        if (!m_writeMethod || !PyCallable_Check(m_writeMethod) ||
+            !m_getResponseMethod || !PyCallable_Check(m_getResponseMethod))
+            m_valid = false;
+
         m_readerThread = std::make_unique<GdbMiResultsReaderThread>("readerthread",
-                                                                    std::bind(&PyGdbMiInterfaceImpl::results, this));
+                                                                    m_getResponseMethod,
+                                                                    std::bind(&PyGdbMiInterfaceImpl::results, this, std::placeholders::_1));
     }
     else
         m_valid = false;
@@ -119,42 +122,40 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
 
 PyGdbMiInterfaceImpl::~PyGdbMiInterfaceImpl()
 {
+    m_readerThread.reset();
+
     Py_Finalize();
 }
 
-PyGdbMiResult
+int
 PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
 {
     PyGdbMiResult result;
     std::stringstream stream;
     stream << m_token << "-" << command;
 
-    // store python GIL state
+    // save python GIL
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
 
-    auto value = PyObject_CallMethod(m_gdbMiInstance, (char*)"write", (char*)"(s)", stream.str().c_str());
+    auto args = Py_BuildValue("(s)", stream.str().c_str());
+    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", false, "read_response", false);
+    auto value = PyObject_Call(m_writeMethod, args, kw);
 
-    auto n = PyList_Size(value);
-
-    for (auto i=0; i < n; i++)
+    if (value)
     {
-        auto r = parseResult(PyList_GetItem(value, i));
-        if (r.token.value == m_token)
-        {
-            result = r;
-        }
-//        else
-//        {
-//            m_outofband.push_back(r);
-//        }
+        auto n = PyList_Size(value);
+        std::cout << "got " << n << " results in executeCommand()" << std::endl;
+    }
+    else
+    {
+        PyErr_Print();
     }
 
-    /* Release the thread. No Python API allowed beyond this point. */
+    // restore python GIL
     PyGILState_Release(gstate);
 
-    m_token++;
-    return result;
+    return m_token++;
 }
 
 PyObject *
@@ -188,8 +189,8 @@ PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::s
         auto klass = PyDict_GetItemString(dict, classname.c_str());
         if (PyCallable_Check(klass))
         {
-            dict = Py_BuildValue("{s:i}", "verbose", false);
-            instance = PyObject_Call(klass, NULL, dict);
+            auto args = Py_BuildValue("{s:i}", "verbose", false);
+            instance = PyObject_Call(klass, nullptr, args);
 
             if (!instance || !PyInstance_Check(instance))
             {
@@ -228,214 +229,10 @@ PyGdbMiInterfaceImpl::callFunction(PyObject *module, const std::string &function
     return result;
 }
 
-PyGdbMiResult
-PyGdbMiInterfaceImpl::parseResult(PyObject *object)
-{
-    // must be a dictionary type
-    if (!PyDict_Check(object))
-    {
-        std::stringstream errmsg;
-        errmsg << "ParseMessage(): invalid data : " << PyString_AsString(PyObject_Str(object));
-        throw std::runtime_error(errmsg.str().c_str());
-    }
-
-    PyGdbMiResult result;
-
-    auto list = PyDict_Keys(object);
-    auto n = PyList_Size(list);
-    std::map<std::string, boost::any> map;
-
-    for (auto i=0; i < n; i++)
-    {
-        auto key = std::string(PyString_AsString(PyList_GetItem(list, i)));
-        auto val = PyDict_GetItem(object, PyList_GetItem(list, i));
-
-        if (key == "message")
-        {
-            result.message = parseMessage(val);
-        }
-        else if (key == "payload")
-        {
-            result.payload = parsePayload(val);
-        }
-        else if (key == "stream")
-        {
-            result.stream = parseStream(val);
-        }
-        else if (key == "token")
-        {
-            result.token = parseToken(val);
-        }
-        else if (key == "type")
-        {
-            result.type = parseType(val);
-        }
-        else
-        {
-            std::cerr << "ParseMessage(): unknown key : " << key << std::endl;
-        }
-    }
-
-    return result;
-}
-
-Message
-PyGdbMiInterfaceImpl::parseMessage(PyObject *object)
-{
-    Message message;
-
-    if (object == Py_None)
-    {
-        message.type = Message::Type::NONE;
-    }
-    else if (PyString_Check(object) || PyUnicode_Check(object))
-    {
-        message.type = Message::Type::STRING;
-        message.string.string = PyString_AsString(object);
-    }
-
-    return message;
-}
-
-Payload
-PyGdbMiInterfaceImpl::parsePayload(PyObject* object)
-{
-    Payload payload;
-
-    if (object == Py_None)
-    {
-        payload.type = Payload::Type::NONE;
-    }
-    else if (PyString_Check(object) || PyUnicode_Check(object))
-    {
-        payload.type = Payload::Type::STRING;
-        payload.string.string = PyString_AsString(object);
-    }
-    else if (PyDict_Check(object))
-    {
-        payload.type = Payload::Type::DICT;
-        payload.dict = boost::any_cast<Payload::Dict>(parseObject(object));
-    }
-
-    return payload;
-}
-
-Stream
-PyGdbMiInterfaceImpl::parseStream(PyObject* object)
-{
-    Stream stream = Stream::NONE;
-
-    if (PyString_Check(object) || PyUnicode_Check(object))
-    {
-        auto string = std::string(PyString_AsString(object));
-        if (string == "stdout")
-            stream = Stream::STDOUT;
-        else
-            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
-    }
-
-    return stream;
-}
-
-Token
-PyGdbMiInterfaceImpl::parseToken(PyObject* object)
-{
-    Token token;
-
-    if (object == Py_None)
-    {
-        token.value = -1;
-    }
-    else if (PyInt_Check(object))
-    {
-        token.value = static_cast<int>(_PyInt_AsInt(object));
-    }
-    else
-    {
-        std::cerr << "parseToken(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
-    }
-
-
-    return token;
-}
-
-Type
-PyGdbMiInterfaceImpl::parseType(PyObject* object)
-{
-    Type type = Type::NONE;
-
-    if (PyString_Check(object) || PyUnicode_Check(object))
-    {
-        auto string = std::string(PyString_AsString(object));
-        if (string == "result")
-            type = Type::RESULT;
-        else if (string == "notify")
-            type = Type::NOTIFY;
-        else if (string == "output")
-            type = Type::OUTPUT;
-        else if (string == "console")
-            type = Type::CONSOLE;
-        else
-            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
-    }
-
-    return type;
-}
-
-boost::any
-PyGdbMiInterfaceImpl::parseObject(PyObject *object)
-{
-    if (PyInt_Check(object))
-        return _PyInt_AsInt(object);
-
-    if (PyFloat_Check(object))
-        return PyFloat_AsDouble(object);
-
-    if (PyString_Check(object) || PyUnicode_Check(object))
-        return PyString_AsString(object);
-
-    if (PyList_Check(object))
-    {
-        auto n = PyList_Size(object);
-        Payload::List list(n);
-
-        for (auto i=0; i < n; i++)
-        {
-            list[i] = parseObject(PyList_GetItem(object, i));
-        }
-
-        return list;
-    }
-
-    if (PyDict_Check(object))
-    {
-        auto list = PyDict_Keys(object);
-        auto n = PyList_Size(list);
-        std::map<std::string, boost::any> map;
-
-        for (auto i=0; i < n; i++)
-        {
-            auto key = PyList_GetItem(list, i);
-            auto val = PyDict_GetItem(object, key);
-            map[PyString_AsString(key)] = parseObject(val);
-        }
-
-        return map;
-    }
-
-    if (object == Py_None)
-        return nullptr;
-
-    std::stringstream errmsg;
-    errmsg << "ParseObject(): un-handled type " << PyString_AsString(PyObject_Str(object));
-    throw std::runtime_error(errmsg.str().c_str());
-}
-
 void
-PyGdbMiInterfaceImpl::results()
+PyGdbMiInterfaceImpl::results(PyGdbMiResult result)
 {
-    std::cout << "foo" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::cout << result << std::endl;
 }
 
 PyGdbMiInterface::PyGdbMiInterface() :
@@ -447,7 +244,7 @@ PyGdbMiInterface::~PyGdbMiInterface()
 {
 }
 
-PyGdbMiResult
+int
 PyGdbMiInterface::executeCommand(const std::string &command)
 {
     return m_impl->executeCommand(command);
