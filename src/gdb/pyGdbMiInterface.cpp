@@ -11,28 +11,32 @@
 
 #include <iostream>
 #include <sstream>
+#include <thread>
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
 
 #include "pyGdbMiInterface.h"
-#include "gdbMiResultsReaderThread.h"
 
 class PyGdbMiInterfaceImpl
 {
   public:
-    PyGdbMiInterfaceImpl();
+    PyGdbMiInterfaceImpl(bool verbose);
     ~PyGdbMiInterfaceImpl();
 
     int             executeCommand(const std::string &command);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
-    PyObject *      callFunction(PyObject *module, const std::string &functionname, PyObject *args);
 
-    void            results(PyGdbMiResult result);
+    void            resultReceived(PyGdbMiResult result);
 
+    void            resultReader();
+
+    bool            m_verbose;
     bool            m_valid = true;
+    bool            m_resultThreadActive = true;
+    bool            m_resultThreadDone = false;
 
     int             m_token = 1;
 
@@ -47,26 +51,21 @@ class PyGdbMiInterfaceImpl
     PyObject *      m_writeMethod = nullptr;
     PyObject *      m_getResponseMethod = nullptr;
 
-    using ReaderThread = std::unique_ptr<GdbMiResultsReaderThread>;
-    ReaderThread    m_readerThread;
+    PyThreadState * m_threadState = nullptr;
+
+    std::unique_ptr<std::thread>    m_readerThread;
 };
 
-PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
+PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(bool verbose) :
+    m_verbose(verbose)
 {
     Py_Initialize();
+    if (!PyEval_ThreadsInitialized())
+    {
+        PyEval_InitThreads();
+    }
 
     m_moduleDict = PyImport_GetModuleDict();
-
-//    auto testmodule = importModule(":/pyc/parsetest.pyc", "parsetest");
-//    for (auto n=0; n < 32; ++n)
-//    {
-//        auto result = callFunction(testmodule, "getn", Py_BuildValue("(i)", n));
-//        if (result)
-//        {
-//            auto r = parseResult(result);
-//            std::cout << r << std::endl;
-//        }
-//    }
 
     // create blank module named 'pygdbmi'
     m_gdbMiModule = PyModule_New("pygdbmi");
@@ -109,12 +108,13 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
             !m_getResponseMethod || !PyCallable_Check(m_getResponseMethod))
             m_valid = false;
 
-        m_readerThread = std::make_unique<GdbMiResultsReaderThread>("readerthread",
-                                                                    m_getResponseMethod,
-                                                                    std::bind(&PyGdbMiInterfaceImpl::results, this, std::placeholders::_1));
+        // start read thread
+        m_readerThread = std::make_unique<std::thread>(&PyGdbMiInterfaceImpl::resultReader, std::ref(*this));
     }
     else
         m_valid = false;
+
+    PyEval_SaveThread();
 
     if (!m_valid)
         std::cerr << "PyGdbMiInterface::PyGdbMiInterface(): failed to initialize class" << std::endl;
@@ -122,9 +122,16 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl()
 
 PyGdbMiInterfaceImpl::~PyGdbMiInterfaceImpl()
 {
-    m_readerThread.reset();
+    // stops result thread loop
+    m_resultThreadActive = false;
 
-    Py_Finalize();
+    // waits for result thread loop to stop
+    while(!m_resultThreadDone);
+
+    // waits for result thread to finish
+    m_readerThread->join();
+
+//    Py_Finalize();
 }
 
 int
@@ -134,12 +141,11 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
     std::stringstream stream;
     stream << m_token << "-" << command;
 
-    // save python GIL
-    PyGILState_STATE gstate;
-    gstate = PyGILState_Ensure();
+    // acquire python GIL
+    auto gstate = PyGILState_Ensure();
 
     auto args = Py_BuildValue("(s)", stream.str().c_str());
-    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", false, "read_response", false);
+    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
     auto value = PyObject_Call(m_writeMethod, args, kw);
 
     if (value)
@@ -152,7 +158,7 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
         PyErr_Print();
     }
 
-    // restore python GIL
+    // release python GIL
     PyGILState_Release(gstate);
 
     return m_token++;
@@ -210,33 +216,50 @@ PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::s
     return instance;
 }
 
-PyObject *
-PyGdbMiInterfaceImpl::callFunction(PyObject *module, const std::string &functionname, PyObject *args)
-{
-    PyObject *result = nullptr;
-
-    auto dict = PyModule_GetDict(module);
-    auto function = PyDict_GetItemString(dict, functionname.c_str());
-    if (function && PyCallable_Check(function))
-    {
-        result = PyObject_CallObject(function, args);
-    }
-    else
-    {
-        PyErr_Print();
-    }
-
-    return result;
-}
-
 void
-PyGdbMiInterfaceImpl::results(PyGdbMiResult result)
+PyGdbMiInterfaceImpl::resultReceived(PyGdbMiResult result)
 {
     std::cout << result << std::endl;
 }
 
-PyGdbMiInterface::PyGdbMiInterface() :
-    m_impl(std::make_unique<PyGdbMiInterfaceImpl>())
+void
+PyGdbMiInterfaceImpl::resultReader()
+{
+    pthread_setname_np(pthread_self(), "resultreader");
+
+    while(m_resultThreadActive)
+    {
+        // acquire python GIL
+        auto gstate = PyGILState_Ensure();
+
+        auto args = Py_BuildValue("(d,i,i)", 0.1, false, m_verbose);
+        auto value = PyObject_Call(m_getResponseMethod, args, nullptr);
+
+        if (value && PyList_Check(value))
+        {
+            auto n = PyList_Size(value);
+            for (auto i=0; i < n; i++)
+            {
+                auto r = parseResult(PyList_GetItem(value, i));
+                resultReceived(r);
+            }
+        }
+        else
+        {
+            PyErr_Print();
+        }
+
+        // release python GIL
+        PyGILState_Release(gstate);
+    }
+
+    m_resultThreadDone = true;
+}
+
+///////////////////////////////////
+
+PyGdbMiInterface::PyGdbMiInterface(bool verbose) :
+    m_impl(std::make_unique<PyGdbMiInterfaceImpl>(verbose))
 {
 }
 

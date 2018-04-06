@@ -24,7 +24,7 @@ class PyGdbMiInterfaceImpl;
 class PyGdbMiInterface
 {
   public:
-    PyGdbMiInterface();
+    explicit PyGdbMiInterface(bool verbose=false);
     ~PyGdbMiInterface();
 
     int executeCommand(const std::string &command);

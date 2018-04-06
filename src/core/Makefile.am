@@ -1,2 +1,1 @@
-db_SOURCES               +=                                                     \
-                            src/core/workerThreadBase.cpp
+db_SOURCES               +=

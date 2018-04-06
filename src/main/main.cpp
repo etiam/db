@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <boost/program_options.hpp>
 
 #include "ast/ast.h"
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
         auto filename = vm["prog"].as<std::string>();
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
-//        gdb->executeCommand("break-insert main");
+        gdb->executeCommand("break-insert main");
 
 //        auto ast = std::make_unique<Ast>(filename);
 //        ast->parseFile(filename);
