@@ -62,15 +62,15 @@ int main(int argc, char *argv[])
         std::exit(0);
     }
 
-    auto gdb = std::make_unique<Gdb::GdbController>();
+//    auto gdb = std::make_unique<Gdb::GdbController>();
 
     // load prog
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
 
-        gdb->executeCommand("file-exec-and-symbols " + filename);
-        gdb->executeCommand("break-insert main");
+//        gdb->executeCommand("file-exec-and-symbols " + filename);
+//        gdb->executeCommand("break-insert main");
 
 //        auto ast = std::make_unique<Ast>(filename);
 //        ast->parseFile(filename);

@@ -58,14 +58,14 @@ GdbControllerImpl::GdbControllerImpl(bool verbose) :
         PyEval_InitThreads();
     }
 
-    auto modulecict = PyImport_GetModuleDict();
+    auto moduledict = PyImport_GetModuleDict();
 
     // create blank module named 'pygdbmi'
     auto gdbmimodule = PyModule_New("pygdbmi");
     if (gdbmimodule && PyModule_Check(gdbmimodule))
     {
         // add module to global module dict
-        PyDict_SetItemString(modulecict, "pygdbmi", gdbmimodule);
+        PyDict_SetItemString(moduledict, "pygdbmi", gdbmimodule);
 
         // import pygdbmi submodules
         auto printcolormodule = importModule(":/pyc/printcolor.pyc", "pygdbmi.printcolor");
@@ -108,7 +108,6 @@ GdbControllerImpl::GdbControllerImpl(bool verbose) :
         }
         else
             m_valid = false;
-
     }
     else
         m_valid = false;
@@ -148,17 +147,7 @@ GdbControllerImpl::executeCommand(const std::string &command)
 
     auto args = Py_BuildValue("(s)", stream.str().c_str());
     auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
-    auto value = PyObject_Call(m_writeMethod, args, kw);
-
-    if (value)
-    {
-        auto n = PyList_Size(value);
-        std::cout << "got " << n << " results in executeCommand()" << std::endl;
-    }
-    else
-    {
-        PyErr_Print();
-    }
+    PyObject_Call(m_writeMethod, args, kw);
 
     // release python GIL
     PyGILState_Release(gstate);
