@@ -1,5 +1,5 @@
 /*
- * PyGdbInterface.cpp
+ * GdbController.cpp
  *
  *  Created on: Feb 22, 2018
  *      Author: jasonr
@@ -16,20 +16,23 @@
 #include <Python.h>
 #include <marshal.h>
 
-#include "pyGdbMiInterface.h"
+#include "gdbController.h"
 
-class PyGdbMiInterfaceImpl
+namespace Gdb
+{
+
+class GdbControllerImpl
 {
   public:
-    PyGdbMiInterfaceImpl(bool verbose);
-    ~PyGdbMiInterfaceImpl();
+    GdbControllerImpl(bool verbose);
+    ~GdbControllerImpl();
 
     int             executeCommand(const std::string &command);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    void            resultReceived(PyGdbMiResult result);
+    void            resultReceived(GdbResult result);
 
     void            resultReader();
 
@@ -40,23 +43,13 @@ class PyGdbMiInterfaceImpl
 
     int             m_token = 1;
 
-    PyObject *      m_moduleDict = nullptr;
-
-    PyObject *      m_gdbMiModule = nullptr;
-    PyObject *      m_gdbMiParserModule = nullptr;
-    PyObject *      m_gdbControllerModule = nullptr;
-
-    PyObject *      m_gdbMiInstance = nullptr;
-
     PyObject *      m_writeMethod = nullptr;
     PyObject *      m_getResponseMethod = nullptr;
-
-    PyThreadState * m_threadState = nullptr;
 
     std::unique_ptr<std::thread>    m_readerThread;
 };
 
-PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(bool verbose) :
+GdbControllerImpl::GdbControllerImpl(bool verbose) :
     m_verbose(verbose)
 {
     Py_Initialize();
@@ -65,51 +58,57 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(bool verbose) :
         PyEval_InitThreads();
     }
 
-    m_moduleDict = PyImport_GetModuleDict();
+    auto modulecict = PyImport_GetModuleDict();
 
     // create blank module named 'pygdbmi'
-    m_gdbMiModule = PyModule_New("pygdbmi");
-    if (m_gdbMiModule && PyModule_Check(m_gdbMiModule))
+    auto gdbmimodule = PyModule_New("pygdbmi");
+    if (gdbmimodule && PyModule_Check(gdbmimodule))
     {
         // add module to global module dict
-        PyDict_SetItemString(m_moduleDict, "pygdbmi", m_gdbMiModule);
+        PyDict_SetItemString(modulecict, "pygdbmi", gdbmimodule);
 
         // import pygdbmi submodules
         auto printcolormodule = importModule(":/pyc/printcolor.pyc", "pygdbmi.printcolor");
         if (printcolormodule && PyModule_Check(printcolormodule))
-            PyModule_AddObject(m_gdbMiModule, "printcolor", printcolormodule);
+            PyModule_AddObject(gdbmimodule, "printcolor", printcolormodule);
         else
             m_valid = false;
 
         auto stringstreammodule = importModule(":/pyc/StringStream.pyc", "pygdbmi.StringStream");
         if (stringstreammodule && PyModule_Check(stringstreammodule))
-            PyModule_AddObject(m_gdbMiModule, "StringStream", stringstreammodule);
+            PyModule_AddObject(gdbmimodule, "StringStream", stringstreammodule);
         else
             m_valid = false;
 
-        m_gdbMiParserModule = importModule(":/pyc/gdbmiparser.pyc", "pygdbmi.gdbmiparser");
-        if (m_gdbMiParserModule && PyModule_Check(m_gdbMiParserModule))
-            PyModule_AddObject(m_gdbMiModule, "gdbmiparser", m_gdbMiParserModule);
+        auto gdbmiparsermodule = importModule(":/pyc/gdbmiparser.pyc", "pygdbmi.gdbmiparser");
+        if (gdbmiparsermodule && PyModule_Check(gdbmiparsermodule))
+            PyModule_AddObject(gdbmimodule, "gdbmiparser", gdbmiparsermodule);
         else
             m_valid = false;
 
-        m_gdbControllerModule = importModule(":/pyc/gdbcontroller.pyc", "pygdbmi.gdbcontroller");
-        if (m_gdbControllerModule && PyModule_Check(m_gdbControllerModule))
-            PyModule_AddObject(m_gdbMiModule, "gdbcontroller", m_gdbMiParserModule);
+        auto gdbcontrollermodule = importModule(":/pyc/gdbcontroller.pyc", "pygdbmi.gdbcontroller");
+        if (gdbcontrollermodule && PyModule_Check(gdbcontrollermodule))
+            PyModule_AddObject(gdbmimodule, "gdbcontroller", gdbmiparsermodule);
         else
             m_valid = false;
 
-        m_gdbMiInstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
+        auto gdbmiinstance = createInstance("pygdbmi.gdbcontroller", "GdbController");
 
-        m_writeMethod = PyObject_GetAttrString(m_gdbMiInstance, "write");
-        m_getResponseMethod = PyObject_GetAttrString(m_gdbMiInstance, "get_gdb_response");
+        if (gdbmiinstance)
+        {
+            m_writeMethod = PyObject_GetAttrString(gdbmiinstance, "write");
+            m_getResponseMethod = PyObject_GetAttrString(gdbmiinstance, "get_gdb_response");
 
-        if (!m_writeMethod || !PyCallable_Check(m_writeMethod) ||
-            !m_getResponseMethod || !PyCallable_Check(m_getResponseMethod))
+            if (!m_writeMethod || !PyCallable_Check(m_writeMethod) ||
+                !m_getResponseMethod || !PyCallable_Check(m_getResponseMethod))
+                m_valid = false;
+
+            // start read thread
+            m_readerThread = std::make_unique<std::thread>(&GdbControllerImpl::resultReader, std::ref(*this));
+        }
+        else
             m_valid = false;
 
-        // start read thread
-        m_readerThread = std::make_unique<std::thread>(&PyGdbMiInterfaceImpl::resultReader, std::ref(*this));
     }
     else
         m_valid = false;
@@ -117,27 +116,30 @@ PyGdbMiInterfaceImpl::PyGdbMiInterfaceImpl(bool verbose) :
     PyEval_SaveThread();
 
     if (!m_valid)
-        std::cerr << "PyGdbMiInterface::PyGdbMiInterface(): failed to initialize class" << std::endl;
+        std::cerr << "GdbController::GdbController(): failed to initialize class" << std::endl;
 }
 
-PyGdbMiInterfaceImpl::~PyGdbMiInterfaceImpl()
+GdbControllerImpl::~GdbControllerImpl()
 {
-    // stops result thread loop
-    m_resultThreadActive = false;
+    if (m_readerThread)
+    {
+        // stops result thread loop
+        m_resultThreadActive = false;
 
-    // waits for result thread loop to stop
-    while(!m_resultThreadDone);
+        // waits for result thread loop to stop
+        while(!m_resultThreadDone);
 
-    // waits for result thread to finish
-    m_readerThread->join();
+        // waits for result thread to finish
+        m_readerThread->join();
 
-//    Py_Finalize();
+//        Py_Finalize();
+    }
 }
 
 int
-PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
+GdbControllerImpl::executeCommand(const std::string &command)
 {
-    PyGdbMiResult result;
+    GdbResult result;
     std::stringstream stream;
     stream << m_token << "-" << command;
 
@@ -165,30 +167,30 @@ PyGdbMiInterfaceImpl::executeCommand(const std::string &command)
 }
 
 PyObject *
-PyGdbMiInterfaceImpl::importModule(const std::string &bytecodename, const std::string &modulename)
+GdbControllerImpl::importModule(const std::string &bytecodename, const std::string &modulename)
 {
     PyObject *module = nullptr;
     QFile file(QString::fromStdString(bytecodename));
 
     if (file.open(QIODevice::ReadOnly))
     {
-        QByteArray blob = file.readAll();
-
-        PyObject *code = PyMarshal_ReadObjectFromString(blob.data()+8, blob.length()-8);
+        auto blob = file.readAll();
+        auto code = PyMarshal_ReadObjectFromString(blob.data()+8, blob.length()-8);
         module = PyImport_ExecCodeModule(const_cast<char*>(modulename.c_str()), code);
     }
     else
-        std::cerr << "PyGdbMiInterface::importModule(): could not open \"" << bytecodename << "\"" << std::endl;
+        std::cerr << "GdbController::importModule(): could not open \"" << bytecodename << "\"" << std::endl;
 
     return module;
 }
 
 PyObject *
-PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::string &classname)
+GdbControllerImpl::createInstance(const std::string &modulename, const std::string &classname)
 {
     PyObject *instance = nullptr;
 
-    auto module = PyDict_GetItemString(m_moduleDict, modulename.c_str());
+    auto moduledict = PyImport_GetModuleDict();
+    auto module = PyDict_GetItemString(moduledict, modulename.c_str());
     if (module)
     {
         auto dict = PyModule_GetDict(module);
@@ -217,13 +219,13 @@ PyGdbMiInterfaceImpl::createInstance(const std::string &modulename, const std::s
 }
 
 void
-PyGdbMiInterfaceImpl::resultReceived(PyGdbMiResult result)
+GdbControllerImpl::resultReceived(GdbResult result)
 {
     std::cout << result << std::endl;
 }
 
 void
-PyGdbMiInterfaceImpl::resultReader()
+GdbControllerImpl::resultReader()
 {
     pthread_setname_np(pthread_self(), "resultreader");
 
@@ -258,17 +260,19 @@ PyGdbMiInterfaceImpl::resultReader()
 
 ///////////////////////////////////
 
-PyGdbMiInterface::PyGdbMiInterface(bool verbose) :
-    m_impl(std::make_unique<PyGdbMiInterfaceImpl>(verbose))
+GdbController::GdbController(bool verbose) :
+    m_impl(std::make_unique<GdbControllerImpl>(verbose))
 {
 }
 
-PyGdbMiInterface::~PyGdbMiInterface()
+GdbController::~GdbController()
 {
 }
 
 int
-PyGdbMiInterface::executeCommand(const std::string &command)
+GdbController::executeCommand(const std::string &command)
 {
     return m_impl->executeCommand(command);
+}
+
 }

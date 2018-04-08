@@ -18,7 +18,10 @@
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
 
-#include "ast.h"
+#include <ast/astBuilder.h>
+
+namespace
+{
 
 struct ReferenceLocation
 {
@@ -42,15 +45,17 @@ struct ReferenceLocation
     }
 };
 
+}
+
 namespace std
 {
 
 template <>
-struct hash<ReferenceLocation>
+struct hash<::ReferenceLocation>
 {
   public:
     std::size_t
-    operator()(const ReferenceLocation &key) const
+    operator()(const ::ReferenceLocation &key) const
     {
         return key.hash();
     }
@@ -58,12 +63,16 @@ struct hash<ReferenceLocation>
 
 }
 
-class AstImpl
+namespace Ast
+{
+
+class AstBuilderImpl
 {
   public:
-    AstImpl(const std::string &buildpath);
-    ~AstImpl();
+    AstBuilderImpl();
+    ~AstBuilderImpl();
 
+    void                        setBuildPath(const std::string &path);
     void                        parseFile(const std::string &buildpath);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
@@ -75,16 +84,17 @@ class AstImpl
         std::string filename;
     };
 
-    using References = std::unordered_map<ReferenceLocation, ReferenceData>;
+    using References = std::unordered_map<::ReferenceLocation, ReferenceData>;
 
+    std::string             m_buildPath;
     References              m_references;
     CXIndex                 m_index = nullptr;
     CXCompilationDatabase   m_compdb = nullptr;
 };
 
-AstImpl::AstImpl(const std::string &buildpath)
+AstBuilderImpl::AstBuilderImpl()
 {
-    auto pathname = boost::filesystem::absolute(boost::filesystem::path(buildpath).parent_path());
+    auto pathname = boost::filesystem::absolute(boost::filesystem::path(m_buildPath).parent_path());
 
     CXCompilationDatabase_Error errorcode;
     m_compdb = clang_CompilationDatabase_fromDirectory(pathname.c_str(), &errorcode);
@@ -92,7 +102,7 @@ AstImpl::AstImpl(const std::string &buildpath)
     m_index = clang_createIndex(0, 0);
 }
 
-AstImpl::~AstImpl()
+AstBuilderImpl::~AstBuilderImpl()
 {
     clang_disposeIndex(m_index);
 
@@ -100,7 +110,7 @@ AstImpl::~AstImpl()
         clang_CompilationDatabase_dispose(m_compdb);
 }
 
-void AstImpl::parseFile(const std::string &buildpath)
+void AstBuilderImpl::parseFile(const std::string &buildpath)
 {
     auto unit = clang_parseTranslationUnit(m_index, buildpath.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
@@ -118,9 +128,9 @@ void AstImpl::parseFile(const std::string &buildpath)
 }
 
 CXChildVisitResult
-AstImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)
+AstBuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)
 {
-    auto *parser = static_cast<AstImpl *>(client_data);
+    auto *parser = static_cast<AstBuilderImpl *>(client_data);
 
     switch(clang_getCursorKind(cursor))
     {
@@ -135,7 +145,7 @@ AstImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_dat
 }
 
 void
-AstImpl::addReference(CXCursor cursor, CXCursor parent)
+AstBuilderImpl::addReference(CXCursor cursor, CXCursor parent)
 {
     CXString cursorspelling = clang_getCursorSpelling(cursor);
     auto varlen = static_cast<unsigned int>(strlen(clang_getCString(cursorspelling)));
@@ -149,7 +159,7 @@ AstImpl::addReference(CXCursor cursor, CXCursor parent)
         if (file)
         {
             auto filename = clang_getFileName(file);
-            m_references[ReferenceLocation({line, column, column + varlen - 1})] = ReferenceData({offset, clang_getCString(filename)});
+            m_references[::ReferenceLocation({line, column, column + varlen - 1})] = ReferenceData({offset, clang_getCString(filename)});
             clang_disposeString(filename);
 
 //            std::cout << "'" << cursorspelling << "' "
@@ -160,16 +170,16 @@ AstImpl::addReference(CXCursor cursor, CXCursor parent)
     }
 }
 
-Ast::Ast(const std::string &buildpath) :
-    m_impl(std::make_unique<AstImpl>(buildpath))
+AstBuilder::AstBuilder() :
+    m_impl(std::make_unique<AstBuilderImpl>())
 {
 }
 
-Ast::~Ast()
+AstBuilder::~AstBuilder()
 {
 }
 
-void Ast::parseFile(const std::string &filename)
+void AstBuilder::parseFile(const std::string &filename)
 {
     m_impl->parseFile(filename);
 
@@ -180,4 +190,6 @@ void Ast::parseFile(const std::string &filename)
 
         std::cout << val.filename << ":" << key.line << " " << key.colstart << "-" << key.colend << " (" << val.offset << ")" << std::endl;
     }
+}
+
 }

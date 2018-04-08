@@ -1,5 +1,5 @@
 /*
- * pyGdbMiResult.h
+ * GdbResult.h
  *
  *  Created on: Apr 4, 2018
  *      Author: jasonr
@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef PYGDBMIRESULT_H_
-#define PYGDBMIRESULT_H_
+#ifndef GDBRESULT_H_
+#define GDBRESULT_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -19,6 +19,9 @@
 #include <map>
 #include <boost/any.hpp>
 #include <Python.h>
+
+namespace Gdb
+{
 
 struct String
 {
@@ -74,7 +77,7 @@ enum class Type : char
     NONE,
 };
 
-struct PyGdbMiResult
+struct GdbResult
 {
     Message     message;
     Payload     payload;
@@ -83,8 +86,10 @@ struct PyGdbMiResult
     Type        type = Type::NONE;
 };
 
-PyGdbMiResult parseResult(PyObject *object);
+GdbResult parseResult(PyObject *object);
 
-std::ostream & operator <<(std::ostream &stream, const PyGdbMiResult &result);
+std::ostream & operator <<(std::ostream &stream, const GdbResult &result);
 
-#endif // PYGDBMIRESULT_H_
+}
+
+#endif // GDBRESULT_H_

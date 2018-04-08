@@ -14,8 +14,8 @@
 #include <thread>
 #include <boost/program_options.hpp>
 
-#include "ast/ast.h"
-#include "gdb/pyGdbMiInterface.h"
+#include "ast/astBuilder.h"
+#include "gdb/gdbController.h"
 #include "ui/main.h"
 
 int main(int argc, char *argv[])
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         std::exit(0);
     }
 
-    auto gdb = std::make_unique<PyGdbMiInterface>();
+    auto gdb = std::make_unique<Gdb::GdbController>();
 
     // load prog
     if (vm.count("prog"))

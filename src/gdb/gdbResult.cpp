@@ -1,5 +1,5 @@
 /*
- * pyGdbMiResult.h
+ * GdbResult.h
  *
  *  Created on: Apr 5, 2018
  *      Author: jasonr
@@ -12,7 +12,7 @@
 #include <iostream>
 #include <regex>
 
-#include "pyGdbMiResult.h"
+#include "gdbResult.h"
 
 namespace
 {
@@ -62,6 +62,9 @@ auto enumerate(Iterable&& iter) -> enumerate_object<Iterable>
 }
 
 }
+
+namespace Gdb
+{
 
 Message
 parseMessage(PyObject *object)
@@ -215,7 +218,7 @@ parseType(PyObject* object)
     return type;
 }
 
-PyGdbMiResult
+GdbResult
 parseResult(PyObject *object)
 {
     // must be a dictionary type
@@ -226,7 +229,7 @@ parseResult(PyObject *object)
         throw std::runtime_error(errmsg.str().c_str());
     }
 
-    PyGdbMiResult result;
+    GdbResult result;
 
     auto list = PyDict_Keys(object);
     auto n = PyList_Size(list);
@@ -464,7 +467,7 @@ operator <<(std::ostream &out, Type type)
 }
 
 std::ostream &
-operator<<(std::ostream &stream, const PyGdbMiResult &result)
+operator<<(std::ostream &stream, const GdbResult &result)
 {
     stream << "{'token': "   << result.token << ", "
            <<  "'message': " << result.message << ", "
@@ -474,3 +477,5 @@ operator<<(std::ostream &stream, const PyGdbMiResult &result)
     return stream;
 }
 
+
+}

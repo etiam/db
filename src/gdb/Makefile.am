@@ -1,6 +1,6 @@
 db_SOURCES               +=                                                     \
-                            src/gdb/pyGdbMiInterface.cpp                        \
-                            src/gdb/pyGdbMiResult.cpp
+                            src/gdb/gdbController.cpp                        \
+                            src/gdb/gdbResult.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \
@@ -18,7 +18,6 @@ nodist_db_SOURCES        +=                                                     
 
 BUILT_SOURCES            +=                                                     \
                             src/gdb/pygdbmi.qrc                                 \
-                            src/gdb/parsetest.pyc                               \
                             src/external/pygdbmi/pygdbmi/printcolor.pyc         \
                             src/external/pygdbmi/pygdbmi/StringStream.pyc       \
                             src/external/pygdbmi/pygdbmi/gdbcontroller.pyc      \
