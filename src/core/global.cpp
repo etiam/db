@@ -16,13 +16,7 @@
 #include "ast/astBuilder.h"
 #include "gdb/gdbController.h"
 
-#include "autoreg.h"
 #include "global.h"
-
-namespace
-{
-class AutoInstantiate;
-}
 
 namespace Core
 {
@@ -46,8 +40,6 @@ class Master : boost::noncopyable
 
     Gdb::GdbControllerPtr           m_gdbController;
     Ast::AstBuilderPtr              m_AstBuilder;
-
-    friend class ::AutoInstantiate;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -109,29 +101,9 @@ gdbController()
 }
 
 Ast::AstBuilderPtr &
-AstBuilder()
+astBuilder()
 {
     return Master::astBuilder();
 }
 
 } // namespace Core
-
-namespace
-{
-
-class AutoInstantiate : public autoregister<AutoInstantiate>
-{
-  public:
-    AutoInstantiate()
-    {
-        Core::Master::initialize();
-
-        // call instance() to create singleton
-        Core::Master::instance();
-    }
-};
-
-AutoInstantiate instantiator;
-
-}
-

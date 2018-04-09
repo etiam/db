@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <regex>
+
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
@@ -210,6 +212,18 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
 void
 GdbControllerImpl::resultReceived(GdbResult result)
 {
+    static std::regex infoAddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+
+    if (result.token.value == -1 && result.message.type == Message::Type::NONE && result.payload.type == Payload::Type::STRING)
+    {
+        std::smatch match;
+        if (std::regex_match(result.payload.string.string, match, infoAddress))
+        {
+           std::cout << "first group " << match[1] << std::endl;
+           std::cout << "second group " << match[2] << std::endl;
+        }
+    }
+
     std::cout << result << std::endl;
 }
 

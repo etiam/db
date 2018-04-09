@@ -13,7 +13,9 @@
 #include <memory>
 #include <thread>
 #include <boost/program_options.hpp>
+#include <boost/filesystem/operations.hpp>
 
+#include "core/global.h"
 #include "ast/astBuilder.h"
 #include "gdb/gdbController.h"
 #include "ui/main.h"
@@ -62,18 +64,24 @@ int main(int argc, char *argv[])
         std::exit(0);
     }
 
-//    auto gdb = std::make_unique<Gdb::GdbController>();
+    auto &gdb = Core::gdbController();
+    auto &ast = Core::astBuilder();
 
     // load prog
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
 
-//        gdb->executeCommand("file-exec-and-symbols " + filename);
-//        gdb->executeCommand("break-insert main");
+        gdb->executeCommand("file-exec-and-symbols " + filename);
 
-//        auto ast = std::make_unique<Ast>(filename);
-//        ast->parseFile(filename);
+        gdb->executeCommand("interpreter-exec console \"info address main\"");
+        gdb->executeCommand("interpreter-exec console \"info line *0x475080\"");
+
+//        gdb->executeCommand("file-list-exec-source-files");
+        gdb->executeCommand("break-insert main");
+
+        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
+        ast->setBuildPath(buildpath);
     }
 
     auto main = std::make_unique<Ui::Main>(argc, argv);

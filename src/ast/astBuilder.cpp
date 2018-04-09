@@ -13,7 +13,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <tuple>
-#include <boost/filesystem/operations.hpp>
 
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
@@ -73,7 +72,7 @@ class AstBuilderImpl
     ~AstBuilderImpl();
 
     void                        setBuildPath(const std::string &path);
-    void                        parseFile(const std::string &buildpath);
+    void                        parseFile(const std::string &filename);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
     static CXChildVisitResult   visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data);
@@ -94,12 +93,6 @@ class AstBuilderImpl
 
 AstBuilderImpl::AstBuilderImpl()
 {
-    auto pathname = boost::filesystem::absolute(boost::filesystem::path(m_buildPath).parent_path());
-
-    CXCompilationDatabase_Error errorcode;
-    m_compdb = clang_CompilationDatabase_fromDirectory(pathname.c_str(), &errorcode);
-
-    m_index = clang_createIndex(0, 0);
 }
 
 AstBuilderImpl::~AstBuilderImpl()
@@ -110,13 +103,23 @@ AstBuilderImpl::~AstBuilderImpl()
         clang_CompilationDatabase_dispose(m_compdb);
 }
 
-void AstBuilderImpl::parseFile(const std::string &buildpath)
+void
+AstBuilderImpl::setBuildPath(const std::string &path)
 {
-    auto unit = clang_parseTranslationUnit(m_index, buildpath.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
+    CXCompilationDatabase_Error errorcode;
+    m_compdb = clang_CompilationDatabase_fromDirectory(path.c_str(), &errorcode);
+
+    m_index = clang_createIndex(0, 0);
+}
+
+void
+AstBuilderImpl::parseFile(const std::string &filename)
+{
+    auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
     if (unit == nullptr)
     {
-        std::cerr << "Ast::parseFile(): unable to parse \"" << buildpath << "\"." << std::endl;
+        std::cerr << "AstBuilder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
     }
     else
     {
@@ -179,7 +182,14 @@ AstBuilder::~AstBuilder()
 {
 }
 
-void AstBuilder::parseFile(const std::string &filename)
+void
+AstBuilder::setBuildPath(const std::string &path)
+{
+    m_impl->setBuildPath(path);
+}
+
+void
+AstBuilder::parseFile(const std::string &filename)
 {
     m_impl->parseFile(filename);
 
