@@ -76,27 +76,50 @@ int main(int argc, char *argv[])
         gdb->executeCommand("file-exec-and-symbols " + filename);
 
         {
-        auto filter = [](const Gdb::GdbResult &result, int token)
-            {
+
+
+        auto filter1 = [](const Gdb::GdbResult &result, int token)
+        {
             static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
             return (result.token.value == -1 &&
                     result.message.type == Gdb::Message::Type::NONE &&
                     result.payload.type == Gdb::Payload::Type::STRING &&
                     std::regex_match(result.payload.string.string, infoaddress));
-            };
-        auto response = [](const Gdb::GdbResult &result, int token)
-            {
+        };
+
+        auto response1 = [](const Gdb::GdbResult &result, int token)
+        {
             static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
             std::smatch match;
             if (std::regex_match(result.payload.string.string, match, infoaddress))
             {
-               std::cout << "*first group " << match[1] << std::endl;
-               std::cout << "*second group " << match[2] << std::endl;
+                auto filter2 = [](const Gdb::GdbResult &result, int token)
+                {
+                    static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+                    return (result.token.value == -1 &&
+                            result.message.type == Gdb::Message::Type::NONE &&
+                            result.payload.type == Gdb::Payload::Type::STRING &&
+                            std::regex_match(result.payload.string.string, infoaddress));
+                };
+
+                auto response2 = [](const Gdb::GdbResult &result, int token)
+                {
+                    static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+                    std::smatch match;
+                    if (std::regex_match(result.payload.string.string, match, infoaddress))
+                    {
+                       std::cout << "*first group " << match[1] << std::endl;
+                       std::cout << "*second group " << match[2] << std::endl;
+                    }
+                };
+
+                std::stringstream stream;
+                stream << "interpreter-exec console \"info line *" << match[2] << "\"";
+                Core::gdbController()->executeCommand(stream.str(), filter2, response2);
             }
+        };
 
-            };
-
-        gdb->executeCommand("interpreter-exec console \"info address main\"", filter, response);
+        gdb->executeCommand("interpreter-exec console \"info address main\"", filter1, response1);
         }
 
 
