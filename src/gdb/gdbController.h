@@ -15,6 +15,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 #include <Python.h>
 
 #include "gdbResult.h"
@@ -30,7 +31,10 @@ class GdbController
     explicit GdbController(bool verbose=false);
     ~GdbController();
 
-    int executeCommand(const std::string &command);
+    using FilterFunc = std::function<bool(const GdbResult, int)>;
+    using ResponseFunc = std::function<void(const GdbResult, int)>;
+
+    int executeCommand(const std::string &command, FilterFunc filter = nullptr, ResponseFunc response = nullptr);
 
   private:
     std::unique_ptr<GdbControllerImpl>   m_impl;

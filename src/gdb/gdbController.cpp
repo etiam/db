@@ -29,14 +29,14 @@ class GdbControllerImpl
     GdbControllerImpl(bool verbose);
     ~GdbControllerImpl();
 
-    int             executeCommand(const std::string &command);
-
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    void            resultReceived(GdbResult result);
+    int             executeCommand(const std::string &command, GdbController::FilterFunc filter, GdbController::ResponseFunc response);
 
-    void            resultReader();
+    void            resultHandler(const GdbResult &result);
+
+    void            resultReaderThread();
 
     bool            m_verbose;
     bool            m_valid = true;
@@ -47,6 +47,9 @@ class GdbControllerImpl
 
     PyObject *      m_writeMethod = nullptr;
     PyObject *      m_getResponseMethod = nullptr;
+
+    using FilterResponse = std::tuple<GdbController::FilterFunc, GdbController::ResponseFunc, int>;
+    std::vector<FilterResponse>     m_filterResponses;
 
     std::unique_ptr<std::thread>    m_readerThread;
 };
@@ -106,7 +109,7 @@ GdbControllerImpl::GdbControllerImpl(bool verbose) :
                 m_valid = false;
 
             // start read thread
-            m_readerThread = std::make_unique<std::thread>(&GdbControllerImpl::resultReader, std::ref(*this));
+            m_readerThread = std::make_unique<std::thread>(&GdbControllerImpl::resultReaderThread, std::ref(*this));
         }
         else
             m_valid = false;
@@ -135,26 +138,6 @@ GdbControllerImpl::~GdbControllerImpl()
 
 //        Py_Finalize();
     }
-}
-
-int
-GdbControllerImpl::executeCommand(const std::string &command)
-{
-    GdbResult result;
-    std::stringstream stream;
-    stream << m_token << "-" << command;
-
-    // acquire python GIL
-    auto gstate = PyGILState_Ensure();
-
-    auto args = Py_BuildValue("(s)", stream.str().c_str());
-    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
-    PyObject_Call(m_writeMethod, args, kw);
-
-    // release python GIL
-    PyGILState_Release(gstate);
-
-    return m_token++;
 }
 
 PyObject *
@@ -209,26 +192,62 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
     return instance;
 }
 
-void
-GdbControllerImpl::resultReceived(GdbResult result)
+int
+GdbControllerImpl::executeCommand(const std::string &command, GdbController::FilterFunc filter, GdbController::ResponseFunc response)
 {
-    static std::regex infoAddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+    GdbResult result;
+    std::stringstream stream;
+    stream << m_token << "-" << command;
 
-    if (result.token.value == -1 && result.message.type == Message::Type::NONE && result.payload.type == Payload::Type::STRING)
-    {
-        std::smatch match;
-        if (std::regex_match(result.payload.string.string, match, infoAddress))
-        {
-           std::cout << "first group " << match[1] << std::endl;
-           std::cout << "second group " << match[2] << std::endl;
-        }
-    }
+    m_token++;
 
-    std::cout << result << std::endl;
+    // store filter/response pair
+    if (filter != nullptr && response != nullptr)
+        m_filterResponses.push_back(std::make_tuple(filter, response, m_token));
+
+    // acquire python GIL
+    auto gstate = PyGILState_Ensure();
+
+    auto args = Py_BuildValue("(s)", stream.str().c_str());
+    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
+    PyObject_Call(m_writeMethod, args, kw);
+
+    // release python GIL
+    PyGILState_Release(gstate);
+
+    return m_token;
 }
 
 void
-GdbControllerImpl::resultReader()
+GdbControllerImpl::resultHandler(const GdbResult &result)
+{
+    for (const auto &filterresponse : m_filterResponses)
+    {
+        const auto &filter = std::get<0>(filterresponse);
+        const auto &response = std::get<1>(filterresponse);
+        const auto token = std::get<2>(filterresponse);
+        if (filter(result, token))
+        {
+            response(result, token);
+        }
+    }
+//    static std::regex infoAddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+//
+//    if (result.token.value == -1 && result.message.type == Message::Type::NONE && result.payload.type == Payload::Type::STRING)
+//    {
+//        std::smatch match;
+//        if (std::regex_match(result.payload.string.string, match, infoAddress))
+//        {
+//           std::cout << "first group " << match[1] << std::endl;
+//           std::cout << "second group " << match[2] << std::endl;
+//        }
+//    }
+//
+//    std::cout << result << std::endl;
+}
+
+void
+GdbControllerImpl::resultReaderThread()
 {
     pthread_setname_np(pthread_self(), "resultreader");
 
@@ -246,7 +265,7 @@ GdbControllerImpl::resultReader()
             for (auto i=0; i < n; i++)
             {
                 auto r = parseResult(PyList_GetItem(value, i));
-                resultReceived(r);
+                resultHandler(r);
             }
         }
         else
@@ -273,9 +292,10 @@ GdbController::~GdbController()
 }
 
 int
-GdbController::executeCommand(const std::string &command)
+
+GdbController::executeCommand(const std::string &command, FilterFunc filter, ResponseFunc response)
 {
-    return m_impl->executeCommand(command);
+    return m_impl->executeCommand(command, filter, response);
 }
 
 }

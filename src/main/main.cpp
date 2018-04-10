@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <regex>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -74,11 +75,36 @@ int main(int argc, char *argv[])
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
 
-        gdb->executeCommand("interpreter-exec console \"info address main\"");
-        gdb->executeCommand("interpreter-exec console \"info line *0x475080\"");
+        {
+        auto filter = [](const Gdb::GdbResult &result, int token)
+            {
+            static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+            return (result.token.value == -1 &&
+                    result.message.type == Gdb::Message::Type::NONE &&
+                    result.payload.type == Gdb::Payload::Type::STRING &&
+                    std::regex_match(result.payload.string.string, infoaddress));
+            };
+        auto response = [](const Gdb::GdbResult &result, int token)
+            {
+            static std::regex infoaddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+            std::smatch match;
+            if (std::regex_match(result.payload.string.string, match, infoaddress))
+            {
+               std::cout << "*first group " << match[1] << std::endl;
+               std::cout << "*second group " << match[2] << std::endl;
+            }
+
+            };
+
+        gdb->executeCommand("interpreter-exec console \"info address main\"", filter, response);
+        }
+
+
+//        gdb->executeCommand("interpreter-exec console \"info address main\"");
+//        gdb->executeCommand("interpreter-exec console \"info line *0x475080\"");
 
 //        gdb->executeCommand("file-list-exec-source-files");
-        gdb->executeCommand("break-insert main");
+//        gdb->executeCommand("break-insert main");
 
         auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
         ast->setBuildPath(buildpath);

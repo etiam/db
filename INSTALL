@@ -1,6 +1,6 @@
 # dependencies on debian based systems
 
-sudo apt install autoconf g++ pkg-config 
+sudo apt install autoconf clang-5.0++ pkg-config 
 sudo apt install qt5-default qtbase5-dev libqt5webkit5-dev libclang-5.0-dev libboost-filesystem-dev libboost-python-dev libboost-program-options-dev python-dev llvm-5.0
 
 git submodule update --init

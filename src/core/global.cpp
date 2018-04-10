@@ -69,7 +69,7 @@ Master::astBuilder()
 }
 
 Master::Master() :
-    m_gdbController(std::make_unique<Gdb::GdbController>()),
+    m_gdbController(std::make_unique<Gdb::GdbController>(true)),
     m_AstBuilder(std::make_unique<Ast::AstBuilder>())
 {
 }

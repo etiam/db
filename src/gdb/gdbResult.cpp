@@ -211,8 +211,10 @@ parseType(PyObject* object)
             type = Type::OUTPUT;
         else if (string == "console")
             type = Type::CONSOLE;
+        else if (string == "log")
+            type = Type::LOG;
         else
-            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+            std::cerr << "parseType(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
     }
 
     return type;
@@ -453,6 +455,10 @@ operator <<(std::ostream &out, Type type)
 
     case Type::CONSOLE:
         out << "'console'";
+        break;
+
+    case Type::LOG:
+        out << "'log'";
         break;
 
     case Type::NONE:

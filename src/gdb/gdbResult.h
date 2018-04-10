@@ -74,6 +74,7 @@ enum class Type : char
     NOTIFY,
     OUTPUT,
     CONSOLE,
+    LOG,
     NONE,
 };
 
