@@ -18,6 +18,7 @@
 #include <Python.h>
 #include <marshal.h>
 
+#include "gdbUtil.h"
 #include "gdbController.h"
 
 namespace Gdb
@@ -32,7 +33,12 @@ class GdbControllerImpl
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    int             executeCommand(const std::string &command, GdbController::FilterFunc filter, GdbController::ResponseFunc response);
+    int             executeCommand(const std::string &command,
+                                   GdbController::FilterFunc filter,
+                                   GdbController::ResponseFunc response,
+                                   bool persistent);
+
+    void            jumpToProgramStart();
 
     void            resultHandler(const GdbResult &result);
 
@@ -48,7 +54,14 @@ class GdbControllerImpl
     PyObject *      m_writeMethod = nullptr;
     PyObject *      m_getResponseMethod = nullptr;
 
-    using FilterResponse = std::tuple<GdbController::FilterFunc, GdbController::ResponseFunc, int>;
+    struct FilterResponse
+    {
+        GdbController::FilterFunc   filter;
+        GdbController::ResponseFunc response;
+        int                         token;
+        bool                        persistent;
+    };
+
     std::vector<FilterResponse>     m_filterResponses;
 
     std::unique_ptr<std::thread>    m_readerThread;
@@ -193,7 +206,10 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
 }
 
 int
-GdbControllerImpl::executeCommand(const std::string &command, GdbController::FilterFunc filter, GdbController::ResponseFunc response)
+GdbControllerImpl::executeCommand(const std::string &command,
+                                  GdbController::FilterFunc filter,
+                                  GdbController::ResponseFunc response,
+                                  bool persistent)
 {
     GdbResult result;
     std::stringstream stream;
@@ -203,7 +219,7 @@ GdbControllerImpl::executeCommand(const std::string &command, GdbController::Fil
 
     // store filter/response pair
     if (filter != nullptr && response != nullptr)
-        m_filterResponses.push_back(std::make_tuple(filter, response, m_token));
+        m_filterResponses.push_back({filter, response, m_token, persistent});
 
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
@@ -219,31 +235,21 @@ GdbControllerImpl::executeCommand(const std::string &command, GdbController::Fil
 }
 
 void
+GdbControllerImpl::jumpToProgramStart()
+{
+    Util::jumpToProgramStart();
+}
+
+void
 GdbControllerImpl::resultHandler(const GdbResult &result)
 {
-    for (const auto &filterresponse : m_filterResponses)
+    for (const auto &item : m_filterResponses)
     {
-        const auto &filter = std::get<0>(filterresponse);
-        const auto &response = std::get<1>(filterresponse);
-        const auto token = std::get<2>(filterresponse);
-        if (filter(result, token))
+        if (item.filter(result, item.token))
         {
-            response(result, token);
+            item.response(result, item.token);
         }
     }
-//    static std::regex infoAddress(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
-//
-//    if (result.token.value == -1 && result.message.type == Message::Type::NONE && result.payload.type == Payload::Type::STRING)
-//    {
-//        std::smatch match;
-//        if (std::regex_match(result.payload.string.string, match, infoAddress))
-//        {
-//           std::cout << "first group " << match[1] << std::endl;
-//           std::cout << "second group " << match[2] << std::endl;
-//        }
-//    }
-//
-//    std::cout << result << std::endl;
 }
 
 void
@@ -292,10 +298,18 @@ GdbController::~GdbController()
 }
 
 int
-
-GdbController::executeCommand(const std::string &command, FilterFunc filter, ResponseFunc response)
+GdbController::executeCommand(const std::string &command,
+                              FilterFunc filter,
+                              ResponseFunc response,
+                              bool persistent)
 {
-    return m_impl->executeCommand(command, filter, response);
+    return m_impl->executeCommand(command, filter, response, persistent);
+}
+
+void
+GdbController::jumpToProgramStart()
+{
+    return m_impl->jumpToProgramStart();
 }
 
 }
