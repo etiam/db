@@ -17,7 +17,7 @@
 namespace Ui
 {
 
-Main::Main(int &argc, char **argv)
+Main::Main(int &argc, char *argv[])
 {
     // has to get called before creating instance of QApplication
     QApplication::setDesktopSettingsAware(true);
@@ -25,7 +25,7 @@ Main::Main(int &argc, char **argv)
     m_app->setStyle("GTK+");
 
     // create a MainWindow
-    m_mainWindow = std::make_unique<MainWindow>(argv[1]);
+    m_mainWindow = std::make_unique<MainWindow>();
     m_mainWindow->setObjectName("mainwindow");
     m_mainWindow->show();
 }

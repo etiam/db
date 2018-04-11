@@ -4,3 +4,6 @@
 [submodule "src/external/pygdbmi"]
 	path = src/external/pygdbmi
 	url = https://github.com/cs01/pygdbmi.git
+[submodule "src/external/wink"]
+	path = src/external/wink
+	url = https://github.com/miguelmartin75/Wink-Signals.git

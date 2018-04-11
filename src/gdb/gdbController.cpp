@@ -33,10 +33,7 @@ class GdbControllerImpl
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    int             executeCommand(const std::string &command,
-                                   GdbController::FilterFunc filter,
-                                   /*GdbController::ResponseFunc response,*/
-                                   bool persistent);
+    int             executeCommand(const std::string &command, GdbController::FilterFunc filter, bool persistent);
 
     void            jumpToProgramStart();
 
@@ -57,7 +54,6 @@ class GdbControllerImpl
     struct FilterResponse
     {
         GdbController::FilterFunc   filter;
-//        GdbController::ResponseFunc response;
         int                         token;
         bool                        persistent;
     };
@@ -206,10 +202,7 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
 }
 
 int
-GdbControllerImpl::executeCommand(const std::string &command,
-                                  GdbController::FilterFunc filter,
-                                  /*GdbController::ResponseFunc response,*/
-                                  bool persistent)
+GdbControllerImpl::executeCommand(const std::string &command, GdbController::FilterFunc filter, bool persistent)
 {
     GdbResult result;
     std::stringstream stream;
@@ -217,9 +210,9 @@ GdbControllerImpl::executeCommand(const std::string &command,
 
     m_token++;
 
-    // store filter/response pair
-    if (filter != nullptr /*&& response != nullptr*/)
-        m_filterResponses.push_back({filter, /*response,*/ m_token, persistent});
+    // store filter
+    if (filter != nullptr)
+        m_filterResponses.push_back({filter, m_token, persistent});
 
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
@@ -249,7 +242,8 @@ GdbControllerImpl::resultHandler(const GdbResult &result)
     {
         if (item.filter(result, item.token) && !item.persistent)
         {
-            todelete.push_back(item);
+            break;
+//            todelete.push_back(item);
         }
     }
 }
@@ -300,12 +294,9 @@ GdbController::~GdbController()
 }
 
 int
-GdbController::executeCommand(const std::string &command,
-                              FilterFunc filter,
-                              /*ResponseFunc response,*/
-                              bool persistent)
+GdbController::executeCommand(const std::string &command, FilterFunc filter, bool persistent)
 {
-    return m_impl->executeCommand(command, filter, /*response,*/ persistent);
+    return m_impl->executeCommand(command, filter, persistent);
 }
 
 void

@@ -29,8 +29,6 @@ class Editor : public QWidget
 
     void    setGutterWidth(int width);
 
-    void    setCursorPosition(int row, int column);
-
     void    setText(const QString &newText);
     QString getText();
 
@@ -40,17 +38,23 @@ class Editor : public QWidget
 
     void    setKeyboardHandler(const QString &name);
 
-  private:
-    QString getLineText(int row) const;
-    int     getNumLines() const;
-    int     getLineLength(int row) const;
+  public Q_SLOTS:
+    void    loadFile(const QString &filename);
+
+    void    setCursorPosition(int row, int column);
 
   protected:
     bool    eventFilter(QObject *object, QEvent *filteredEvent);
 
   private:
-    std::unique_ptr<EditorImpl> m_impl;
+    QString getLineText(int row) const;
+    int     getNumLines() const;
+    int     getLineLength(int row) const;
 
+    void    onLoadFileSignal(const std::string &filename);
+    void    onSetCursorPositionSignal(int row, int column);
+
+    std::unique_ptr<EditorImpl> m_impl;
 };
 
 #endif // UI_EDITOR_H_

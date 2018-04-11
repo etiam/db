@@ -10,10 +10,10 @@
 namespace Ui
 {
 
-MainWindow::MainWindow(const QString &filename, QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    setWindowTitle("db " + filename);
+    setWindowTitle("db");
 
     // gui setup
     auto centralWidget = new QWidget(this);
@@ -39,21 +39,6 @@ MainWindow::MainWindow(const QString &filename, QWidget *parent) :
 
     // settings
     readSettings();
-
-    // read file into editor
-    if (!filename.isEmpty())
-    {
-        QFile file(filename);
-        QTextStream stream(&file);
-
-        file.open(QFile::ReadOnly | QFile::Text);
-        auto text = stream.readAll();
-        m_editor->setText(text);
-
-        auto numlines = text.count("\n");
-        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
-        m_editor->setGutterWidth(numdigits);
-    }
 }
 
 MainWindow::~MainWindow()

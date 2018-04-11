@@ -11,11 +11,13 @@
 
 #include <iostream>
 
-#include <QObject>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QtWebKit>
-#include <QtWebKitWidgets>
+//#include <QObject>
+//#include <QWidget>
+//#include <QVBoxLayout>
+//#include <QtWebKit>
+//#include <QtWebKitWidgets>
+
+#include "core/signal.h"
 
 #include "editorImpl.h"
 #include "editor.h"
@@ -36,6 +38,9 @@ Editor::Editor(QMainWindow *parent) :
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
+
+    Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
+    Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
 Editor::~Editor()
@@ -52,22 +57,12 @@ Editor::setGutterWidth(int width)
 }
 
 void
-Editor::setCursorPosition(int row, int column)
-{
-    if (getNumLines() > row && getLineLength(row) >= column)
-    {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row).arg(column));
-        m_impl->executeJavaScript("editor.renderer.scrollCursorIntoView()");
-    }
-}
-
-void
 Editor::setText(const QString &newText)
 {
     const QString request = "editor.getSession().setValue('%1')";
     m_impl->executeJavaScript(request.arg(m_impl->escape(newText)));
 
-    setCursorPosition(0, 0);
+    setCursorPosition(1, 1);
 }
 
 QString
@@ -103,22 +98,34 @@ Editor::setKeyboardHandler(const QString &name)
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
 }
 
-QString
-Editor::getLineText(int row) const
+void
+Editor::loadFile(const QString &filename)
 {
-    return m_impl->executeJavaScript(QString("editor.getSession().getLine(%1)").arg(row)).toString();
+    // read file into editor
+    if (!filename.isEmpty())
+    {
+        QFile file(filename);
+        QTextStream stream(&file);
+
+        file.open(QFile::ReadOnly | QFile::Text);
+        auto text = stream.readAll();
+        setText(text);
+
+        auto numlines = text.count("\n");
+        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+        setGutterWidth(numdigits);
+    }
+
 }
 
-int
-Editor::getNumLines() const
+void
+Editor::setCursorPosition(int row, int column)
 {
-    return m_impl->executeJavaScript("property('lines')").toInt();
-}
-
-int
-Editor::getLineLength(int row) const
-{
-    return getLineText(row).length();
+    if (getNumLines() > row && getLineLength(row) >= column)
+    {
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
+        m_impl->executeJavaScript("editor.renderer.scrollCursorIntoView()");
+    }
 }
 
 bool
@@ -145,4 +152,34 @@ Editor::eventFilter(QObject *object, QEvent *filteredEvent)
     }
 
     return result;
+}
+
+QString
+Editor::getLineText(int row) const
+{
+    return m_impl->executeJavaScript(QString("editor.getSession().getLine(%1)").arg(row)).toString();
+}
+
+int
+Editor::getNumLines() const
+{
+    return m_impl->executeJavaScript("property('lines')").toInt();
+}
+
+int
+Editor::getLineLength(int row) const
+{
+    return getLineText(row).length();
+}
+
+void
+Editor::onLoadFileSignal(const std::string &filename)
+{
+    QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(filename)));
+}
+
+void
+Editor::onSetCursorPositionSignal(int row, int column)
+{
+    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
 }

@@ -23,7 +23,7 @@ namespace Ui
 class Main
 {
   public:
-    Main(int &argc, char **argv);
+    Main(int &argc, char *argv[]);
     ~Main();
 
     void                            run();

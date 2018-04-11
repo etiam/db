@@ -16,6 +16,7 @@ include $(top_srcdir)/src/core/Makefile.am
 include $(top_srcdir)/src/ui/Makefile.am
 include $(top_srcdir)/src/gdb/Makefile.am
 include $(top_srcdir)/src/ast/Makefile.am
+include $(top_srcdir)/src/external/Makefile.am
 
 EXTRA_DIST                = $(nodist_db_la_SOURCES:moc_%.cpp=%.h)
 CLEANFILES                = $(filter moc_%.cpp,$(db_la_SOURCES))

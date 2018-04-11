@@ -19,14 +19,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const QString &filename, QWidget *parent=0);
+    MainWindow(QWidget *parent=0);
     ~MainWindow();
 
     void readSettings();
     void writeSettings();
 
 private:
-    Editor *                m_editor;
+    Editor * m_editor;
 };
 
 }
