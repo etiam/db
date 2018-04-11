@@ -11,12 +11,6 @@
 
 #include <iostream>
 
-//#include <QObject>
-//#include <QWidget>
-//#include <QVBoxLayout>
-//#include <QtWebKit>
-//#include <QtWebKitWidgets>
-
 #include "core/signal.h"
 
 #include "editorImpl.h"
@@ -124,7 +118,7 @@ Editor::setCursorPosition(int row, int column)
     if (getNumLines() > row && getLineLength(row) >= column)
     {
         m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
-        m_impl->executeJavaScript("editor.renderer.scrollCursorIntoView()");
+        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
     }
 }
 
