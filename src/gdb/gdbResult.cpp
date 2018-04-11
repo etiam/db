@@ -275,7 +275,7 @@ std::ostream & operator <<(std::ostream &out, Payload::Dict dict);
 std::ostream & operator <<(std::ostream &out, Payload::List list);
 
 std::ostream &
-operator <<(std::ostream &out, String string)
+operator <<(std::ostream &out, const String &string)
 {
     out << "'" << std::regex_replace(string.string, std::regex("(\n)"),"\\n") << "'";
     return out;

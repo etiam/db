@@ -32,11 +32,11 @@ class GdbController
     ~GdbController();
 
     using FilterFunc = std::function<bool(const GdbResult, int)>;
-    using ResponseFunc = std::function<void(const GdbResult, int)>;
+//    using ResponseFunc = std::function<void(const GdbResult, int)>;
 
     int     executeCommand(const std::string &command,
                            GdbController::FilterFunc filter = nullptr,
-                           GdbController::ResponseFunc response = nullptr,
+                           /*GdbController::ResponseFunc response = nullptr,*/
                            bool persistent = false);
 
     void    jumpToProgramStart();

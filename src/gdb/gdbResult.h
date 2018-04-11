@@ -89,6 +89,7 @@ struct GdbResult
 
 GdbResult parseResult(PyObject *object);
 
+std::ostream & operator <<(std::ostream &stream, const String &string);
 std::ostream & operator <<(std::ostream &stream, const GdbResult &result);
 
 }

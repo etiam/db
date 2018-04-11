@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
         auto filename = vm["prog"].as<std::string>();
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
+        gdb->jumpToProgramStart();
 
-//        gdb->jumpToProgramStart();
-
+        /*
         {
 
         auto filter1 = [](const Gdb::GdbResult &result, int token)
@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
 
         gdb->executeCommand("interpreter-exec console \"info address main\"", filter1, response1);
         }
+        */
 
 //        gdb->executeCommand("interpreter-exec console \"info address main\"");
 //        gdb->executeCommand("interpreter-exec console \"info line *0x475080\"");
