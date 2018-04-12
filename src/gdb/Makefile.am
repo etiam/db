@@ -1,7 +1,7 @@
 db_SOURCES               +=                                                     \
-                            src/gdb/gdbController.cpp                           \
-                            src/gdb/gdbUtil.cpp                                 \
-                            src/gdb/gdbResult.cpp
+                            src/gdb/controller.cpp                              \
+                            src/gdb/result.cpp                                  \
+                            src/gdb/jumpToMain.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

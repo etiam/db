@@ -18,9 +18,9 @@
 namespace Gdb
 {
 
-class GdbController;
+class Controller;
 
-using GdbControllerPtr         = std::unique_ptr<GdbController>;
+using ControllerPtr         = std::unique_ptr<Controller>;
 
 }
 

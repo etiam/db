@@ -28,7 +28,7 @@ void                        shutdown();
 StatePtr &                  state();
 OptionsManagerPtr &         optionsManager();
 
-Gdb::GdbControllerPtr &     gdbController();
+Gdb::ControllerPtr &        gdb();
 Ast::AstBuilderPtr &        astBuilder();
 
 } // namespace Core

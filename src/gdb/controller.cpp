@@ -1,5 +1,5 @@
 /*
- * GdbController.cpp
+ * controller.cpp
  *
  *  Created on: Feb 22, 2018
  *      Author: jasonr
@@ -21,27 +21,27 @@
 #include "core/global.h"
 #include "core/optionsManager.h"
 
-#include "gdbUtil.h"
-#include "gdbController.h"
+#include "util.h"
+#include "controller.h"
 
 namespace Gdb
 {
 
-class GdbControllerImpl
+class ControllerImpl
 {
   public:
-    GdbControllerImpl() = default;
-    ~GdbControllerImpl();
+    ControllerImpl() = default;
+    ~ControllerImpl();
 
     void            initialize();
 
-    int             executeCommand(const std::string &command, GdbController::ResponseFunc response, bool persistent);
-    void            jumpToProgramStart();
+    int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
+    void            jumpToMain();
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    void            resultHandler(const GdbResult &result);
+    void            resultHandler(const Result &result);
     void            resultReaderThread();
 
     bool            m_verbose = false;
@@ -57,7 +57,7 @@ class GdbControllerImpl
 
     struct ResponseData
     {
-        GdbController::ResponseFunc     response;
+        Controller::ResponseFunc     response;
         int                             token;
         bool                            persistent;
     };
@@ -67,7 +67,7 @@ class GdbControllerImpl
     std::unique_ptr<std::thread>    m_readerThread;
 };
 
-GdbControllerImpl::~GdbControllerImpl()
+ControllerImpl::~ControllerImpl()
 {
     if (m_readerThread)
     {
@@ -85,7 +85,7 @@ GdbControllerImpl::~GdbControllerImpl()
 }
 
 void
-GdbControllerImpl::initialize()
+ControllerImpl::initialize()
 {
     m_verbose = Core::optionsManager()->hasOption("verbose");
 
@@ -141,7 +141,7 @@ GdbControllerImpl::initialize()
                 m_valid = false;
 
             // start read thread
-            m_readerThread = std::make_unique<std::thread>(&GdbControllerImpl::resultReaderThread, std::ref(*this));
+            m_readerThread = std::make_unique<std::thread>(&ControllerImpl::resultReaderThread, std::ref(*this));
         }
         else
             m_valid = false;
@@ -152,13 +152,13 @@ GdbControllerImpl::initialize()
     PyEval_SaveThread();
 
     if (!m_valid)
-        std::cerr << "GdbController::GdbController(): failed to initialize class" << std::endl;
+        std::cerr << "Gdb::Controller(): failed to initialize class" << std::endl;
 
     m_initialized = true;
 }
 
 PyObject *
-GdbControllerImpl::importModule(const std::string &bytecodename, const std::string &modulename)
+ControllerImpl::importModule(const std::string &bytecodename, const std::string &modulename)
 {
     PyObject *module = nullptr;
     QFile file(QString::fromStdString(bytecodename));
@@ -170,13 +170,13 @@ GdbControllerImpl::importModule(const std::string &bytecodename, const std::stri
         module = PyImport_ExecCodeModule(const_cast<char*>(modulename.c_str()), code);
     }
     else
-        std::cerr << "GdbController::importModule(): could not open \"" << bytecodename << "\"" << std::endl;
+        std::cerr << "Gdb::Controller::importModule(): could not open \"" << bytecodename << "\"" << std::endl;
 
     return module;
 }
 
 PyObject *
-GdbControllerImpl::createInstance(const std::string &modulename, const std::string &classname)
+ControllerImpl::createInstance(const std::string &modulename, const std::string &classname)
 {
     PyObject *instance = nullptr;
 
@@ -210,9 +210,9 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
 }
 
 int
-GdbControllerImpl::executeCommand(const std::string &command, GdbController::ResponseFunc response, bool persistent)
+ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent)
 {
-    GdbResult result;
+    Result result;
 
     if (!m_initialized)
         initialize();
@@ -240,16 +240,16 @@ GdbControllerImpl::executeCommand(const std::string &command, GdbController::Res
 }
 
 void
-GdbControllerImpl::jumpToProgramStart()
+ControllerImpl::jumpToMain()
 {
     if (!m_initialized)
         initialize();
 
-    Util::jumpToProgramStart();
+    Util::jumpToMain();
 }
 
 void
-GdbControllerImpl::resultHandler(const GdbResult &result)
+ControllerImpl::resultHandler(const Result &result)
 {
     std::vector<ResponseData> todelete;
 
@@ -264,7 +264,7 @@ GdbControllerImpl::resultHandler(const GdbResult &result)
 }
 
 void
-GdbControllerImpl::resultReaderThread()
+ControllerImpl::resultReaderThread()
 {
     pthread_setname_np(pthread_self(), "resultreader");
 
@@ -299,25 +299,25 @@ GdbControllerImpl::resultReaderThread()
 
 ///////////////////////////////////
 
-GdbController::GdbController() :
-    m_impl(std::make_unique<GdbControllerImpl>())
+Controller::Controller() :
+    m_impl(std::make_unique<ControllerImpl>())
 {
 }
 
-GdbController::~GdbController()
+Controller::~Controller()
 {
 }
 
 int
-GdbController::executeCommand(const std::string &command, ResponseFunc response, bool persistent)
+Controller::executeCommand(const std::string &command, ResponseFunc response, bool persistent)
 {
     return m_impl->executeCommand(command, response, persistent);
 }
 
 void
-GdbController::jumpToProgramStart()
+Controller::jumpToMain()
 {
-    return m_impl->jumpToProgramStart();
+    return m_impl->jumpToMain();
 }
 
 }

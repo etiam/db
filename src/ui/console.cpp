@@ -9,7 +9,7 @@
 # include "config.h"
 #endif
 
-#include <ui/console.h>
+#include "console.h"
 
 Console::Console(QWidget *parent) :
     QPlainTextEdit(parent)
@@ -20,4 +20,3 @@ Console::Console(QWidget *parent) :
 Console::~Console()
 {
 }
-

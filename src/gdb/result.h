@@ -1,5 +1,5 @@
 /*
- * GdbResult.h
+ * Result.h
  *
  *  Created on: Apr 4, 2018
  *      Author: jasonr
@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef GDBRESULT_H_
-#define GDBRESULT_H_
+#ifndef Result_H_
+#define Result_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -78,7 +78,7 @@ enum class Type : char
     NONE,
 };
 
-struct GdbResult
+struct Result
 {
     Message     message;
     Payload     payload;
@@ -87,11 +87,11 @@ struct GdbResult
     Type        type = Type::NONE;
 };
 
-GdbResult parseResult(PyObject *object);
+Result parseResult(PyObject *object);
 
 std::ostream & operator <<(std::ostream &stream, const String &string);
-std::ostream & operator <<(std::ostream &stream, const GdbResult &result);
+std::ostream & operator <<(std::ostream &stream, const Result &result);
 
 }
 
-#endif // GDBRESULT_H_
+#endif // Result_H_

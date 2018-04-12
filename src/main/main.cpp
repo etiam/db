@@ -22,7 +22,7 @@
 #include "core/optionsManager.h"
 
 #include "ast/astBuilder.h"
-#include "gdb/gdbController.h"
+#include "gdb/controller.h"
 #include "ui/main.h"
 
 using namespace boost::program_options;
@@ -32,7 +32,7 @@ startupThread(const variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "startup");
 
-    auto &gdb = Core::gdbController();
+    auto &gdb = Core::gdb();
     auto &ast = Core::astBuilder();
 
     auto opts = vm;
@@ -48,7 +48,7 @@ startupThread(const variables_map &vm)
         opts.insert(std::make_pair("buildpath", variable_value(buildpath, false)));
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
-        gdb->jumpToProgramStart();
+        gdb->jumpToMain();
 
 //        gdb->executeCommand("file-list-exec-source-files");
 //        gdb->executeCommand("break-insert main");

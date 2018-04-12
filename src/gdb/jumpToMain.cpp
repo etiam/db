@@ -18,14 +18,14 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "gdbController.h"
-#include "gdbResult.h"
+#include "controller.h"
+#include "result.h"
 
 namespace
 {
 
 bool
-lineresponse(const Gdb::GdbResult &result, int token)
+lineresponse(const Gdb::Result &result, int token)
 {
     static std::regex lineRegex(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
 
@@ -54,7 +54,7 @@ lineresponse(const Gdb::GdbResult &result, int token)
 }
 
 bool
-addressresponse(const Gdb::GdbResult &result, int token)
+addressresponse(const Gdb::Result &result, int token)
 {
     static std::regex addrRegex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
 
@@ -68,7 +68,7 @@ addressresponse(const Gdb::GdbResult &result, int token)
     if (ret)
     {
         std::string cmd = "interpreter-exec console \"info line *" + match[2].str() + "\"";
-        Core::gdbController()->executeCommand(cmd, lineresponse);
+        Core::gdb()->executeCommand(cmd, lineresponse);
     }
 
     return ret;
@@ -82,10 +82,10 @@ namespace Gdb
 namespace Util
 {
 
-void jumpToProgramStart()
+void jumpToMain()
 {
     std::string cmd = "interpreter-exec console \"info address main\"";
-    Core::gdbController()->executeCommand(cmd, addressresponse);
+    Core::gdb()->executeCommand(cmd, addressresponse);
 }
 
 }

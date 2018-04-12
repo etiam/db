@@ -1,5 +1,5 @@
 /*
- * GdbResult.h
+ * Result.h
  *
  *  Created on: Apr 5, 2018
  *      Author: jasonr
@@ -12,7 +12,7 @@
 #include <iostream>
 #include <regex>
 
-#include "gdbResult.h"
+#include "result.h"
 
 namespace
 {
@@ -220,7 +220,7 @@ parseType(PyObject* object)
     return type;
 }
 
-GdbResult
+Result
 parseResult(PyObject *object)
 {
     // must be a dictionary type
@@ -231,7 +231,7 @@ parseResult(PyObject *object)
         throw std::runtime_error(errmsg.str().c_str());
     }
 
-    GdbResult result;
+    Result result;
 
     auto list = PyDict_Keys(object);
     auto n = PyList_Size(list);
@@ -473,7 +473,7 @@ operator <<(std::ostream &out, Type type)
 }
 
 std::ostream &
-operator<<(std::ostream &stream, const GdbResult &result)
+operator<<(std::ostream &stream, const Result &result)
 {
     stream << "{'token': "   << result.token << ", "
            <<  "'message': " << result.message << ", "
