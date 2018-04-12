@@ -9,24 +9,35 @@
 #include <QMap>
 #include <QMainWindow>
 
-#include "editor.h"
+//#include "editor.h"
 
 namespace Ui
 {
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
     MainWindow(QWidget *parent=0);
     ~MainWindow();
 
     void readSettings();
     void writeSettings();
 
-private:
-    Editor * m_editor;
+    // menu creation
+    void                            createMenus();
+    void                            createFileMenu();
+    void                            createViewMenu();
+    void                            createControlMenu();
+    void                            createWindowMenu();
+    void                            createPreferencesMenu();
+    void                            createHelpMenu();
+
+    void                            createHotkeys();
+
+//  private:
+//    Editor * m_editor;
 };
 
 }

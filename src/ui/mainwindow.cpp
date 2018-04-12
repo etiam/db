@@ -2,9 +2,13 @@
 #include <QFile>
 #include <QTextStream>
 #include <QWidget>
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QSettings>
+#include <QMenu>
+#include <QMenuBar>
 
+#include "editor.h"
+#include "console.h"
 #include "mainwindow.h"
 
 namespace Ui
@@ -13,32 +17,30 @@ namespace Ui
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    setObjectName("mainwindow");
     setWindowTitle("db");
 
     // gui setup
-    auto centralWidget = new QWidget(this);
-    centralWidget->setObjectName(QStringLiteral("centralWidget"));
-    centralWidget->setEnabled(true);
+    auto centralwidget = new QWidget(this);
+    centralwidget->setObjectName("centralWidget");
 
-    auto horizontalLayout = new QHBoxLayout(centralWidget);
-    horizontalLayout->setSpacing(0);
-    horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-    horizontalLayout->setContentsMargins(0, 0, 0, 0);
+    auto centralwidgetlayout = new QVBoxLayout(centralwidget);
+    centralwidgetlayout->setSpacing(0);
+    centralwidgetlayout->setObjectName("centralwidgetlayout");
+    centralwidgetlayout->setContentsMargins(0, 0, 0, 0);
 
-    auto mainLayout = new QHBoxLayout();
-    mainLayout->setSpacing(0);
-    mainLayout->setObjectName(QStringLiteral("mainLayout"));
+    auto editor = new Editor(this);
+    auto console = new Console(this);
 
-    horizontalLayout->addLayout(mainLayout);
-
-    setCentralWidget(centralWidget);
-
-    m_editor = new Editor(this);
-
-    mainLayout->insertWidget(1, m_editor, 1);
+    centralwidgetlayout->addWidget(editor, 1);
+    centralwidgetlayout->addWidget(console, 0);
+    setCentralWidget(centralwidget);
 
     // settings
     readSettings();
+
+    createMenus();
+    createHotkeys();
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +64,47 @@ MainWindow::writeSettings()
 
     settings.setValue("pos", pos());
     settings.setValue("size", size());
+}
+
+void
+MainWindow::createMenus()
+{
+    createFileMenu();
+//    createViewMenu();
+//    createControlMenu();
+//    createWindowMenu();
+//    createPreferencesMenu();
+//    createHelpMenu();
+}
+
+void
+MainWindow::createFileMenu()
+{
+    auto filemenu = menuBar()->addMenu(tr("&File"));
+
+    // File actions
+    auto fileopenact = new QAction(tr("&Open..."), this);
+    fileopenact->setStatusTip(tr("Open an existing file"));
+    fileopenact->setShortcuts(QKeySequence::Open);
+    connect(fileopenact, SIGNAL(triggered()), this, SLOT(open()));
+    filemenu->addAction(fileopenact);
+
+    filemenu->addSeparator();
+
+    auto fileexitact = new QAction(tr("E&xit"), this);
+    fileexitact->setStatusTip(tr("Exit the application"));
+    fileexitact->setShortcut(Qt::Key_Q);
+    connect(fileexitact, SIGNAL(triggered()), this, SLOT(close()));
+    filemenu->addAction(fileexitact);
+}
+
+void
+MainWindow::createHotkeys()
+{
+//    auto normalModeAct = new QAction(this);
+//    normalModeAct->setShortcut(Qt::Key_Escape);
+//    connect(normalModeAct, SIGNAL(triggered()), this, SLOT(activateNormalMode()));
+//    addAction(normalModeAct);
 }
 
 }
