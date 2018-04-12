@@ -25,7 +25,7 @@ namespace
 {
 
 bool
-lineFilter(const Gdb::GdbResult &result, int token)
+lineresponse(const Gdb::GdbResult &result, int token)
 {
     static std::regex lineRegex(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
 
@@ -54,7 +54,7 @@ lineFilter(const Gdb::GdbResult &result, int token)
 }
 
 bool
-addressFilter(const Gdb::GdbResult &result, int token)
+addressresponse(const Gdb::GdbResult &result, int token)
 {
     static std::regex addrRegex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
 
@@ -68,7 +68,7 @@ addressFilter(const Gdb::GdbResult &result, int token)
     if (ret)
     {
         std::string cmd = "interpreter-exec console \"info line *" + match[2].str() + "\"";
-        Core::gdbController()->executeCommand(cmd, lineFilter);
+        Core::gdbController()->executeCommand(cmd, lineresponse);
     }
 
     return ret;
@@ -85,7 +85,7 @@ namespace Util
 void jumpToProgramStart()
 {
     std::string cmd = "interpreter-exec console \"info address main\"";
-    Core::gdbController()->executeCommand(cmd, addressFilter);
+    Core::gdbController()->executeCommand(cmd, addressresponse);
 }
 
 }
