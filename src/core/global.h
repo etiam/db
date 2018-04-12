@@ -29,7 +29,7 @@ StatePtr &                  state();
 OptionsManagerPtr &         optionsManager();
 
 Gdb::ControllerPtr &        gdb();
-Ast::AstBuilderPtr &        astBuilder();
+Ast::BuilderPtr &        astBuilder();
 
 } // namespace Core
 

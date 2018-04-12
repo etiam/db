@@ -1,2 +1,2 @@
 db_SOURCES               +=                                                     \
-                            src/ast/astBuilder.cpp
+                            src/ast/builder.cpp

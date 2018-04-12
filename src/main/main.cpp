@@ -21,7 +21,7 @@
 #include "core/state.h"
 #include "core/optionsManager.h"
 
-#include "ast/astBuilder.h"
+#include "ast/builder.h"
 #include "gdb/controller.h"
 #include "ui/main.h"
 

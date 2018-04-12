@@ -18,9 +18,9 @@
 namespace Ast
 {
 
-class AstBuilder;
+class Builder;
 
-using AstBuilderPtr            = std::unique_ptr<AstBuilder>;
+using BuilderPtr               = std::unique_ptr<Builder>;
 
 }
 

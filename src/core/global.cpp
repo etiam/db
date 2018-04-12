@@ -13,7 +13,7 @@
 
 #include <boost/utility.hpp>
 
-#include "ast/astBuilder.h"
+#include "ast/builder.h"
 #include "gdb/controller.h"
 
 #include "state.h"
@@ -35,7 +35,7 @@ class Master : boost::noncopyable
     static OptionsManagerPtr &      optionsManager();
 
     static Gdb::ControllerPtr &     gdbController();
-    static Ast::AstBuilderPtr &     astBuilder();
+    static Ast::BuilderPtr &     astBuilder();
 
 
   private:
@@ -46,7 +46,7 @@ class Master : boost::noncopyable
     StatePtr                        m_state;
     OptionsManagerPtr               m_optionsManager;
     Gdb::ControllerPtr              m_gdbController;
-    Ast::AstBuilderPtr              m_AstBuilder;
+    Ast::BuilderPtr              m_AstBuilder;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -81,7 +81,7 @@ Master::gdbController()
     return instance().m_gdbController;
 }
 
-Ast::AstBuilderPtr &
+Ast::BuilderPtr &
 Master::astBuilder()
 {
     return instance().m_AstBuilder;
@@ -91,7 +91,7 @@ Master::Master() :
     m_state(std::make_unique<State>()),
     m_optionsManager(std::make_unique<OptionsManager>()),
     m_gdbController(std::make_unique<Gdb::Controller>()),
-    m_AstBuilder(std::make_unique<Ast::AstBuilder>())
+    m_AstBuilder(std::make_unique<Ast::Builder>())
 {
 }
 
@@ -133,7 +133,7 @@ gdb()
     return Master::gdbController();
 }
 
-Ast::AstBuilderPtr &
+Ast::BuilderPtr &
 astBuilder()
 {
     return Master::astBuilder();

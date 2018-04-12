@@ -17,7 +17,7 @@
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
 
-#include <ast/astBuilder.h>
+#include "ast/builder.h"
 
 namespace
 {
@@ -65,11 +65,11 @@ struct hash<::ReferenceLocation>
 namespace Ast
 {
 
-class AstBuilderImpl
+class BuilderImpl
 {
   public:
-    AstBuilderImpl();
-    ~AstBuilderImpl();
+    BuilderImpl();
+    ~BuilderImpl();
 
     void                        setBuildPath(const std::string &path);
     void                        parseFile(const std::string &filename);
@@ -91,11 +91,11 @@ class AstBuilderImpl
     CXCompilationDatabase   m_compdb = nullptr;
 };
 
-AstBuilderImpl::AstBuilderImpl()
+BuilderImpl::BuilderImpl()
 {
 }
 
-AstBuilderImpl::~AstBuilderImpl()
+BuilderImpl::~BuilderImpl()
 {
     clang_disposeIndex(m_index);
 
@@ -104,7 +104,7 @@ AstBuilderImpl::~AstBuilderImpl()
 }
 
 void
-AstBuilderImpl::setBuildPath(const std::string &path)
+BuilderImpl::setBuildPath(const std::string &path)
 {
     CXCompilationDatabase_Error errorcode;
     m_compdb = clang_CompilationDatabase_fromDirectory(path.c_str(), &errorcode);
@@ -113,13 +113,13 @@ AstBuilderImpl::setBuildPath(const std::string &path)
 }
 
 void
-AstBuilderImpl::parseFile(const std::string &filename)
+BuilderImpl::parseFile(const std::string &filename)
 {
     auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
     if (unit == nullptr)
     {
-        std::cerr << "AstBuilder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
+        std::cerr << "Builder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
     }
     else
     {
@@ -131,9 +131,9 @@ AstBuilderImpl::parseFile(const std::string &filename)
 }
 
 CXChildVisitResult
-AstBuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)
+BuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)
 {
-    auto *parser = static_cast<AstBuilderImpl *>(client_data);
+    auto *parser = static_cast<BuilderImpl *>(client_data);
 
     switch(clang_getCursorKind(cursor))
     {
@@ -148,7 +148,7 @@ AstBuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData cli
 }
 
 void
-AstBuilderImpl::addReference(CXCursor cursor, CXCursor parent)
+BuilderImpl::addReference(CXCursor cursor, CXCursor parent)
 {
     CXString cursorspelling = clang_getCursorSpelling(cursor);
     auto varlen = static_cast<unsigned int>(strlen(clang_getCString(cursorspelling)));
@@ -173,23 +173,23 @@ AstBuilderImpl::addReference(CXCursor cursor, CXCursor parent)
     }
 }
 
-AstBuilder::AstBuilder() :
-    m_impl(std::make_unique<AstBuilderImpl>())
+Builder::Builder() :
+    m_impl(std::make_unique<BuilderImpl>())
 {
 }
 
-AstBuilder::~AstBuilder()
+Builder::~Builder()
 {
 }
 
 void
-AstBuilder::setBuildPath(const std::string &path)
+Builder::setBuildPath(const std::string &path)
 {
     m_impl->setBuildPath(path);
 }
 
 void
-AstBuilder::parseFile(const std::string &filename)
+Builder::parseFile(const std::string &filename)
 {
     m_impl->parseFile(filename);
 
