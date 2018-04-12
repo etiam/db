@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <regex>
+#include <boost/filesystem/path.hpp>
 
 #include "core/global.h"
 #include "core/signal.h"
@@ -35,6 +36,7 @@ lineFilter(const Gdb::GdbResult &result, int token)
 
     if (ret)
     {
+        std::cout << "#### " << match[2].str() << " " << boost::filesystem::path(match[2].str()).is_absolute() << std::endl;
         Core::loadFileSignal(match[2].str());
         Core::setCursorPositionSignal(std::stoi(match[1]), 0);
     }
@@ -57,7 +59,7 @@ addressFilter(const Gdb::GdbResult &result, int token)
     if (ret)
     {
         std::string cmd = "interpreter-exec console \"info line *" + match[2].str() + "\"";
-        Core::gdbController()->executeCommand(cmd, lineFilter/*, lineResponse*/);
+        Core::gdbController()->executeCommand(cmd, lineFilter);
     }
 
     return ret;

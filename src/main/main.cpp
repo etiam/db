@@ -18,6 +18,8 @@
 
 #include "core/global.h"
 #include "core/timer.h"
+#include "core/optionsManager.h"
+
 #include "ast/astBuilder.h"
 #include "gdb/gdbController.h"
 #include "ui/main.h"
@@ -36,6 +38,7 @@ startupThread(const variables_map &vm)
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
+        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
         gdb->jumpToProgramStart();
@@ -43,7 +46,6 @@ startupThread(const variables_map &vm)
 //        gdb->executeCommand("file-list-exec-source-files");
 //        gdb->executeCommand("break-insert main");
 
-        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
         ast->setBuildPath(buildpath);
     }
 }
@@ -59,6 +61,11 @@ main(int argc, char *argv[])
     generic.add_options()
         ("version", "print version string.")
         ("help,h", "produce help message.");
+
+#ifdef DEBUG_ENABLED
+    generic.add_options()
+    ("verbose,v", "be noisy.");
+#endif
 
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
@@ -90,6 +97,12 @@ main(int argc, char *argv[])
     {
         std::cout << "version " << PACKAGE_VERSION << std::endl;
         std::exit(0);
+    }
+
+    // --verbose
+    if (vm.count("verbose"))
+    {
+        Core::optionsManager()->setOption("verbose", true);
     }
 
     auto startupthread = std::make_unique<std::thread>(&startupThread, vm);

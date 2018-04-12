@@ -28,7 +28,7 @@ class GdbControllerImpl;
 class GdbController
 {
   public:
-    explicit GdbController(bool verbose=false);
+    explicit GdbController();
     ~GdbController();
 
     using FilterFunc = std::function<bool(const GdbResult, int)>;

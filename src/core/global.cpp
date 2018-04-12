@@ -16,6 +16,7 @@
 #include "ast/astBuilder.h"
 #include "gdb/gdbController.h"
 
+#include "optionsManager.h"
 #include "global.h"
 
 namespace Core
@@ -29,6 +30,8 @@ class Master : boost::noncopyable
     static void                     initialize();
     static void                     shutdown();
 
+    static OptionsManagerPtr &      optionsManager();
+
     static Gdb::GdbControllerPtr &  gdbController();
     static Ast::AstBuilderPtr &     astBuilder();
 
@@ -38,6 +41,7 @@ class Master : boost::noncopyable
 
     static Master &                 instance();
 
+    OptionsManagerPtr               m_optionsManager;
     Gdb::GdbControllerPtr           m_gdbController;
     Ast::AstBuilderPtr              m_AstBuilder;
 };
@@ -56,6 +60,12 @@ Master::shutdown()
         theinstance.reset();
 }
 
+OptionsManagerPtr &
+Master::optionsManager()
+{
+    return instance().m_optionsManager;
+}
+
 Gdb::GdbControllerPtr &
 Master::gdbController()
 {
@@ -69,7 +79,8 @@ Master::astBuilder()
 }
 
 Master::Master() :
-    m_gdbController(std::make_unique<Gdb::GdbController>(false)),
+    m_optionsManager(std::make_unique<OptionsManager>()),
+    m_gdbController(std::make_unique<Gdb::GdbController>()),
     m_AstBuilder(std::make_unique<Ast::AstBuilder>())
 {
 }
@@ -92,6 +103,12 @@ void
 shutdown()
 {
     Master::shutdown();
+}
+
+OptionsManagerPtr &
+optionsManager()
+{
+    return Master::optionsManager();
 }
 
 Gdb::GdbControllerPtr &

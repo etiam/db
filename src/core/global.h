@@ -15,6 +15,8 @@
 #include "gdb/classPointers.h"
 #include "ast/classPointers.h"
 
+#include "classPointers.h"
+
 namespace Core
 {
 
@@ -23,6 +25,8 @@ void                        initialize();
 void                        shutdown();
 
 // Access to Managers
+OptionsManagerPtr &         optionsManager();
+
 Gdb::GdbControllerPtr &     gdbController();
 Ast::AstBuilderPtr &        astBuilder();
 

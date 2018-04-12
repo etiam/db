@@ -18,6 +18,9 @@
 #include <Python.h>
 #include <marshal.h>
 
+#include "core/global.h"
+#include "core/optionsManager.h"
+
 #include "gdbUtil.h"
 #include "gdbController.h"
 
@@ -27,21 +30,22 @@ namespace Gdb
 class GdbControllerImpl
 {
   public:
-    GdbControllerImpl(bool verbose);
+    GdbControllerImpl() = default;
     ~GdbControllerImpl();
+
+    void            initialize();
+
+    int             executeCommand(const std::string &command, GdbController::FilterFunc filter, bool persistent);
+    void            jumpToProgramStart();
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
-    int             executeCommand(const std::string &command, GdbController::FilterFunc filter, bool persistent);
-
-    void            jumpToProgramStart();
-
     void            resultHandler(const GdbResult &result);
-
     void            resultReaderThread();
 
-    bool            m_verbose;
+    bool            m_verbose = false;
+    bool            m_initialized = false;
     bool            m_valid = true;
     bool            m_resultThreadActive = true;
     bool            m_resultThreadDone = false;
@@ -63,9 +67,28 @@ class GdbControllerImpl
     std::unique_ptr<std::thread>    m_readerThread;
 };
 
-GdbControllerImpl::GdbControllerImpl(bool verbose) :
-    m_verbose(verbose)
+GdbControllerImpl::~GdbControllerImpl()
 {
+    if (m_readerThread)
+    {
+        // stops result thread loop
+        m_resultThreadActive = false;
+
+        // waits for result thread loop to stop
+        while(!m_resultThreadDone);
+
+        // waits for result thread to finish
+        m_readerThread->join();
+
+//        Py_Finalize();
+    }
+}
+
+void
+GdbControllerImpl::initialize()
+{
+    m_verbose = Core::optionsManager()->hasOption("verbose");
+
     Py_Initialize();
     if (!PyEval_ThreadsInitialized())
     {
@@ -130,23 +153,8 @@ GdbControllerImpl::GdbControllerImpl(bool verbose) :
 
     if (!m_valid)
         std::cerr << "GdbController::GdbController(): failed to initialize class" << std::endl;
-}
 
-GdbControllerImpl::~GdbControllerImpl()
-{
-    if (m_readerThread)
-    {
-        // stops result thread loop
-        m_resultThreadActive = false;
-
-        // waits for result thread loop to stop
-        while(!m_resultThreadDone);
-
-        // waits for result thread to finish
-        m_readerThread->join();
-
-//        Py_Finalize();
-    }
+    m_initialized = true;
 }
 
 PyObject *
@@ -180,7 +188,7 @@ GdbControllerImpl::createInstance(const std::string &modulename, const std::stri
         auto klass = PyDict_GetItemString(dict, classname.c_str());
         if (PyCallable_Check(klass))
         {
-            auto args = Py_BuildValue("{s:i}", "verbose", false);
+            auto args = Py_BuildValue("{s:i}", "verbose", m_verbose);
             instance = PyObject_Call(klass, nullptr, args);
 
             if (!instance || !PyInstance_Check(instance))
@@ -205,6 +213,10 @@ int
 GdbControllerImpl::executeCommand(const std::string &command, GdbController::FilterFunc filter, bool persistent)
 {
     GdbResult result;
+
+    if (!m_initialized)
+        initialize();
+
     std::stringstream stream;
     stream << m_token << "-" << command;
 
@@ -230,6 +242,9 @@ GdbControllerImpl::executeCommand(const std::string &command, GdbController::Fil
 void
 GdbControllerImpl::jumpToProgramStart()
 {
+    if (!m_initialized)
+        initialize();
+
     Util::jumpToProgramStart();
 }
 
@@ -284,8 +299,8 @@ GdbControllerImpl::resultReaderThread()
 
 ///////////////////////////////////
 
-GdbController::GdbController(bool verbose) :
-    m_impl(std::make_unique<GdbControllerImpl>(verbose))
+GdbController::GdbController() :
+    m_impl(std::make_unique<GdbControllerImpl>())
 {
 }
 
