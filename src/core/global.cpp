@@ -16,6 +16,7 @@
 #include "ast/astBuilder.h"
 #include "gdb/gdbController.h"
 
+#include "state.h"
 #include "optionsManager.h"
 #include "global.h"
 
@@ -30,6 +31,7 @@ class Master : boost::noncopyable
     static void                     initialize();
     static void                     shutdown();
 
+    static StatePtr &               state();
     static OptionsManagerPtr &      optionsManager();
 
     static Gdb::GdbControllerPtr &  gdbController();
@@ -41,6 +43,7 @@ class Master : boost::noncopyable
 
     static Master &                 instance();
 
+    StatePtr                        m_state;
     OptionsManagerPtr               m_optionsManager;
     Gdb::GdbControllerPtr           m_gdbController;
     Ast::AstBuilderPtr              m_AstBuilder;
@@ -58,6 +61,12 @@ Master::shutdown()
 {
     if (theinstance)
         theinstance.reset();
+}
+
+StatePtr &
+Master::state()
+{
+    return instance().m_state;
 }
 
 OptionsManagerPtr &
@@ -79,6 +88,7 @@ Master::astBuilder()
 }
 
 Master::Master() :
+    m_state(std::make_unique<State>()),
     m_optionsManager(std::make_unique<OptionsManager>()),
     m_gdbController(std::make_unique<Gdb::GdbController>()),
     m_AstBuilder(std::make_unique<Ast::AstBuilder>())
@@ -103,6 +113,12 @@ void
 shutdown()
 {
     Master::shutdown();
+}
+
+StatePtr &
+state()
+{
+    return Master::state();
 }
 
 OptionsManagerPtr &

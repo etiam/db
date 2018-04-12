@@ -18,6 +18,7 @@
 
 #include "core/global.h"
 #include "core/timer.h"
+#include "core/state.h"
 #include "core/optionsManager.h"
 
 #include "ast/astBuilder.h"
@@ -34,11 +35,17 @@ startupThread(const variables_map &vm)
     auto &gdb = Core::gdbController();
     auto &ast = Core::astBuilder();
 
+    auto opts = vm;
+
+
     // load prog
     if (vm.count("prog"))
     {
         auto filename = vm["prog"].as<std::string>();
         auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
+
+        opts.insert(std::make_pair("filename", variable_value(filename, false)));
+        opts.insert(std::make_pair("buildpath", variable_value(buildpath, false)));
 
         gdb->executeCommand("file-exec-and-symbols " + filename);
         gdb->jumpToProgramStart();
@@ -48,6 +55,15 @@ startupThread(const variables_map &vm)
 
         ast->setBuildPath(buildpath);
     }
+
+    else
+    {
+        opts.insert(std::make_pair("filename", variable_value(std::string(), false)));
+        opts.insert(std::make_pair("buildpath", variable_value(std::string(), false)));
+
+    }
+
+    Core::state()->m_options = opts;
 }
 
 int
@@ -105,9 +121,9 @@ main(int argc, char *argv[])
         Core::optionsManager()->setOption("verbose", true);
     }
 
+    auto gui = std::make_unique<Ui::Main>(argc, argv);
     auto startupthread = std::make_unique<std::thread>(&startupThread, vm);
 
-    auto gui = std::make_unique<Ui::Main>(argc, argv);
     std::cout << "startup in " << timer << std::endl;
     gui->run();
 

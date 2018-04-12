@@ -12,9 +12,10 @@
 
 #include <iostream>
 #include <regex>
-#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
+#include "core/state.h"
 #include "core/signal.h"
 
 #include "gdbController.h"
@@ -36,8 +37,16 @@ lineFilter(const Gdb::GdbResult &result, int token)
 
     if (ret)
     {
-        std::cout << "#### " << match[2].str() << " " << boost::filesystem::path(match[2].str()).is_absolute() << std::endl;
-        Core::loadFileSignal(match[2].str());
+        auto filename = match[2].str();
+
+        // if filename is relative, convert to absolute based on buildpath
+        if (!boost::filesystem::path(match[2].str()).is_absolute())
+        {
+            auto buildpath = Core::state()->m_options["buildpath"].as<std::string>();
+            filename = boost::filesystem::absolute(filename, buildpath).string();
+        }
+
+        Core::loadFileSignal(filename);
         Core::setCursorPositionSignal(std::stoi(match[1]), 0);
     }
 

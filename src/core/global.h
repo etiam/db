@@ -25,6 +25,7 @@ void                        initialize();
 void                        shutdown();
 
 // Access to Managers
+StatePtr &                  state();
 OptionsManagerPtr &         optionsManager();
 
 Gdb::GdbControllerPtr &     gdbController();
