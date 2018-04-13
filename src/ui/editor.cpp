@@ -16,6 +16,9 @@
 #include "editorImpl.h"
 #include "editor.h"
 
+namespace Ui
+{
+
 Editor::Editor(QMainWindow *parent) :
     QWidget(parent),
     m_impl(std::make_unique<EditorImpl>(this))
@@ -32,9 +35,6 @@ Editor::Editor(QMainWindow *parent) :
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
-
-    Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
-    Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
 Editor::~Editor()
@@ -66,6 +66,16 @@ Editor::getText()
 }
 
 void
+Editor::setCursorPosition(int row, int column)
+{
+    if (getNumLines() > row && getLineLength(row) >= column)
+    {
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
+        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+    }
+}
+
+void
 Editor::setTheme(const QString &name)
 {
     const QString request = ""
@@ -90,36 +100,6 @@ Editor::setKeyboardHandler(const QString &name)
             "$.getScript('%1');"
             "editor.getSession().setMode('ace/keybinding/%2');";
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
-}
-
-void
-Editor::loadFile(const QString &filename)
-{
-    // read file into editor
-    if (!filename.isEmpty())
-    {
-        QFile file(filename);
-        QTextStream stream(&file);
-
-        file.open(QFile::ReadOnly | QFile::Text);
-        auto text = stream.readAll();
-        setText(text);
-
-        auto numlines = text.count("\n");
-        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
-        setGutterWidth(numdigits);
-    }
-
-}
-
-void
-Editor::setCursorPosition(int row, int column)
-{
-    if (getNumLines() > row && getLineLength(row) >= column)
-    {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
-        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
-    }
 }
 
 bool
@@ -166,14 +146,4 @@ Editor::getLineLength(int row) const
     return getLineText(row).length();
 }
 
-void
-Editor::onLoadFileSignal(const std::string &filename)
-{
-    QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(filename)));
-}
-
-void
-Editor::onSetCursorPositionSignal(int row, int column)
-{
-    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
 }

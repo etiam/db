@@ -1,4 +1,6 @@
 #include <iostream>
+#include "core/signal.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QWidget>
@@ -29,11 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     centralwidgetlayout->setObjectName("centralwidgetlayout");
     centralwidgetlayout->setContentsMargins(0, 0, 0, 0);
 
-    auto editor = new Editor(this);
-    auto console = new Console(this);
+    m_editor = new Editor(this);
+    m_console = new Console(this);
 
-    centralwidgetlayout->addWidget(editor, 1);
-    centralwidgetlayout->addWidget(console, 0);
+    centralwidgetlayout->addWidget(m_editor, 1);
+    centralwidgetlayout->addWidget(m_console, 0);
     setCentralWidget(centralwidget);
 
     // settings
@@ -41,6 +43,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createMenus();
     createHotkeys();
+
+    Core::loadFileSignal.connect(this, &MainWindow::onLoadFileSignal);
+    Core::loadFileCompleteSignal.connect(this, &MainWindow::onLoadFileCompleteSignal);
+    Core::setCursorPositionSignal.connect(this, &MainWindow::onSetCursorPositionSignal);
+    Core::appendConsoleTextSignal.connect(this, &MainWindow::onAppendConsoleTextSignal);
 }
 
 MainWindow::~MainWindow()
@@ -82,17 +89,17 @@ MainWindow::createFileMenu()
 {
     auto filemenu = menuBar()->addMenu(tr("&File"));
 
-    // File actions
-    auto fileopenact = new QAction(tr("&Open..."), this);
-    fileopenact->setStatusTip(tr("Open an existing file"));
-    fileopenact->setShortcuts(QKeySequence::Open);
-    connect(fileopenact, SIGNAL(triggered()), this, SLOT(open()));
-    filemenu->addAction(fileopenact);
+//    // File actions
+//    auto fileopenact = new QAction(tr("&Open..."), this);
+//    fileopenact->setStatusTip(tr("Open an existing file"));
+//    fileopenact->setShortcuts(QKeySequence::Open);
+//    connect(fileopenact, SIGNAL(triggered()), this, SLOT(open()));
+//    filemenu->addAction(fileopenact);
 
     filemenu->addSeparator();
 
-    auto fileexitact = new QAction(tr("E&xit"), this);
-    fileexitact->setStatusTip(tr("Exit the application"));
+    auto fileexitact = new QAction(tr("Quit"), this);
+    fileexitact->setStatusTip(tr("Quit the application"));
     fileexitact->setShortcut(Qt::Key_Q);
     connect(fileexitact, SIGNAL(triggered()), this, SLOT(close()));
     filemenu->addAction(fileexitact);
@@ -105,6 +112,69 @@ MainWindow::createHotkeys()
 //    normalModeAct->setShortcut(Qt::Key_Escape);
 //    connect(normalModeAct, SIGNAL(triggered()), this, SLOT(activateNormalMode()));
 //    addAction(normalModeAct);
+}
+
+void
+MainWindow::loadFile(const QString &filename)
+{
+    // read file into editor
+    if (!filename.isEmpty())
+    {
+        QFile file(filename);
+        QTextStream stream(&file);
+
+        file.open(QFile::ReadOnly | QFile::Text);
+        auto text = stream.readAll();
+        m_editor->setText(text);
+
+        auto numlines = text.count("\n");
+        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+        m_editor->setGutterWidth(numdigits);
+    }
+}
+
+void
+MainWindow::loadFileComplete()
+{
+    m_console->appendPlainText("done");
+}
+
+void
+MainWindow::setCursorPosition(int row, int column)
+{
+    m_editor->setCursorPosition(row, column);
+}
+
+void
+MainWindow::appendConsoleText(const QString &text)
+{
+    m_console->appendPlainText(text);
+}
+
+// wink signal handlers
+
+void
+MainWindow::onLoadFileSignal(const std::string &filename)
+{
+    QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(filename)));
+}
+
+void
+MainWindow::onLoadFileCompleteSignal()
+{
+    QMetaObject::invokeMethod(this, "loadFileComplete", Qt::QueuedConnection);
+}
+
+void
+MainWindow::onSetCursorPositionSignal(int row, int column)
+{
+    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
+}
+
+void
+MainWindow::onAppendConsoleTextSignal(const std::string &text)
+{
+    QMetaObject::invokeMethod(this, "appendConsoleText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 }

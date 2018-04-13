@@ -20,6 +20,7 @@ namespace Gdb
 namespace Util
 {
 
+void loadFile(const std::string &filename);
 void jumpToMain();
 
 }

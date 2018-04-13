@@ -14,6 +14,8 @@
 #include <thread>
 #include <regex>
 
+#include "core/signal.h"
+
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
@@ -36,6 +38,8 @@ class ControllerImpl
     void            initialize();
 
     int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
+    void            loadFile(const std::string &filename);
+
     void            jumpToMain();
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
@@ -240,6 +244,15 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
 }
 
 void
+ControllerImpl::loadFile(const std::string &filename)
+{
+    if (!m_initialized)
+        initialize();
+
+    Util::loadFile(filename);
+}
+
+void
 ControllerImpl::jumpToMain()
 {
     if (!m_initialized)
@@ -315,9 +328,16 @@ Controller::executeCommand(const std::string &command, ResponseFunc response, bo
 }
 
 void
+Controller::loadFile(const std::string &filename)
+{
+    Core::appendConsoleTextSignal("Reading symbols from " + filename + "...");
+    m_impl->loadFile(filename);
+}
+
+void
 Controller::jumpToMain()
 {
-    return m_impl->jumpToMain();
+    m_impl->jumpToMain();
 }
 
 }

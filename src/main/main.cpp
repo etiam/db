@@ -37,7 +37,6 @@ startupThread(const variables_map &vm)
 
     auto opts = vm;
 
-
     // load prog
     if (vm.count("prog"))
     {
@@ -47,7 +46,7 @@ startupThread(const variables_map &vm)
         opts.insert(std::make_pair("filename", variable_value(filename, false)));
         opts.insert(std::make_pair("buildpath", variable_value(buildpath, false)));
 
-        gdb->executeCommand("file-exec-and-symbols " + filename);
+        gdb->loadFile(filename);
         gdb->jumpToMain();
 
 //        gdb->executeCommand("file-list-exec-source-files");

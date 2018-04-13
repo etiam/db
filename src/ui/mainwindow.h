@@ -9,10 +9,11 @@
 #include <QMap>
 #include <QMainWindow>
 
-//#include "editor.h"
-
 namespace Ui
 {
+
+class Editor;
+class Console;
 
 class MainWindow : public QMainWindow
 {
@@ -22,22 +23,30 @@ class MainWindow : public QMainWindow
     MainWindow(QWidget *parent=0);
     ~MainWindow();
 
-    void readSettings();
-    void writeSettings();
+    void        readSettings();
+    void        writeSettings();
 
     // menu creation
-    void                            createMenus();
-    void                            createFileMenu();
-    void                            createViewMenu();
-    void                            createControlMenu();
-    void                            createWindowMenu();
-    void                            createPreferencesMenu();
-    void                            createHelpMenu();
+    void        createMenus();
+    void        createFileMenu();
 
-    void                            createHotkeys();
+    void        createHotkeys();
 
-//  private:
-//    Editor * m_editor;
+  private Q_SLOTS:
+    void        loadFile(const QString &filename);
+    void        loadFileComplete();
+    void        setCursorPosition(int row, int column);
+    void        appendConsoleText(const QString &text);
+
+  private:
+    // wink signal handlers
+    void        onLoadFileSignal(const std::string &filename);
+    void        onLoadFileCompleteSignal();
+    void        onSetCursorPositionSignal(int row, int column);
+    void        onAppendConsoleTextSignal(const std::string &text);
+
+    Editor *    m_editor;
+    Console *   m_console;
 };
 
 }

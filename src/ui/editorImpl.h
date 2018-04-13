@@ -21,6 +21,9 @@
 
 #include "editor.h"
 
+namespace Ui
+{
+
 class MyWebPage : public QWebPage
 {
   public:
@@ -106,5 +109,7 @@ class EditorImpl: public QObject
     QWebPage *      m_webPage;
     QVBoxLayout *   m_layout;
 };
+
+}
 
 #endif

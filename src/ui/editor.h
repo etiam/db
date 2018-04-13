@@ -16,8 +16,12 @@
 #include <memory>
 #include <QWidget>
 
-class EditorImpl;
 class QMainWindow;
+
+namespace Ui
+{
+
+class EditorImpl;
 
 class Editor : public QWidget
 {
@@ -32,16 +36,13 @@ class Editor : public QWidget
     void    setText(const QString &newText);
     QString getText();
 
+    void    setCursorPosition(int row, int column);
+
     void    setTheme(const QString &name);
 
     void    setHighlightMode(const QString &name);
 
     void    setKeyboardHandler(const QString &name);
-
-  public Q_SLOTS:
-    void    loadFile(const QString &filename);
-
-    void    setCursorPosition(int row, int column);
 
   protected:
     bool    eventFilter(QObject *object, QEvent *filteredEvent);
@@ -51,10 +52,9 @@ class Editor : public QWidget
     int     getNumLines() const;
     int     getLineLength(int row) const;
 
-    void    onLoadFileSignal(const std::string &filename);
-    void    onSetCursorPositionSignal(int row, int column);
-
     std::unique_ptr<EditorImpl> m_impl;
 };
+
+}
 
 #endif // UI_EDITOR_H_

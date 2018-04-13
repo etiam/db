@@ -11,12 +11,18 @@
 
 #include "console.h"
 
+namespace Ui
+{
+
 Console::Console(QWidget *parent) :
     QPlainTextEdit(parent)
 {
     setReadOnly(true);
+    setFont(QFont("hack", 12));
 }
 
 Console::~Console()
 {
+}
+
 }

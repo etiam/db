@@ -1,6 +1,7 @@
 db_SOURCES               +=                                                     \
                             src/gdb/controller.cpp                              \
                             src/gdb/result.cpp                                  \
+                            src/gdb/loadFile.cpp                                \
                             src/gdb/jumpToMain.cpp
 
 db_CPPFLAGS              +=                                                     \

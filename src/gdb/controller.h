@@ -35,6 +35,7 @@ class Controller
 
     int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
 
+    void    loadFile(const std::string &filename);
     void    jumpToMain();
 
   private:

@@ -15,6 +15,9 @@
 
 #include <QPlainTextEdit>
 
+namespace Ui
+{
+
 class Console: public QPlainTextEdit
 {
   Q_OBJECT
@@ -23,5 +26,7 @@ class Console: public QPlainTextEdit
     Console(QWidget *parent=0);
     virtual ~Console();
 };
+
+}
 
 #endif // UI_CONSOLE_H_
