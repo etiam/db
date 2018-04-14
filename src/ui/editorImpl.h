@@ -56,7 +56,7 @@ class EditorImpl: public QObject
 
         m_parent->setLayout(m_layout);
         m_layout->addWidget(m_webView);
-        m_layout->setMargin(0);
+        m_layout->setMargin(2);
 
         m_webView->setPage(m_webPage);
     }

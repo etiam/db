@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     centralwidget->setObjectName("centralWidget");
 
     auto centralwidgetlayout = new QVBoxLayout(centralwidget);
-    centralwidgetlayout->setSpacing(0);
+    centralwidgetlayout->setSpacing(2);
     centralwidgetlayout->setObjectName("centralwidgetlayout");
     centralwidgetlayout->setContentsMargins(0, 0, 0, 0);
 
@@ -77,11 +77,6 @@ void
 MainWindow::createMenus()
 {
     createFileMenu();
-//    createViewMenu();
-//    createControlMenu();
-//    createWindowMenu();
-//    createPreferencesMenu();
-//    createHelpMenu();
 }
 
 void
@@ -148,7 +143,11 @@ MainWindow::setCursorPosition(int row, int column)
 void
 MainWindow::appendConsoleText(const QString &text)
 {
-    m_console->appendPlainText(text);
+//    auto prevcursor = m_console->textCursor();
+    m_console->insertPlainText(text);
+//    m_console->setTextCursor(prevcursor);
+    m_console->moveCursor(QTextCursor::Up);
+    m_console->moveCursor(QTextCursor::EndOfLine);
 }
 
 // wink signal handlers
