@@ -330,7 +330,7 @@ Controller::executeCommand(const std::string &command, ResponseFunc response, bo
 void
 Controller::loadFile(const std::string &filename)
 {
-    Core::appendConsoleTextSignal("Reading symbols from " + filename + "...");
+    Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
     m_impl->loadFile(filename);
 }
 

@@ -18,11 +18,22 @@ Console::Console(QWidget *parent) :
     QPlainTextEdit(parent)
 {
     setReadOnly(true);
-    setFont(QFont("hack", 12));
+    setFont(QFont("hack", 10));
 }
 
 Console::~Console()
 {
+}
+
+void
+Console::appendText(const QString &text, bool newline)
+{
+    insertPlainText(text);
+    if (newline)
+    {
+        moveCursor(QTextCursor::Up);
+        moveCursor(QTextCursor::EndOfLine);
+    }
 }
 
 }

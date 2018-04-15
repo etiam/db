@@ -102,32 +102,6 @@ Editor::setKeyboardHandler(const QString &name)
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
 }
 
-bool
-Editor::eventFilter(QObject *object, QEvent *filteredEvent)
-{
-    bool result = false;
-
-    // Key press filters
-    if (filteredEvent->type() == QEvent::KeyPress)
-    {
-        QKeyEvent *event = (QKeyEvent*) filteredEvent;
-        int key = event->key();
-
-        switch (key)
-        {
-            case Qt::Key_Q:
-                QCoreApplication::quit();
-                result = true;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    return result;
-}
-
 QString
 Editor::getLineText(int row) const
 {

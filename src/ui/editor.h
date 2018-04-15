@@ -44,9 +44,6 @@ class Editor : public QWidget
 
     void    setKeyboardHandler(const QString &name);
 
-  protected:
-    bool    eventFilter(QObject *object, QEvent *filteredEvent);
-
   private:
     QString getLineText(int row) const;
     int     getNumLines() const;

@@ -25,6 +25,9 @@ class Console: public QPlainTextEdit
   public:
     Console(QWidget *parent=0);
     virtual ~Console();
+
+    void appendText(const QString &text, bool newline=true);
+
 };
 
 }

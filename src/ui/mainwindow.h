@@ -36,14 +36,14 @@ class MainWindow : public QMainWindow
     void        loadFile(const QString &filename);
     void        loadFileComplete();
     void        setCursorPosition(int row, int column);
-    void        appendConsoleText(const QString &text);
+    void        appendConsoleText(const QString &text, bool newline);
 
   private:
     // wink signal handlers
     void        onLoadFileSignal(const std::string &filename);
     void        onLoadFileCompleteSignal();
     void        onSetCursorPositionSignal(int row, int column);
-    void        onAppendConsoleTextSignal(const std::string &text);
+    void        onAppendConsoleTextSignal(const std::string &text, bool newline);
 
     Editor *    m_editor;
     Console *   m_console;

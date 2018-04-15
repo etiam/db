@@ -131,7 +131,7 @@ MainWindow::loadFile(const QString &filename)
 void
 MainWindow::loadFileComplete()
 {
-    m_console->appendPlainText("done");
+    m_console->appendText("done.", true);
 }
 
 void
@@ -141,13 +141,9 @@ MainWindow::setCursorPosition(int row, int column)
 }
 
 void
-MainWindow::appendConsoleText(const QString &text)
+MainWindow::appendConsoleText(const QString &text, bool newline)
 {
-//    auto prevcursor = m_console->textCursor();
-    m_console->insertPlainText(text);
-//    m_console->setTextCursor(prevcursor);
-    m_console->moveCursor(QTextCursor::Up);
-    m_console->moveCursor(QTextCursor::EndOfLine);
+    m_console->appendText(text, newline);
 }
 
 // wink signal handlers
@@ -171,9 +167,10 @@ MainWindow::onSetCursorPositionSignal(int row, int column)
 }
 
 void
-MainWindow::onAppendConsoleTextSignal(const std::string &text)
+MainWindow::onAppendConsoleTextSignal(const std::string &text, bool newline)
 {
-    QMetaObject::invokeMethod(this, "appendConsoleText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(this, "appendConsoleText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)),
+                                                                               Q_ARG(bool, newline));
 }
 
 }
