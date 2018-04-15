@@ -9,6 +9,8 @@
 #include <QMap>
 #include <QMainWindow>
 
+class QTabWidget;
+
 namespace Ui
 {
 
@@ -45,8 +47,9 @@ class MainWindow : public QMainWindow
     void        onSetCursorPositionSignal(int row, int column);
     void        onAppendConsoleTextSignal(const std::string &text, bool newline);
 
-    Editor *    m_editor;
-    Console *   m_console;
+    Editor *        m_editor;
+    Console *       m_console;
+    QTabWidget *    m_tabWidget;
 };
 
 }

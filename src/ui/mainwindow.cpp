@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <QMenu>
 #include <QMenuBar>
+#include <QSplitter>
 
 #include "editor.h"
 #include "console.h"
@@ -23,20 +24,29 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle("db");
 
     // gui setup
-    auto centralwidget = new QWidget(this);
-    centralwidget->setObjectName("centralWidget");
+    auto splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->setObjectName("splitter");
+    splitter->setContentsMargins(0, 0, 0, 0);
+    setCentralWidget(splitter);
 
-    auto centralwidgetlayout = new QVBoxLayout(centralwidget);
-    centralwidgetlayout->setSpacing(2);
-    centralwidgetlayout->setObjectName("centralwidgetlayout");
-    centralwidgetlayout->setContentsMargins(0, 0, 0, 0);
+    // main editor window
+    m_editor = new Editor();
 
-    m_editor = new Editor(this);
-    m_console = new Console(this);
+    // tabs window
+    m_tabWidget = new QTabWidget();
 
-    centralwidgetlayout->addWidget(m_editor, 1);
-    centralwidgetlayout->addWidget(m_console, 0);
-    setCentralWidget(centralwidget);
+    // tabs within tab window
+    m_console = new Console();
+    m_tabWidget->addTab(m_console, tr("Console"));
+
+    // add editor and tabwidget to main
+    splitter->addWidget(m_editor);
+    splitter->addWidget(m_tabWidget);
+
+    // set splitter sizes
+    auto h = size().height();
+    splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
 
     // settings
     readSettings();
