@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "core/signal.h"
 
 #include <QFile>
@@ -39,6 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs window
     m_tabWidget = new QTabWidget();
+    m_tabWidget->setTabsClosable(true);
+
+//    std::stringstream stylesheet;
+//    stylesheet << "QTabBar::close-button { image: url(:/img/close.png); }";
+//    m_tabWidget->setStyleSheet(QString::fromStdString(stylesheet.str()));
 
     // tabs within tab window
     m_console = new Console();

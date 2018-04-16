@@ -59,7 +59,7 @@ class EditorImpl: public QObject
         m_webView->setPage(m_webPage);
 
         // scale qwebview font sizes by dpi (https://stackoverflow.com/questions/2019716/differing-dpi-font-sizes-in-qwebview-compared-to-all-other-qwidgets)
-       auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0 + 0.2;
+       auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
        std::cout << "setting text size multiplier to " << factor << std::endl;
        m_webView->setTextSizeMultiplier(factor);
     }

@@ -10,6 +10,7 @@
 #endif
 
 #include <QApplication>
+#include <QFile>
 
 #include "mainwindow.h"
 #include "main.h"
@@ -23,6 +24,12 @@ Main::Main(int &argc, char *argv[])
     QApplication::setDesktopSettingsAware(true);
     m_app = std::make_unique<QApplication>(argc, argv);
     m_app->setStyle("GTK+");
+
+    // apply global stylesheet
+    QFile stylefile(":/qss/custom.qss");
+    stylefile.open(QFile::ReadOnly);
+    QString style(stylefile.readAll());
+    m_app->setStyleSheet(style);
 
     // create a MainWindow
     m_mainWindow = std::make_unique<MainWindow>();

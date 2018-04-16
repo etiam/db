@@ -1,0 +1,3 @@
+.QTabBar:close-button { 
+    image: url(:/img/close.png); 
+}
