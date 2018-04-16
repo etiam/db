@@ -67,6 +67,13 @@ Editor::getText()
 }
 
 void
+Editor::setBreakpointMarker(int row)
+{
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1)").arg(row-1));
+//        m_impl->executeJavaScript(QString("editor.getSession().setMarker(%1, \"language_highlight_default\")").arg(row-1));
+}
+
+void
 Editor::setCursorPosition(int row, int column)
 {
     if (getNumLines() > row && getLineLength(row) >= column)

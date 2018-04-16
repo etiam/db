@@ -36,6 +36,8 @@ class Editor : public QWidget
     void    setText(const QString &newText);
     QString getText();
 
+    void    setBreakpointMarker(int row);
+
     void    setCursorPosition(int row, int column);
 
     void    setTheme(const QString &name);

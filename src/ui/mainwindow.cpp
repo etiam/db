@@ -162,6 +162,7 @@ void
 MainWindow::setCursorPosition(int row, int column)
 {
     m_editor->setCursorPosition(row, column);
+    m_editor->setBreakpointMarker(row);
 }
 
 void
