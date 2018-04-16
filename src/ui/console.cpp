@@ -18,7 +18,7 @@ Console::Console(QWidget *parent) :
     QPlainTextEdit(parent)
 {
     setReadOnly(true);
-    setFont(QFont("hack", 10));
+    setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 }
 
 Console::~Console()

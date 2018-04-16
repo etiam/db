@@ -52,13 +52,18 @@ class EditorImpl: public QObject
     {
         QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
-        m_webView->installEventFilter(parent);
-
         m_parent->setLayout(m_layout);
         m_layout->addWidget(m_webView);
         m_layout->setMargin(2);
 
         m_webView->setPage(m_webPage);
+
+        // scale qwebview font sizes by dpi (https://stackoverflow.com/questions/2019716/differing-dpi-font-sizes-in-qwebview-compared-to-all-other-qwidgets)
+       auto dpi = QApplication::desktop()->screen()->logicalDpiX();
+
+       std::cout << "dpi = " << dpi << ", setting text size multiplier to " << dpi/96.0 << std::endl;
+
+        m_webView->setTextSizeMultiplier(dpi / 96.0);
     }
 
     ~EditorImpl() {};

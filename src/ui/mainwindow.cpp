@@ -14,21 +14,25 @@
 #include "console.h"
 #include "mainwindow.h"
 
+Q_DECLARE_METATYPE(QList<int>)
+
 namespace Ui
 {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    qRegisterMetaTypeStreamOperators<QList<int>>("QList<int>");
+
     setObjectName("mainwindow");
     setWindowTitle("db");
 
     // gui setup
-    auto splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->setObjectName("splitter");
-    splitter->setContentsMargins(0, 0, 0, 0);
-    setCentralWidget(splitter);
+    m_splitter = new QSplitter(this);
+    m_splitter->setOrientation(Qt::Vertical);
+    m_splitter->setObjectName("splitter");
+    m_splitter->setContentsMargins(0, 0, 0, 0);
+    setCentralWidget(m_splitter);
 
     // main editor window
     m_editor = new Editor();
@@ -41,12 +45,12 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tabWidget->addTab(m_console, tr("Console"));
 
     // add editor and tabwidget to main
-    splitter->addWidget(m_editor);
-    splitter->addWidget(m_tabWidget);
+    m_splitter->addWidget(m_editor);
+    m_splitter->addWidget(m_tabWidget);
 
     // set splitter sizes
     auto h = size().height();
-    splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
+    m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
 
     // settings
     readSettings();
@@ -72,6 +76,11 @@ MainWindow::readSettings()
 
     resize(settings.value("size", QSize(720, 480)).toSize());
     move(settings.value("pos", QPoint(10, 10)).toPoint());
+
+    QList<int> sizes;
+    for (const auto &size : settings.value("splitter").toStringList())
+        sizes.append(size.toInt());
+    m_splitter->setSizes(sizes);
 }
 
 void
@@ -81,6 +90,11 @@ MainWindow::writeSettings()
 
     settings.setValue("pos", pos());
     settings.setValue("size", size());
+
+    QStringList sizes;
+    for (const auto &size : m_splitter->sizes())
+        sizes << QString::number(size);
+    settings.setValue("splitter", sizes);
 }
 
 void

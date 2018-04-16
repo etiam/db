@@ -10,6 +10,7 @@
 #include <QMainWindow>
 
 class QTabWidget;
+class QSplitter;
 
 namespace Ui
 {
@@ -50,6 +51,7 @@ class MainWindow : public QMainWindow
     Editor *        m_editor;
     Console *       m_console;
     QTabWidget *    m_tabWidget;
+    QSplitter *     m_splitter;
 };
 
 }
