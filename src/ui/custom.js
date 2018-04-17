@@ -39,6 +39,21 @@ editor.on("keyboardActivity", function(e)
     codeview.onMouseMove(cp.row + 1, cp.column + 1);
 });
 
+editor.on("guttermousedown", function(e) 
+{
+    var target = e.domEvent.target; 
+    if (target.className.indexOf("ace_gutter-cell") == -1)
+        return; 
+    if (!editor.isFocused()) 
+        return; 
+    if (e.clientX > 25 + target.getBoundingClientRect().left) 
+        return; 
+
+    var row = e.getDocumentPosition().row;
+    e.editor.session.setBreakpoint(row);
+    e.stop();
+});
+
 // set constant gutter width
 var mywidth = 3;
 editor.session.gutterRenderer = 
@@ -56,3 +71,4 @@ editor.session.gutterRenderer =
         return row+1;
     }
 };
+

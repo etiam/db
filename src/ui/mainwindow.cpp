@@ -1,6 +1,16 @@
+/*
+ * mainWindow.cpp
+ *
+ *  Created on: Feb 6, 2018
+ *      Author: jasonr
+ */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <iostream>
 #include <sstream>
-#include "core/signal.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -10,6 +20,8 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
+
+#include "core/signal.h"
 
 #include "editor.h"
 #include "console.h"
@@ -38,13 +50,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // main editor window
     m_editor = new Editor();
 
+    m_editor->setBreakpointMarker(1);
+    m_editor->setBreakpointMarker(2);
+
     // tabs window
     m_tabWidget = new QTabWidget();
     m_tabWidget->setTabsClosable(true);
-
-//    std::stringstream stylesheet;
-//    stylesheet << "QTabBar::close-button { image: url(:/img/close.png); }";
-//    m_tabWidget->setStyleSheet(QString::fromStdString(stylesheet.str()));
 
     // tabs within tab window
     m_console = new Console();

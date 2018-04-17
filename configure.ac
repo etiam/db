@@ -114,6 +114,14 @@ AM_CONDITIONAL([DO_PROFILER], [test x$profile = xtrue])
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 
+# since we're using boost signals we need to make qt not use it's keywords which would conflict 
+AC_DEFINE(QT_NO_KEYWORDS,,[do not use qt keywords])
+
+# processor type
+if test "x$host_cpu" == xx86_64; then
+    AC_DEFINE(X86_64,,[64 bit arch])
+fi
+
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
 

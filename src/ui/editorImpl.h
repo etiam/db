@@ -103,7 +103,7 @@ class EditorImpl: public QObject
         return escaped;
     }
 
-  public slots:
+  public Q_SLOTS:
       void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
 
   public:

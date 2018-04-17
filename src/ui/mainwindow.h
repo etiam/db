@@ -1,3 +1,10 @@
+/*
+ * mainWindow.h
+ *
+ *  Created on: Feb 6, 2018
+ *      Author: jasonr
+ */
+
 #ifndef UI_MAINWINDOW_H_
 #define UI_MAINWINDOW_H_
 

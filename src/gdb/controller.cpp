@@ -14,14 +14,14 @@
 #include <thread>
 #include <regex>
 
-#include "core/signal.h"
-
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
 
 #include "core/global.h"
 #include "core/optionsManager.h"
+#include "core/signal.h"
+
 
 #include "util.h"
 #include "controller.h"
