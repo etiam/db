@@ -24,10 +24,9 @@
 namespace Core
 {
 
-extern wink::signal<wink::slot<void (const std::string &filename)>>     loadFileSignal;
-extern wink::signal<wink::slot<void ()>>                                loadFileCompleteSignal;
-extern wink::signal<wink::slot<void (int, int)>>                        setCursorPositionSignal;
-
+extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFileSignal;
+extern wink::signal<wink::slot<void ()>>                                        loadFileCompleteSignal;
+extern wink::signal<wink::slot<void (int, int)>>                                setCursorPositionSignal;
 extern wink::signal<wink::slot<void (const std::string &text, bool newline)>>   appendConsoleTextSignal;
 
 } // namespace Core

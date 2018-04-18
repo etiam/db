@@ -50,9 +50,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // main editor window
     m_editor = new Editor();
 
-    m_editor->setBreakpointMarker(1);
-    m_editor->setBreakpointMarker(2);
-
     // tabs window
     m_tabWidget = new QTabWidget();
     m_tabWidget->setTabsClosable(true);
@@ -64,10 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // add editor and tabwidget to main
     m_splitter->addWidget(m_editor);
     m_splitter->addWidget(m_tabWidget);
-
-    // set splitter sizes
-    auto h = size().height();
-    m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
 
     // settings
     readSettings();
@@ -94,14 +87,22 @@ MainWindow::readSettings()
     resize(settings.value("size", QSize(720, 480)).toSize());
     move(settings.value("pos", QPoint(10, 10)).toPoint());
 
-    QList<int> sizes;
-    for (const auto &size : settings.value("splitter").toStringList())
-        sizes.append(size.toInt());
-    m_splitter->setSizes(sizes);
+    if (settings.contains("splitter"))
+    {
+        QList<int> sizes;
+        for (const auto &size : settings.value("splitter").toStringList())
+            sizes.append(size.toInt());
+        m_splitter->setSizes(sizes);
+    }
+    else
+    {
+        auto h = size().height();
+        m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
+    }
 }
 
 void
-MainWindow::writeSettings()
+MainWindow::writeSettings() const
 {
     QSettings settings("db", "mainwindow");
 

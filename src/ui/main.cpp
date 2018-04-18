@@ -11,6 +11,10 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QSettings>
+
+#include "core/global.h"
+#include "core/optionsManager.h"
 
 #include "mainwindow.h"
 #include "main.h"
@@ -31,6 +35,8 @@ Main::Main(int &argc, char *argv[])
     QString style(stylefile.readAll());
     m_app->setStyleSheet(style);
 
+    readSettings();
+
     // create a MainWindow
     m_mainWindow = std::make_unique<MainWindow>();
     m_mainWindow->setObjectName("mainwindow");
@@ -39,12 +45,7 @@ Main::Main(int &argc, char *argv[])
 
 Main::~Main()
 {
-}
-
-void
-Main::initialize()
-{
-    m_initialized = true;
+    writeSettings();
 }
 
 void
@@ -54,6 +55,28 @@ Main::run()
         initialize();
 
     m_app->exec();
+}
+
+void
+Main::initialize()
+{
+    m_initialized = true;
+}
+
+void
+Main::readSettings()
+{
+    QSettings settings("db", "core");
+
+    Core::optionsManager()->setOption("breakonmain", settings.value("breakonmain", true).toBool());
+}
+
+void
+Main::writeSettings() const
+{
+    QSettings settings("db", "core");
+
+    settings.setValue("breakonmain", Core::optionsManager()->getOption<bool>("breakonmain"));
 }
 
 }

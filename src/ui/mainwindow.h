@@ -33,8 +33,9 @@ class MainWindow : public QMainWindow
     MainWindow(QWidget *parent=0);
     ~MainWindow();
 
+  private:
     void        readSettings();
-    void        writeSettings();
+    void        writeSettings() const;
 
     // menu creation
     void        createMenus();
@@ -42,13 +43,6 @@ class MainWindow : public QMainWindow
 
     void        createHotkeys();
 
-  private Q_SLOTS:
-    void        loadFile(const QString &filename);
-    void        loadFileComplete();
-    void        setCursorPosition(int row, int column);
-    void        appendConsoleText(const QString &text, bool newline);
-
-  private:
     // wink signal handlers
     void        onLoadFileSignal(const std::string &filename);
     void        onLoadFileCompleteSignal();
@@ -59,6 +53,14 @@ class MainWindow : public QMainWindow
     Console *       m_console;
     QTabWidget *    m_tabWidget;
     QSplitter *     m_splitter;
+
+  private Q_SLOTS:
+    void        loadFile(const QString &filename);
+    void        loadFileComplete();
+    void        setCursorPosition(int row, int column);
+    void        appendConsoleText(const QString &text, bool newline);
+
+
 };
 
 }

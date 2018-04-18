@@ -49,8 +49,11 @@ startupThread(const variables_map &vm)
         gdb->loadFile(filename);
         gdb->jumpToMain();
 
-//        gdb->executeCommand("file-list-exec-source-files");
-//        gdb->executeCommand("break-insert main");
+        if (Core::optionsManager()->getOption<bool>("breakonmain"))
+        {
+//            gdb->executeCommand("file-list-exec-source-files");
+            gdb->executeCommand("break-insert main");
+        }
 
         ast->setBuildPath(buildpath);
     }

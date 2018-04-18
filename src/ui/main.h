@@ -31,6 +31,9 @@ class Main
   private:
     void                            initialize();
 
+    void                            readSettings();
+    void                            writeSettings() const;
+
     bool                            m_initialized = false;
 
     std::unique_ptr<QApplication>   m_app;
