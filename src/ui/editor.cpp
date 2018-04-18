@@ -38,6 +38,7 @@ Editor::Editor(QMainWindow *parent) :
     setTheme("clouds_midnight");
 
     Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
+    Core::setBreakpointSignal.connect(this, &Editor::onSetBreakpointSignal);
     Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
@@ -67,12 +68,6 @@ QString
 Editor::getText()
 {
     return m_impl->executeJavaScript(QString("editor.getSession().getValue()")).toString();
-}
-
-void
-Editor::setBreakpointMarker(int row)
-{
-    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1)").arg(row-1));
 }
 
 void
@@ -129,6 +124,12 @@ Editor::onLoadFileSignal(const std::string &filename)
 }
 
 void
+Editor::onSetBreakpointSignal(int row)
+{
+    QMetaObject::invokeMethod(this, "setBreakpoint", Qt::QueuedConnection, Q_ARG(int, row));
+}
+
+void
 Editor::onSetCursorPositionSignal(int row, int column)
 {
     QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
@@ -153,6 +154,12 @@ Editor::loadFile(const QString &filename)
         auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
         setGutterWidth(numdigits);
     }
+}
+
+void
+Editor::setBreakpoint(int row)
+{
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1)").arg(row-1));
 }
 
 void
