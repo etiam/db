@@ -12,7 +12,6 @@
 # include "config.h"
 #endif
 
-#include <memory>
 #include <QMap>
 #include <QMainWindow>
 
@@ -34,33 +33,19 @@ class MainWindow : public QMainWindow
     ~MainWindow();
 
   private:
-    void        readSettings();
-    void        writeSettings() const;
+    void            readSettings();
+    void            writeSettings() const;
 
     // menu creation
-    void        createMenus();
-    void        createFileMenu();
+    void            createMenus();
+    void            createFileMenu();
 
-    void        createHotkeys();
-
-    // wink signal handlers
-    void        onLoadFileSignal(const std::string &filename);
-    void        onLoadFileCompleteSignal();
-    void        onSetCursorPositionSignal(int row, int column);
-    void        onAppendConsoleTextSignal(const std::string &text, bool newline);
+    void            createHotkeys();
 
     Editor *        m_editor;
     Console *       m_console;
     QTabWidget *    m_tabWidget;
     QSplitter *     m_splitter;
-
-  private Q_SLOTS:
-    void        loadFile(const QString &filename);
-    void        loadFileComplete();
-    void        setCursorPosition(int row, int column);
-    void        appendConsoleText(const QString &text, bool newline);
-
-
 };
 
 }

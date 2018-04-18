@@ -26,8 +26,13 @@ class Console: public QPlainTextEdit
     Console(QWidget *parent=0);
     virtual ~Console();
 
+  public Q_SLOTS:
     void appendText(const QString &text, bool newline=true);
 
+  private:
+
+    // wink signal handlers
+    void onAppendConsoleTextSignal(const std::string &text, bool newline);
 };
 
 }

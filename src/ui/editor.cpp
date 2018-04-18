@@ -36,6 +36,9 @@ Editor::Editor(QMainWindow *parent) :
 
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
+
+    Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
+    Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
 Editor::~Editor()
@@ -70,17 +73,6 @@ void
 Editor::setBreakpointMarker(int row)
 {
     m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1)").arg(row-1));
-//        m_impl->executeJavaScript(QString("editor.getSession().setMarker(%1, \"language_highlight_default\")").arg(row-1));
-}
-
-void
-Editor::setCursorPosition(int row, int column)
-{
-    if (getNumLines() > row && getLineLength(row) >= column)
-    {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
-        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
-    }
 }
 
 void
@@ -126,6 +118,51 @@ int
 Editor::getLineLength(int row) const
 {
     return getLineText(row).length();
+}
+
+// wink signal handlers
+
+void
+Editor::onLoadFileSignal(const std::string &filename)
+{
+    QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(filename)));
+}
+
+void
+Editor::onSetCursorPositionSignal(int row, int column)
+{
+    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
+}
+
+// qt slots
+
+void
+Editor::loadFile(const QString &filename)
+{
+    // read file into editor
+    if (!filename.isEmpty())
+    {
+        QFile file(filename);
+        QTextStream stream(&file);
+
+        file.open(QFile::ReadOnly | QFile::Text);
+        auto text = stream.readAll();
+        setText(text);
+
+        auto numlines = text.count("\n");
+        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+        setGutterWidth(numdigits);
+    }
+}
+
+void
+Editor::setCursorPosition(int row, int column)
+{
+    if (getNumLines() > row && getLineLength(row) >= column)
+    {
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
+        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+    }
 }
 
 }

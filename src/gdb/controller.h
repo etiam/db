@@ -35,8 +35,9 @@ class Controller
 
     int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
 
-    void    loadFile(const std::string &filename);
-    void    jumpToMain();
+    void    fileExec(const std::string &filename);
+    void    breakInsert(const std::string &function);
+    void    infoAddress(const std::string &function);
 
   private:
     std::unique_ptr<ControllerImpl>   m_impl;

@@ -46,14 +46,14 @@ startupThread(const variables_map &vm)
         opts.insert(std::make_pair("filename", variable_value(filename, false)));
         opts.insert(std::make_pair("buildpath", variable_value(buildpath, false)));
 
-        gdb->loadFile(filename);
-        gdb->jumpToMain();
+        gdb->fileExec(filename);
 
         if (Core::optionsManager()->getOption<bool>("breakonmain"))
-        {
-//            gdb->executeCommand("file-list-exec-source-files");
-            gdb->executeCommand("break-insert main");
-        }
+            gdb->breakInsert("main");
+        else
+            gdb->infoAddress("main");
+
+//        gdb->executeCommand("file-list-exec-source-files");
 
         ast->setBuildPath(buildpath);
     }

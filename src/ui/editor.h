@@ -38,8 +38,6 @@ class Editor : public QWidget
 
     void    setBreakpointMarker(int row);
 
-    void    setCursorPosition(int row, int column);
-
     void    setTheme(const QString &name);
 
     void    setHighlightMode(const QString &name);
@@ -51,7 +49,15 @@ class Editor : public QWidget
     int     getNumLines() const;
     int     getLineLength(int row) const;
 
+    // wink signal handlers
+    void    onLoadFileSignal(const std::string &filename);
+    void    onSetCursorPositionSignal(int row, int column);
+
     std::unique_ptr<EditorImpl> m_impl;
+
+  private Q_SLOTS:
+    void    loadFile(const QString &filename);
+    void    setCursorPosition(int row, int column);
 };
 
 }

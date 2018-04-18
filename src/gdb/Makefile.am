@@ -1,8 +1,10 @@
 db_SOURCES               +=                                                     \
                             src/gdb/controller.cpp                              \
                             src/gdb/result.cpp                                  \
-                            src/gdb/loadFile.cpp                                \
-                            src/gdb/jumpToMain.cpp
+                                                                                \
+                            src/gdb/handlers/file-exec.cpp                      \
+                            src/gdb/handlers/break-insert.cpp                   \
+                            src/gdb/handlers/info-address.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

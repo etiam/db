@@ -9,6 +9,8 @@
 # include "config.h"
 #endif
 
+#include "core/signal.h"
+
 #include "console.h"
 
 namespace Ui
@@ -19,6 +21,8 @@ Console::Console(QWidget *parent) :
 {
     setReadOnly(true);
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+
+    Core::appendConsoleTextSignal.connect(this, &Console::onAppendConsoleTextSignal);
 }
 
 Console::~Console()
@@ -34,6 +38,15 @@ Console::appendText(const QString &text, bool newline)
         moveCursor(QTextCursor::Up);
         moveCursor(QTextCursor::EndOfLine);
     }
+}
+
+// wink signal handlers
+
+void
+Console::onAppendConsoleTextSignal(const std::string &text, bool newline)
+{
+    QMetaObject::invokeMethod(this, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)),
+                                                                        Q_ARG(bool, newline));
 }
 
 }

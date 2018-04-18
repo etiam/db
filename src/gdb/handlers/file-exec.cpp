@@ -18,21 +18,19 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "controller.h"
-#include "result.h"
+#include "gdb/controller.h"
+#include "gdb/result.h"
 
 namespace
 {
 
 bool
-loadfileresponse(const Gdb::Result &result, int token)
+fileexecresponse(const Gdb::Result &result, int token)
 {
     auto ret = result.token.value == token;
 
     if (ret)
-    {
-        Core::loadFileCompleteSignal();
-    }
+        Core::appendConsoleTextSignal(result.message.string.string, true);
 
     return ret;
 }
@@ -42,14 +40,13 @@ loadfileresponse(const Gdb::Result &result, int token)
 namespace Gdb
 {
 
-namespace Util
+namespace Handlers
 {
 
-void loadFile(const std::string &filename)
+void fileExec(const std::string &filename)
 {
     std::string cmd = "file-exec-and-symbols " + filename;
-    Core::gdb()->executeCommand(cmd, loadfileresponse);
-
+    Core::gdb()->executeCommand(cmd, fileexecresponse);
 }
 
 }

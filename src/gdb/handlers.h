@@ -17,11 +17,12 @@
 namespace Gdb
 {
 
-namespace Util
+namespace Handlers
 {
 
-void loadFile(const std::string &filename);
-void jumpToMain();
+void fileExec(const std::string &filename);
+void breakInsert(const std::string &function);
+void infoAddress(const std::string &function);
 
 }
 

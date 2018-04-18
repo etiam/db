@@ -1,5 +1,5 @@
 /*
- * Result.h
+ * result.h
  *
  *  Created on: Apr 4, 2018
  *      Author: jasonr
@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef Result_H_
-#define Result_H_
+#ifndef RESULT_H_
+#define RESULT_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -89,9 +89,16 @@ struct Result
 
 Result parseResult(PyObject *object);
 
-std::ostream & operator <<(std::ostream &stream, const String &string);
-std::ostream & operator <<(std::ostream &stream, const Result &result);
+std::ostream & operator <<(std::ostream &out, const String &string);
+std::ostream & operator <<(std::ostream &out, const Message message);
+std::ostream & operator <<(std::ostream &out, const Payload::Dict dict);
+std::ostream & operator <<(std::ostream &out, const Payload::List list);
+std::ostream & operator <<(std::ostream &out, const Payload payload);
+std::ostream & operator <<(std::ostream &out, const Stream stream);
+std::ostream & operator <<(std::ostream &out, const Token token);
+std::ostream & operator <<(std::ostream &out, const Type type);
+std::ostream & operator <<(std::ostream &out, const Result &result);
 
 }
 
-#endif // Result_H_
+#endif // RESULT_H_

@@ -23,7 +23,7 @@
 #include "core/signal.h"
 
 
-#include "util.h"
+#include <gdb/handlers.h>
 #include "controller.h"
 
 namespace Gdb
@@ -38,9 +38,10 @@ class ControllerImpl
     void            initialize();
 
     int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
-    void            loadFile(const std::string &filename);
 
-    void            jumpToMain();
+    void            fileExec(const std::string &filename);
+    void            breakInsert(const std::string &function);
+    void            infoAddress(const std::string &function);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
@@ -224,8 +225,6 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
     std::stringstream stream;
     stream << m_token << "-" << command;
 
-    m_token++;
-
     // store response data
     if (response != nullptr)
         m_responses.push_back({response, m_token, persistent});
@@ -240,25 +239,34 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
     // release python GIL
     PyGILState_Release(gstate);
 
-    return m_token;
+    return m_token++;
 }
 
 void
-ControllerImpl::loadFile(const std::string &filename)
+ControllerImpl::fileExec(const std::string &filename)
 {
     if (!m_initialized)
         initialize();
 
-    Util::loadFile(filename);
+    Handlers::fileExec(filename);
 }
 
 void
-ControllerImpl::jumpToMain()
+ControllerImpl::breakInsert(const std::string &function)
 {
     if (!m_initialized)
         initialize();
 
-    Util::jumpToMain();
+    Handlers::breakInsert(function);
+}
+
+void
+ControllerImpl::infoAddress(const std::string &function)
+{
+    if (!m_initialized)
+        initialize();
+
+    Handlers::infoAddress(function);
 }
 
 void
@@ -328,16 +336,22 @@ Controller::executeCommand(const std::string &command, ResponseFunc response, bo
 }
 
 void
-Controller::loadFile(const std::string &filename)
+Controller::fileExec(const std::string &filename)
 {
     Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
-    m_impl->loadFile(filename);
+    m_impl->fileExec(filename);
 }
 
 void
-Controller::jumpToMain()
+Controller::breakInsert(const std::string &function)
 {
-    m_impl->jumpToMain();
+    m_impl->breakInsert(function);
+}
+
+void
+Controller::infoAddress(const std::string &function)
+{
+    m_impl->infoAddress(function);
 }
 
 }

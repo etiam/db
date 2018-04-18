@@ -1,9 +1,10 @@
 /*
- * breakpoint.cpp
+ * gdbUtiil.cpp
  *
- *  Created on: Apr 17, 2018
+ *  Created on: Apr 10, 2018
  *      Author: jasonr
  */
+
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -17,14 +18,14 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "controller.h"
-#include "result.h"
+#include "gdb/controller.h"
+#include "gdb/result.h"
 
 namespace
 {
 
 bool
-lineresponse(const Gdb::Result &result, int token)
+infolineresponse(const Gdb::Result &result, int token)
 {
     static std::regex lineRegex(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
 
@@ -53,7 +54,7 @@ lineresponse(const Gdb::Result &result, int token)
 }
 
 bool
-addressresponse(const Gdb::Result &result, int token)
+infoaddressresponse(const Gdb::Result &result, int token)
 {
     static std::regex addrRegex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
 
@@ -67,7 +68,7 @@ addressresponse(const Gdb::Result &result, int token)
     if (ret)
     {
         std::string cmd = "interpreter-exec console \"info line *" + match[2].str() + "\"";
-        Core::gdb()->executeCommand(cmd, lineresponse);
+        Core::gdb()->executeCommand(cmd, infolineresponse);
     }
 
     return ret;
@@ -78,19 +79,15 @@ addressresponse(const Gdb::Result &result, int token)
 namespace Gdb
 {
 
-namespace Util
+namespace Handlers
 {
 
-void breakpoint()
+void infoAddress(const std::string &function)
 {
-    std::string cmd = "interpreter-exec console \"info address main\"";
-    Core::gdb()->executeCommand(cmd, addressresponse);
+    std::string cmd = "interpreter-exec console \"info address " + function + "\"";
+    Core::gdb()->executeCommand(cmd, infoaddressresponse);
 }
 
 }
 
 }
-
-
-
-

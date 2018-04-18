@@ -1,5 +1,5 @@
 /*
- * Result.h
+ * result.h
  *
  *  Created on: Apr 5, 2018
  *      Author: jasonr
@@ -271,9 +271,6 @@ parseResult(PyObject *object)
     return result;
 }
 
-std::ostream & operator <<(std::ostream &out, Payload::Dict dict);
-std::ostream & operator <<(std::ostream &out, Payload::List list);
-
 std::ostream &
 operator <<(std::ostream &out, const String &string)
 {
@@ -282,7 +279,7 @@ operator <<(std::ostream &out, const String &string)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Message message)
+operator <<(std::ostream &out, const Message message)
 {
     switch (message.type)
     {
@@ -299,7 +296,7 @@ operator <<(std::ostream &out, Message message)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Payload::List list)
+operator <<(std::ostream &out, const Payload::List list)
 {
     out << "[";
     for (auto&& a : enumerate(list))
@@ -340,7 +337,7 @@ operator <<(std::ostream &out, Payload::List list)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Payload::Dict dict)
+operator <<(std::ostream &out, const Payload::Dict dict)
 {
     out << "{";
     for (auto&& a : enumerate(dict))
@@ -382,7 +379,7 @@ operator <<(std::ostream &out, Payload::Dict dict)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Payload payload)
+operator <<(std::ostream &out, const Payload payload)
 {
     switch (payload.type)
     {
@@ -403,7 +400,7 @@ operator <<(std::ostream &out, Payload payload)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Stream stream)
+operator <<(std::ostream &out, const Stream stream)
 {
     switch (stream)
     {
@@ -423,7 +420,7 @@ operator <<(std::ostream &out, Stream stream)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Token token)
+operator <<(std::ostream &out, const Token token)
 {
     if (token.value == -1)
     {
@@ -437,7 +434,7 @@ operator <<(std::ostream &out, Token token)
 }
 
 std::ostream &
-operator <<(std::ostream &out, Type type)
+operator <<(std::ostream &out, const Type type)
 {
     switch (type)
     {
