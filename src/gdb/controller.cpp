@@ -40,7 +40,7 @@ class ControllerImpl
     int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
 
     void            fileExec(const std::string &filename);
-    void            breakInsert(const std::string &function);
+    void            breakInsert(const std::string &location);
     void            infoAddress(const std::string &function);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
@@ -92,7 +92,7 @@ ControllerImpl::~ControllerImpl()
 void
 ControllerImpl::initialize()
 {
-    m_verbose = Core::optionsManager()->hasOption("verbose");
+    m_verbose = Core::optionsManager()->has("verbose");
 
     Py_Initialize();
     if (!PyEval_ThreadsInitialized())
@@ -252,12 +252,12 @@ ControllerImpl::fileExec(const std::string &filename)
 }
 
 void
-ControllerImpl::breakInsert(const std::string &function)
+ControllerImpl::breakInsert(const std::string &location)
 {
     if (!m_initialized)
         initialize();
 
-    Handlers::breakInsert(function);
+    Handlers::breakInsert(location);
 }
 
 void
@@ -343,9 +343,9 @@ Controller::fileExec(const std::string &filename)
 }
 
 void
-Controller::breakInsert(const std::string &function)
+Controller::breakInsert(const std::string &location)
 {
-    m_impl->breakInsert(function);
+    m_impl->breakInsert(location);
 }
 
 void

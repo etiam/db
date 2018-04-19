@@ -42,6 +42,11 @@ class Editor : public QWidget
 
     void    setKeyboardHandler(const QString &name);
 
+  public Q_SLOTS:
+    void    onSetBreakpoint(int row);
+    void    onCursorMoved(int x, int y);
+    void    onMouseMoved(int x, int y);
+
   private:
     QString getLineText(int row) const;
     int     getNumLines() const;

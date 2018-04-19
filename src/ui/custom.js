@@ -29,14 +29,14 @@ editor.on('change', function()
 editor.on('mousemove', function(e) 
 {
     sc = editor.renderer.pixelToScreenCoordinates(e.clientX, e.clientY);
-//    codeview.onMouseMove(sc.row + 1, sc.column + 1);
+    codeview.onMouseMoved(sc.row + 1, sc.column + 1);
 });
 
 // callback for keypress
 editor.on("keyboardActivity", function(e) 
 {
 	cp = editor.getCursorPosition()
-    codeview.onMouseMove(cp.row + 1, cp.column + 1);
+    codeview.onCursorMoved(cp.row + 1, cp.column + 1);
 });
 
 editor.on("guttermousedown", function(e) 
@@ -50,7 +50,7 @@ editor.on("guttermousedown", function(e)
         return; 
 
     var row = e.getDocumentPosition().row;
-    e.editor.session.setBreakpoint(row);
+    codeview.onSetBreakpoint(row + 1);
     e.stop();
 });
 

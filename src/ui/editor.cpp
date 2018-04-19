@@ -14,7 +14,11 @@
 #include <QtWebKit>
 #include <QtWebKitWidgets>
 
+#include "core/global.h"
+#include "core/state.h"
 #include "core/signal.h"
+
+#include "gdb/controller.h"
 
 #include "editor.h"
 
@@ -78,7 +82,7 @@ class EditorImpl: public QObject
         loop.exec();
 
         QWebFrame *frame = m_webView->page()->mainFrame();
-        frame->addToJavaScriptWindowObject("codeview", this);
+        frame->addToJavaScriptWindowObject("codeview", m_parent);
 
         QFile custom(":/ace/custom.js");
         if (custom.open(QIODevice::ReadOnly))
@@ -99,9 +103,6 @@ class EditorImpl: public QObject
 
         return escaped;
     }
-
-  public Q_SLOTS:
-      void onMouseMove(int x, int y) { std::cout << x << ", " << y << std::endl; };
 
   public:
     Editor *        m_parent;
@@ -138,6 +139,8 @@ Editor::Editor(QMainWindow *parent) :
 Editor::~Editor()
 {
 }
+
+// public functions
 
 void
 Editor::setGutterWidth(int width)
@@ -190,6 +193,31 @@ Editor::setKeyboardHandler(const QString &name)
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
 }
 
+
+// public slots
+
+void
+Editor::onSetBreakpoint(int row)
+{
+    std::cout << "onsetbreakpoint " << row << std::endl;
+    auto filename = Core::state()->get<std::string>("currentfilename");
+    Core::gdb()->breakInsert(filename + ":" + std::to_string(row));
+}
+
+void
+Editor::onCursorMoved(int x, int y)
+{
+    std::cout << "oncursormoved " << x << ", " << y << std::endl;
+}
+
+void
+Editor::onMouseMoved(int x, int y)
+{
+    std::cout << "onmousemoved " << x << ", " << y << std::endl;
+}
+
+// private functions
+
 QString
 Editor::getLineText(int row) const
 {
@@ -228,7 +256,7 @@ Editor::onSetCursorPositionSignal(int row, int column)
     QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
 }
 
-// qt slots
+// private slots
 
 void
 Editor::loadFile(const QString &filename)
@@ -246,6 +274,9 @@ Editor::loadFile(const QString &filename)
         auto numlines = text.count("\n");
         auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
         setGutterWidth(numdigits);
+
+        // store the current filename
+        Core::state()->set("currentfilename", filename.toStdString());
     }
 }
 

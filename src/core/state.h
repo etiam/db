@@ -14,15 +14,13 @@
 # include "config.h"
 #endif
 
-#include <boost/program_options.hpp>
+#include "anymap.h"
 
 namespace Core
 {
 
-class State
+class State : public AnyMap
 {
-  public:
-    boost::program_options::variables_map   m_options;
 };
 
 }

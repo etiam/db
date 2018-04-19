@@ -37,17 +37,22 @@ infolineresponse(const Gdb::Result &result, int token)
 
     if (ret)
     {
+        auto &state = Core::state();
         auto filename = match[2].str();
 
         // if filename is relative, convert to absolute based on buildpath
         if (!boost::filesystem::path(match[2].str()).is_absolute())
         {
-            auto buildpath = Core::state()->m_options["buildpath"].as<std::string>();
+            auto buildpath = state->get<std::string>("buildpath");
             filename = boost::filesystem::absolute(filename, buildpath).string();
         }
 
-        Core::loadFileSignal(filename);
-        Core::setCursorPositionSignal(std::stoi(match[1]), 0);
+        if(!state->has("initialdisplay") || !state->get<bool>("initialdisplay"))
+        {
+            Core::loadFileSignal(filename);
+            Core::setCursorPositionSignal(std::stoi(match[1]), 0);
+            state->set("initialdisplay", true);
+        }
     }
 
     return ret;

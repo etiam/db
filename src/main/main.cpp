@@ -32,10 +32,9 @@ startupThread(const variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "startup");
 
+    auto &state = Core::state();
     auto &gdb = Core::gdb();
     auto &ast = Core::astBuilder();
-
-    auto opts = vm;
 
     // load prog
     if (vm.count("prog"))
@@ -43,12 +42,12 @@ startupThread(const variables_map &vm)
         auto filename = vm["prog"].as<std::string>();
         auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
 
-        opts.insert(std::make_pair("filename", variable_value(filename, false)));
-        opts.insert(std::make_pair("buildpath", variable_value(buildpath, false)));
+        state->set("filename", filename);
+        state->set("buildpath", buildpath);
 
         gdb->fileExec(filename);
 
-        if (Core::optionsManager()->getOption<bool>("breakonmain"))
+        if (Core::optionsManager()->get<bool>("breakonmain"))
             gdb->breakInsert("main");
         else
             gdb->infoAddress("main");
@@ -60,12 +59,9 @@ startupThread(const variables_map &vm)
 
     else
     {
-        opts.insert(std::make_pair("filename", variable_value(std::string(), false)));
-        opts.insert(std::make_pair("buildpath", variable_value(std::string(), false)));
-
+        state->set("filename", std::string());
+        state->set("buildpath", std::string());
     }
-
-    Core::state()->m_options = opts;
 }
 
 int
@@ -120,7 +116,7 @@ main(int argc, char *argv[])
     // --verbose
     if (vm.count("verbose"))
     {
-        Core::optionsManager()->setOption("verbose", true);
+        Core::optionsManager()->set("verbose", true);
     }
 
     auto gui = std::make_unique<Ui::Main>(argc, argv);

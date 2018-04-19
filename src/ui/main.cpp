@@ -68,7 +68,7 @@ Main::readSettings()
 {
     QSettings settings("db", "core");
 
-    Core::optionsManager()->setOption("breakonmain", settings.value("breakonmain", true).toBool());
+    Core::optionsManager()->set("breakonmain", settings.value("breakonmain", true).toBool());
 }
 
 void
@@ -76,7 +76,7 @@ Main::writeSettings() const
 {
     QSettings settings("db", "core");
 
-    settings.setValue("breakonmain", Core::optionsManager()->getOption<bool>("breakonmain"));
+    settings.setValue("breakonmain", Core::optionsManager()->get<bool>("breakonmain"));
 }
 
 }

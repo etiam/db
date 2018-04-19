@@ -30,13 +30,19 @@ breakinsertresponse(const Gdb::Result &result, int token)
 
     if (ret)
     {
+        auto &state = Core::state();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
         auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
         auto line = boost::any_cast<char *>(bkpt.at("line"));
 
-        Core::loadFileSignal(filename);
-        Core::setCursorPositionSignal(std::stoi(line), 0);
+        if(!state->has("initialdisplay") || !state->get<bool>("initialdisplay"))
+        {
+            Core::loadFileSignal(filename);
+            Core::setCursorPositionSignal(std::stoi(line), 0);
+            state->set("initialdisplay", true);
+        }
+
         Core::setBreakpointSignal(std::stoi(line));
     }
 
@@ -51,9 +57,9 @@ namespace Gdb
 namespace Handlers
 {
 
-void breakInsert(const std::string &function)
+void breakInsert(const std::string &location)
 {
-    std::string cmd = "break-insert  " + function;
+    std::string cmd = "break-insert  " + location;
     Core::gdb()->executeCommand(cmd, breakinsertresponse);
 }
 
