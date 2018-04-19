@@ -7,7 +7,6 @@ db_SOURCES               +=                                             \
 nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainwindow.cpp                   \
                             src/ui/moc_editor.cpp                       \
-                            src/ui/moc_editorImpl.cpp                   \
                             src/ui/moc_console.cpp                      \
                                                                         \
                             src/ui/qrc_editor.cpp
