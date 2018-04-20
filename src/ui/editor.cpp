@@ -132,7 +132,7 @@ Editor::Editor(QMainWindow *parent) :
     setTheme("clouds_midnight");
 
     Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
-    Core::setBreakpointSignal.connect(this, &Editor::onSetBreakpointSignal);
+    Core::showBreakpointMarkerSignal.connect(this, &Editor::onShowBreakpointMarkerSignal);
     Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
@@ -197,7 +197,7 @@ Editor::setKeyboardHandler(const QString &name)
 // public slots
 
 void
-Editor::onSetBreakpoint(int row)
+Editor::onGutterClicked(int row)
 {
     std::cout << "onsetbreakpoint " << row << std::endl;
     auto filename = Core::state()->get<std::string>("currentfilename");
@@ -245,9 +245,9 @@ Editor::onLoadFileSignal(const std::string &filename)
 }
 
 void
-Editor::onSetBreakpointSignal(int row)
+Editor::onShowBreakpointMarkerSignal(int row, bool enabled)
 {
-    QMetaObject::invokeMethod(this, "setBreakpoint", Qt::QueuedConnection, Q_ARG(int, row));
+    QMetaObject::invokeMethod(this, "showBreakpointMarker", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(bool, enabled));
 }
 
 void
@@ -281,9 +281,12 @@ Editor::loadFile(const QString &filename)
 }
 
 void
-Editor::setBreakpoint(int row)
+Editor::showBreakpointMarker(int row, bool enabled)
 {
-    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1)").arg(row-1));
+//    if (enabled)
+//        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint\")").arg(row-1));
+//    else
+        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint_disabled\")").arg(row-1));
 }
 
 void

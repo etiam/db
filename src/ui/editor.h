@@ -43,7 +43,7 @@ class Editor : public QWidget
     void    setKeyboardHandler(const QString &name);
 
   public Q_SLOTS:
-    void    onSetBreakpoint(int row);
+    void    onGutterClicked(int row);
     void    onCursorMoved(int x, int y);
     void    onMouseMoved(int x, int y);
 
@@ -54,14 +54,14 @@ class Editor : public QWidget
 
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);
-    void    onSetBreakpointSignal(int row);
+    void    onShowBreakpointMarkerSignal(int row, bool enabled);
     void    onSetCursorPositionSignal(int row, int column);
 
     std::unique_ptr<EditorImpl> m_impl;
 
   private Q_SLOTS:
     void    loadFile(const QString &filename);
-    void    setBreakpoint(int row);
+    void    showBreakpointMarker(int row, bool enabled);
     void    setCursorPosition(int row, int column);
 };
 

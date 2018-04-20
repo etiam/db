@@ -50,7 +50,7 @@ editor.on("guttermousedown", function(e)
         return; 
 
     var row = e.getDocumentPosition().row;
-    codeview.onSetBreakpoint(row + 1);
+    codeview.onGutterClicked(row + 1);
     e.stop();
 });
 

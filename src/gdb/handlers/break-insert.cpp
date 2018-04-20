@@ -43,7 +43,7 @@ breakinsertresponse(const Gdb::Result &result, int token)
             state->set("initialdisplay", true);
         }
 
-        Core::setBreakpointSignal(std::stoi(line));
+        Core::showBreakpointMarkerSignal(std::stoi(line), true);
     }
 
     return ret;
