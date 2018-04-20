@@ -14,6 +14,7 @@ function property(param, value)
 
 // the number of lines in the document
 property("lines", 1);
+property("charheight", editor.renderer.characterHeight);
 
 // calc number of lines when document changes
 editor.on('change', function() 

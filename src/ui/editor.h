@@ -51,6 +51,7 @@ class Editor : public QWidget
     QString getLineText(int row) const;
     int     getNumLines() const;
     int     getLineLength(int row) const;
+    int     getCharacterHeight() const;
 
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);

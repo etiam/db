@@ -63,6 +63,11 @@ class EditorImpl: public QObject
        auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
        std::cout << "setting text size multiplier to " << factor << std::endl;
        m_webView->setTextSizeMultiplier(factor);
+
+       QWebView myView;
+       QWebSettings * settings = m_webView->settings();
+       QUrl myCssFileURL;
+       settings->setUserStyleSheetUrl(myCssFileURL);
     }
 
     ~EditorImpl() {};
@@ -158,6 +163,8 @@ Editor::setText(const QString &newText)
     m_impl->executeJavaScript(request.arg(m_impl->escape(newText)));
 
     setCursorPosition(1, 1);
+
+    std::cout << "ch: " << getCharacterHeight() << std::endl;
 }
 
 QString
@@ -193,15 +200,14 @@ Editor::setKeyboardHandler(const QString &name)
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
 }
 
-
 // public slots
 
 void
 Editor::onGutterClicked(int row)
 {
-    std::cout << "onsetbreakpoint " << row << std::endl;
+    std::cout << "ongutterclicked " << row << std::endl;
     auto filename = Core::state()->get<std::string>("currentfilename");
-    Core::gdb()->breakInsert(filename + ":" + std::to_string(row));
+    Core::gdb()->insertBreakpoint(filename + ":" + std::to_string(row));
 }
 
 void
@@ -234,6 +240,12 @@ int
 Editor::getLineLength(int row) const
 {
     return getLineText(row).length();
+}
+
+int
+Editor::getCharacterHeight() const
+{
+    return m_impl->executeJavaScript("editor.renderer.lineHeight").toInt();
 }
 
 // wink signal handlers
@@ -283,9 +295,9 @@ Editor::loadFile(const QString &filename)
 void
 Editor::showBreakpointMarker(int row, bool enabled)
 {
-//    if (enabled)
-//        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint\")").arg(row-1));
-//    else
+    if (enabled)
+        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint\")").arg(row-1));
+    else
         m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint_disabled\")").arg(row-1));
 }
 

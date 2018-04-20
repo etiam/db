@@ -35,8 +35,8 @@ class Controller
 
     int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
 
-    void    fileExec(const std::string &filename);
-    void    breakInsert(const std::string &function);
+    void    loadProgram(const std::string &filename);
+    void    insertBreakpoint(const std::string &function);
     void    infoAddress(const std::string &function);
 
   private:

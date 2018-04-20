@@ -40,7 +40,8 @@
                 "${workspaceRoot}/src",
                 "/usr/include/x86_64-linux-gnu/qt5/QtWidgets",
                 "/usr/include/x86_64-linux-gnu/qt5/QtWebKit",
-                "/usr/include/x86_64-linux-gnu/qt5/QtWebKitWidgets"
+                "/usr/include/x86_64-linux-gnu/qt5/QtWebKitWidgets",
+                "/usr/include/python2.7"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",

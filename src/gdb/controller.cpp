@@ -39,8 +39,8 @@ class ControllerImpl
 
     int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
 
-    void            fileExec(const std::string &filename);
-    void            breakInsert(const std::string &location);
+    void            loadProgram(const std::string &filename);
+    void            insertBreakpoint(const std::string &location);
     void            infoAddress(const std::string &function);
 
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
@@ -243,7 +243,7 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
 }
 
 void
-ControllerImpl::fileExec(const std::string &filename)
+ControllerImpl::loadProgram(const std::string &filename)
 {
     if (!m_initialized)
         initialize();
@@ -252,7 +252,7 @@ ControllerImpl::fileExec(const std::string &filename)
 }
 
 void
-ControllerImpl::breakInsert(const std::string &location)
+ControllerImpl::insertBreakpoint(const std::string &location)
 {
     if (!m_initialized)
         initialize();
@@ -336,16 +336,16 @@ Controller::executeCommand(const std::string &command, ResponseFunc response, bo
 }
 
 void
-Controller::fileExec(const std::string &filename)
+Controller::loadProgram(const std::string &filename)
 {
     Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
-    m_impl->fileExec(filename);
+    m_impl->loadProgram(filename);
 }
 
 void
-Controller::breakInsert(const std::string &location)
+Controller::insertBreakpoint(const std::string &location)
 {
-    m_impl->breakInsert(location);
+    m_impl->insertBreakpoint(location);
 }
 
 void
