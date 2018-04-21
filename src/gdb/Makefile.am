@@ -1,9 +1,13 @@
 db_SOURCES               +=                                                     \
+                            src/gdb/commands.cpp                                \
                             src/gdb/controller.cpp                              \
                             src/gdb/result.cpp                                  \
                                                                                 \
                             src/gdb/handlers/file-exec.cpp                      \
                             src/gdb/handlers/break-insert.cpp                   \
+                            src/gdb/handlers/break-disable.cpp                  \
+                            src/gdb/handlers/break-delete.cpp                   \
+                            src/gdb/handlers/info-line.cpp                      \
                             src/gdb/handlers/info-address.cpp
 
 db_CPPFLAGS              +=                                                     \

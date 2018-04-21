@@ -1,0 +1,41 @@
+/*
+ * commands.h
+ *
+ *  Created on: Apr 21, 2018
+ *      Author: jasonr
+ */
+
+#pragma once
+#ifndef SRC_GDB_COMMANDS_H_
+#define SRC_GDB_COMMANDS_H_
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <memory>
+
+#include "controller.h"
+
+namespace Gdb
+{
+
+class Commands
+{
+  public:
+    Commands();
+    ~Commands();
+
+    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
+
+    void    loadProgram(const std::string &filename);
+    void    insertBreakpoint(const std::string &function);
+    void    infoAddress(const std::string &function);
+
+  private:
+    std::unique_ptr<Controller> m_controller;
+};
+
+} // namespace Gdb
+
+#endif // SRC_GDB_COMMANDS_H_

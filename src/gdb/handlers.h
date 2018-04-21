@@ -14,15 +14,20 @@
 # include "config.h"
 #endif
 
+#include "gdb/result.h"
+
 namespace Gdb
 {
 
 namespace Handlers
 {
 
-void fileExec(const std::string &filename);
-void breakInsert(const std::string &function);
-void infoAddress(const std::string &function);
+bool fileexecresponse(const Result &result, int token);
+bool breakinsertresponse(const Result &result, int token);
+bool breakdisableresponse(const Result &result, int token);
+bool breakdeleteresponse(const Result &result, int token);
+bool infoaddressresponse(const Result &result, int token);
+bool infolineresponse(const Result &result, int token);
 
 }
 

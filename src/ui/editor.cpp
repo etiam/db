@@ -18,7 +18,7 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 
 #include "editor.h"
 

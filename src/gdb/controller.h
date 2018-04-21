@@ -1,5 +1,5 @@
 /*
- * controller.h
+ * commands.h
  *
  *  Created on: Feb 22, 2018
  *      Author: jasonr
@@ -34,10 +34,7 @@ class Controller
     using ResponseFunc = std::function<bool(const Result, int)>;
 
     int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
-
-    void    loadProgram(const std::string &filename);
-    void    insertBreakpoint(const std::string &function);
-    void    infoAddress(const std::string &function);
+    void    addResponse(Controller::ResponseFunc response);
 
   private:
     std::unique_ptr<ControllerImpl>   m_impl;

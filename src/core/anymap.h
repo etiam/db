@@ -14,6 +14,7 @@
 #endif
 
 #include <string>
+#include <map>
 #include <sstream>
 
 #include <boost/any.hpp>

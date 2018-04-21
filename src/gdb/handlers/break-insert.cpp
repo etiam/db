@@ -17,19 +17,24 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 #include "gdb/result.h"
 
-namespace
+namespace Gdb
+{
+
+namespace Handlers
 {
 
 bool
-breakinsertresponse(const Gdb::Result &result, int token)
+breakinsertresponse(const Result &result, int token)
 {
-    auto ret = result.token.value == token;
+    bool match = false;
 
-    if (ret)
+    const auto &payload = result.payload;
+    if (payload.type == Payload::Type::DICT && payload.dict.find("bkpt") != std::end(payload.dict))
     {
+        match = true;
         auto &state = Core::state();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
@@ -46,22 +51,8 @@ breakinsertresponse(const Gdb::Result &result, int token)
         Core::showBreakpointMarkerSignal(std::stoi(line), true);
     }
 
-    return ret;
+    return match;
 };
-
-}
-
-namespace Gdb
-{
-
-namespace Handlers
-{
-
-void breakInsert(const std::string &location)
-{
-    std::string cmd = "break-insert  " + location;
-    Core::gdb()->executeCommand(cmd, breakinsertresponse);
-}
 
 }
 

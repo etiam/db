@@ -17,14 +17,17 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 #include "gdb/result.h"
 
-namespace
+namespace Gdb
+{
+
+namespace Handlers
 {
 
 bool
-breakinsertresponse(const Gdb::Result &result, int token)
+breakdeleteresponse(const Gdb::Result &result, int token)
 {
     auto ret = result.token.value == token;
 
@@ -48,20 +51,6 @@ breakinsertresponse(const Gdb::Result &result, int token)
 
     return ret;
 };
-
-}
-
-namespace Gdb
-{
-
-namespace Handlers
-{
-
-void breakInsert(const std::string &location)
-{
-    std::string cmd = "break-insert  " + location;
-    Core::gdb()->executeCommand(cmd, breakinsertresponse);
-}
 
 }
 

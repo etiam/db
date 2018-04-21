@@ -22,7 +22,6 @@
 #include "core/optionsManager.h"
 #include "core/signal.h"
 
-
 #include <gdb/handlers.h>
 #include "controller.h"
 
@@ -37,17 +36,18 @@ class ControllerImpl
 
     void            initialize();
 
-    int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
-
-    void            loadProgram(const std::string &filename);
-    void            insertBreakpoint(const std::string &location);
-    void            infoAddress(const std::string &function);
-
     PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
     PyObject *      createInstance(const std::string &modulename, const std::string &classname);
 
     void            resultHandler(const Result &result);
     void            resultReaderThread();
+
+    int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
+    void            addResponse(Controller::ResponseFunc response);
+
+    void            loadProgram(const std::string &filename);
+    void            insertBreakpoint(const std::string &location);
+    void            infoAddress(const std::string &function);
 
     bool            m_verbose = false;
     bool            m_initialized = false;
@@ -62,9 +62,9 @@ class ControllerImpl
 
     struct ResponseData
     {
-        Controller::ResponseFunc     response;
-        int                             token;
-        bool                            persistent;
+        Controller::ResponseFunc    response;
+        int                         token;
+        bool                        persistent;
     };
 
     std::vector<ResponseData>       m_responses;
@@ -214,61 +214,6 @@ ControllerImpl::createInstance(const std::string &modulename, const std::string 
     return instance;
 }
 
-int
-ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent)
-{
-    Result result;
-
-    if (!m_initialized)
-        initialize();
-
-    std::stringstream stream;
-    stream << m_token << "-" << command;
-
-    // store response data
-    if (response != nullptr)
-        m_responses.push_back({response, m_token, persistent});
-
-    // acquire python GIL
-    auto gstate = PyGILState_Ensure();
-
-    auto args = Py_BuildValue("(s)", stream.str().c_str());
-    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
-    PyObject_Call(m_writeMethod, args, kw);
-
-    // release python GIL
-    PyGILState_Release(gstate);
-
-    return m_token++;
-}
-
-void
-ControllerImpl::loadProgram(const std::string &filename)
-{
-    if (!m_initialized)
-        initialize();
-
-    Handlers::fileExec(filename);
-}
-
-void
-ControllerImpl::insertBreakpoint(const std::string &location)
-{
-    if (!m_initialized)
-        initialize();
-
-    Handlers::breakInsert(location);
-}
-
-void
-ControllerImpl::infoAddress(const std::string &function)
-{
-    if (!m_initialized)
-        initialize();
-
-    Handlers::infoAddress(function);
-}
-
 void
 ControllerImpl::resultHandler(const Result &result)
 {
@@ -318,6 +263,40 @@ ControllerImpl::resultReaderThread()
     m_resultThreadDone = true;
 }
 
+int
+ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent)
+{
+    Result result;
+
+    if (!m_initialized)
+        initialize();
+
+    std::stringstream stream;
+    stream << m_token << "-" << command;
+
+    // store response data
+    if (response != nullptr)
+        m_responses.push_back({response, m_token, persistent});
+
+    // acquire python GIL
+    auto gstate = PyGILState_Ensure();
+
+    auto args = Py_BuildValue("(s)", stream.str().c_str());
+    auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
+    PyObject_Call(m_writeMethod, args, kw);
+
+    // release python GIL
+    PyGILState_Release(gstate);
+
+    return m_token++;
+}
+
+void
+ControllerImpl::addResponse(Controller::ResponseFunc response)
+{
+    m_responses.push_back({response, m_token, true});
+}
+
 ///////////////////////////////////
 
 Controller::Controller() :
@@ -336,22 +315,9 @@ Controller::executeCommand(const std::string &command, ResponseFunc response, bo
 }
 
 void
-Controller::loadProgram(const std::string &filename)
+Controller::addResponse(Controller::ResponseFunc response)
 {
-    Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
-    m_impl->loadProgram(filename);
-}
-
-void
-Controller::insertBreakpoint(const std::string &location)
-{
-    m_impl->insertBreakpoint(location);
-}
-
-void
-Controller::infoAddress(const std::string &function)
-{
-    m_impl->infoAddress(function);
+    m_impl->addResponse(response);
 }
 
 }

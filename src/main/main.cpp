@@ -17,12 +17,13 @@
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
+#include "core/signal.h"
 #include "core/timer.h"
 #include "core/state.h"
 #include "core/optionsManager.h"
 
 #include "ast/builder.h"
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 #include "ui/main.h"
 
 using namespace boost::program_options;
@@ -45,6 +46,7 @@ startupThread(const variables_map &vm)
         state->set("filename", filename);
         state->set("buildpath", buildpath);
 
+        Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
         gdb->loadProgram(filename);
 
         if (Core::optionsManager()->get<bool>("breakonmain"))
@@ -52,7 +54,7 @@ startupThread(const variables_map &vm)
         else
             gdb->infoAddress("main");
 
-        gdb->executeCommand("file-list-exec-source-files");
+//        gdb->executeCommand("file-list-exec-source-files");
 
         ast->setBuildPath(buildpath);
     }

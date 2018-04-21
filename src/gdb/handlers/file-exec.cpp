@@ -18,10 +18,13 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 #include "gdb/result.h"
 
-namespace
+namespace Gdb
+{
+
+namespace Handlers
 {
 
 bool
@@ -33,20 +36,6 @@ fileexecresponse(const Gdb::Result &result, int token)
         Core::appendConsoleTextSignal(result.message.string.string, true);
 
     return ret;
-}
-
-}
-
-namespace Gdb
-{
-
-namespace Handlers
-{
-
-void fileExec(const std::string &filename)
-{
-    std::string cmd = "file-exec-and-symbols " + filename;
-    Core::gdb()->executeCommand(cmd, fileexecresponse);
 }
 
 }

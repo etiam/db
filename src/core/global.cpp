@@ -14,7 +14,7 @@
 #include <boost/utility.hpp>
 
 #include "ast/builder.h"
-#include "gdb/controller.h"
+#include "gdb/commands.h"
 
 #include "state.h"
 #include "optionsManager.h"
@@ -34,9 +34,8 @@ class Master : boost::noncopyable
     static StatePtr &               state();
     static OptionsManagerPtr &      optionsManager();
 
-    static Gdb::ControllerPtr &     gdbController();
-    static Ast::BuilderPtr &     astBuilder();
-
+    static Gdb::CommandsPtr &       gdbCommands();
+    static Ast::BuilderPtr &        astBuilder();
 
   private:
     Master();
@@ -45,8 +44,8 @@ class Master : boost::noncopyable
 
     StatePtr                        m_state;
     OptionsManagerPtr               m_optionsManager;
-    Gdb::ControllerPtr              m_gdbController;
-    Ast::BuilderPtr              m_AstBuilder;
+    Gdb::CommandsPtr                m_gdbCommands;
+    Ast::BuilderPtr                 m_AstBuilder;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -75,10 +74,10 @@ Master::optionsManager()
     return instance().m_optionsManager;
 }
 
-Gdb::ControllerPtr &
-Master::gdbController()
+Gdb::CommandsPtr &
+Master::gdbCommands()
 {
-    return instance().m_gdbController;
+    return instance().m_gdbCommands;
 }
 
 Ast::BuilderPtr &
@@ -90,7 +89,7 @@ Master::astBuilder()
 Master::Master() :
     m_state(std::make_unique<State>()),
     m_optionsManager(std::make_unique<OptionsManager>()),
-    m_gdbController(std::make_unique<Gdb::Controller>()),
+    m_gdbCommands(std::make_unique<Gdb::Commands>()),
     m_AstBuilder(std::make_unique<Ast::Builder>())
 {
 }
@@ -127,10 +126,10 @@ optionsManager()
     return Master::optionsManager();
 }
 
-Gdb::ControllerPtr &
+Gdb::CommandsPtr &
 gdb()
 {
-    return Master::gdbController();
+    return Master::gdbCommands();
 }
 
 Ast::BuilderPtr &
