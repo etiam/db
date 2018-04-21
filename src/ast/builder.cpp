@@ -13,6 +13,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <tuple>
+#include <boost/filesystem.hpp>
 
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
@@ -106,28 +107,33 @@ BuilderImpl::~BuilderImpl()
 void
 BuilderImpl::setBuildPath(const std::string &path)
 {
-    CXCompilationDatabase_Error errorcode;
-    m_compdb = clang_CompilationDatabase_fromDirectory(path.c_str(), &errorcode);
-
-    m_index = clang_createIndex(0, 0);
+    if (boost::filesystem::exists(path + "compile_commands.json"))
+    {
+        CXCompilationDatabase_Error errorcode;
+        m_compdb = clang_CompilationDatabase_fromDirectory(path.c_str(), &errorcode);
+        m_index = clang_createIndex(0, 0);
+    }
 }
 
 void
 BuilderImpl::parseFile(const std::string &filename)
 {
-    auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
-
-    if (unit == nullptr)
+    if (m_index)
     {
-        std::cerr << "Builder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
-    }
-    else
-    {
-        CXCursor cursor = clang_getTranslationUnitCursor(unit);
-        clang_visitChildren(cursor, visitFunction, this);
-    }
+        auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
 
-    clang_disposeTranslationUnit(unit);
+        if (unit == nullptr)
+        {
+            std::cerr << "Builder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
+        }
+        else
+        {
+            CXCursor cursor = clang_getTranslationUnitCursor(unit);
+            clang_visitChildren(cursor, visitFunction, this);
+        }
+
+        clang_disposeTranslationUnit(unit);
+    }
 }
 
 CXChildVisitResult
