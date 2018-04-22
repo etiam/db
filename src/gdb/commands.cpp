@@ -21,6 +21,8 @@ Commands::Commands() :
 {
     m_controller->addResponse(Handlers::fileexecresponse);
     m_controller->addResponse(Handlers::breakinsertresponse);
+    m_controller->addResponse(Handlers::breakdisableresponse);
+    m_controller->addResponse(Handlers::breakdeleteresponse);
     m_controller->addResponse(Handlers::infoaddressresponse);
     m_controller->addResponse(Handlers::infolineresponse);
 }

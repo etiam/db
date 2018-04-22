@@ -36,6 +36,7 @@ startupThread(const variables_map &vm)
     auto &state = Core::state();
     auto &gdb = Core::gdb();
     auto &ast = Core::astBuilder();
+    auto &vars = state->vars();
 
     // load prog
     if (vm.count("prog"))
@@ -43,8 +44,8 @@ startupThread(const variables_map &vm)
         auto filename = vm["prog"].as<std::string>();
         auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
 
-        state->set("filename", filename);
-        state->set("buildpath", buildpath);
+        vars.set("filename", filename);
+        vars.set("buildpath", buildpath);
 
         Core::appendConsoleTextSignal("Reading symbols from " + filename + "...", false);
         gdb->loadProgram(filename);
@@ -61,8 +62,8 @@ startupThread(const variables_map &vm)
 
     else
     {
-        state->set("filename", std::string());
-        state->set("buildpath", std::string());
+        vars.set("filename", std::string());
+        vars.set("buildpath", std::string());
     }
 }
 

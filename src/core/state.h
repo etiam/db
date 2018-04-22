@@ -15,12 +15,23 @@
 #endif
 
 #include "anymap.h"
+#include "breakpoints.h"
 
 namespace Core
 {
 
-class State : public AnyMap
+class State
 {
+  public:
+    State() = default;
+    ~State() = default;
+
+    AnyMap &        vars();
+    Breakpoints &   breakpoints();
+
+  private:
+    AnyMap          m_vars;
+    Breakpoints     m_breakpoints;
 };
 
 }

@@ -42,7 +42,7 @@ infoaddressresponse(const Gdb::Result &result, int token)
     if (ret)
     {
         std::string cmd = "interpreter-exec console \"info line *" + match[2].str() + "\"";
-        Core::gdb()->executeCommand(cmd, infolineresponse);
+        Core::gdb()->executeCommand(cmd);
     }
 
     return ret;

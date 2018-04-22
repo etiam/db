@@ -36,19 +36,22 @@ breakinsertresponse(const Result &result, int token)
     {
         match = true;
         auto &state = Core::state();
+        auto &vars = state->vars();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
         auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
         auto line = boost::any_cast<char *>(bkpt.at("line"));
 
-        if(!state->has("initialdisplay") || !state->get<bool>("initialdisplay"))
+//        state->
+        Core::showBreakpointMarkerSignal(std::stoi(line), true);
+
+        if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::loadFileSignal(filename);
             Core::setCursorPositionSignal(std::stoi(line), 0);
-            state->set("initialdisplay", true);
+            vars.set("initialdisplay", true);
         }
 
-        Core::showBreakpointMarkerSignal(std::stoi(line), true);
     }
 
     return match;

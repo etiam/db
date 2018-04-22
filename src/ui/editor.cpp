@@ -163,8 +163,6 @@ Editor::setText(const QString &newText)
     m_impl->executeJavaScript(request.arg(m_impl->escape(newText)));
 
     setCursorPosition(1, 1);
-
-    std::cout << "ch: " << getCharacterHeight() << std::endl;
 }
 
 QString
@@ -206,20 +204,20 @@ void
 Editor::onGutterClicked(int row)
 {
     std::cout << "ongutterclicked " << row << std::endl;
-    auto filename = Core::state()->get<std::string>("currentfilename");
+    auto filename = Core::state()->vars().get<std::string>("currentfilename");
     Core::gdb()->insertBreakpoint(filename + ":" + std::to_string(row));
 }
 
 void
 Editor::onCursorMoved(int x, int y)
 {
-    std::cout << "oncursormoved " << x << ", " << y << std::endl;
+//    std::cout << "oncursormoved " << x << ", " << y << std::endl;
 }
 
 void
 Editor::onMouseMoved(int x, int y)
 {
-    std::cout << "onmousemoved " << x << ", " << y << std::endl;
+//    std::cout << "onmousemoved " << x << ", " << y << std::endl;
 }
 
 // private functions
@@ -288,7 +286,7 @@ Editor::loadFile(const QString &filename)
         setGutterWidth(numdigits);
 
         // store the current filename
-        Core::state()->set("currentfilename", filename.toStdString());
+        Core::state()->vars().set("currentfilename", filename.toStdString());
     }
 }
 

@@ -29,6 +29,7 @@ namespace Handlers
 bool
 breakdeleteresponse(const Gdb::Result &result, int token)
 {
+    /*
     auto ret = result.token.value == token;
 
     if (ret)
@@ -50,6 +51,9 @@ breakdeleteresponse(const Gdb::Result &result, int token)
     }
 
     return ret;
+    */
+
+    return false;
 };
 
 }
