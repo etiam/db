@@ -26,10 +26,12 @@ class Commands
     Commands();
     ~Commands();
 
-    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
+    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, boost::any data = nullptr);
 
     void    loadProgram(const std::string &filename);
     void    insertBreakpoint(const std::string &function);
+    void    disableBreakpoint(int number);
+    void    deleteBreakpoint(int number);
     void    infoAddress(const std::string &function);
 
   private:

@@ -21,6 +21,23 @@ class Breakpoints
   public:
     Breakpoints();
     ~Breakpoints();
+
+    void    toggleBreakpoint(const std::string &filename, int line);
+
+    void    insertBreakpoint(const std::string &filename, int line, int number);
+    void    disableBreakpoint(int number);
+    void    deleteBreakpoint(int number);
+
+  private:
+    struct Breakpoint
+    {
+        std::string filename;
+        int         line;
+        int         number;
+        bool        disabled;
+    };
+
+    std::vector<Breakpoint>     m_breakpoints;
 };
 
 } // namespace Core

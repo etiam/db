@@ -31,9 +31,9 @@ class Controller
     explicit Controller();
     ~Controller();
 
-    using ResponseFunc = std::function<bool(const Result, int)>;
+    using ResponseFunc = std::function<bool(const Result, int, boost::any data)>;
 
-    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, bool persistent = false);
+    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, boost::any data = nullptr);
     void    addResponse(Controller::ResponseFunc response);
 
   private:

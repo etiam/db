@@ -24,18 +24,18 @@
 namespace Gdb
 {
 
-namespace Handlers
+namespace Responses
 {
 
 bool
-fileexecresponse(const Gdb::Result &result, int token)
+fileexec(const Gdb::Result &result, int token, boost::any data)
 {
-    auto ret = result.token.value == token;
+    auto match = result.token.value == token;
 
-    if (ret)
+    if (match)
         Core::appendConsoleTextSignal(result.message.string.string, true);
 
-    return ret;
+    return match;
 }
 
 }

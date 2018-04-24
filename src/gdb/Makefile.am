@@ -3,12 +3,12 @@ db_SOURCES               +=                                                     
                             src/gdb/controller.cpp                              \
                             src/gdb/result.cpp                                  \
                                                                                 \
-                            src/gdb/handlers/file-exec.cpp                      \
-                            src/gdb/handlers/break-insert.cpp                   \
-                            src/gdb/handlers/break-disable.cpp                  \
-                            src/gdb/handlers/break-delete.cpp                   \
-                            src/gdb/handlers/info-line.cpp                      \
-                            src/gdb/handlers/info-address.cpp
+                            src/gdb/responses/file-exec.cpp                     \
+                            src/gdb/responses/break-insert.cpp                  \
+                            src/gdb/responses/break-disable.cpp                 \
+                            src/gdb/responses/break-delete.cpp                  \
+                            src/gdb/responses/info-line.cpp                     \
+                            src/gdb/responses/info-address.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

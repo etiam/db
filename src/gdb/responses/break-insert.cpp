@@ -23,11 +23,11 @@
 namespace Gdb
 {
 
-namespace Handlers
+namespace Responses
 {
 
 bool
-breakinsertresponse(const Result &result, int token)
+breakinsert(const Result &result, int token, boost::any data)
 {
     bool match = false;
 
@@ -36,22 +36,13 @@ breakinsertresponse(const Result &result, int token)
     {
         match = true;
         auto &state = Core::state();
-        auto &vars = state->vars();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
         auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
-        auto line = boost::any_cast<char *>(bkpt.at("line"));
+        auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
+        auto number = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
 
-//        state->
-        Core::showBreakpointMarkerSignal(std::stoi(line), true);
-
-        if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
-        {
-            Core::loadFileSignal(filename);
-            Core::setCursorPositionSignal(std::stoi(line), 0);
-            vars.set("initialdisplay", true);
-        }
-
+        state->breakpoints().insertBreakpoint(filename, line, number);
     }
 
     return match;

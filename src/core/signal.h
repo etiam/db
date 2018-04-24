@@ -26,7 +26,8 @@ namespace Core
 
 extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFileSignal;
 extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPositionSignal;
-extern wink::signal<wink::slot<void (int rot, bool enabled)>>                   showBreakpointMarkerSignal;
+extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showBreakpointMarkerSignal;
+extern wink::signal<wink::slot<void (int row)>>                                 clearBreakpointMarkerSignal;
 extern wink::signal<wink::slot<void (const std::string &text, bool newline)>>   appendConsoleTextSignal;
 
 } // namespace Core

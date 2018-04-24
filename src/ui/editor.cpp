@@ -138,6 +138,7 @@ Editor::Editor(QMainWindow *parent) :
 
     Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
     Core::showBreakpointMarkerSignal.connect(this, &Editor::onShowBreakpointMarkerSignal);
+    Core::clearBreakpointMarkerSignal.connect(this, &Editor::onClearBreakpointMarkerSignal);
     Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
@@ -203,9 +204,10 @@ Editor::setKeyboardHandler(const QString &name)
 void
 Editor::onGutterClicked(int row)
 {
-    std::cout << "ongutterclicked " << row << std::endl;
-    auto filename = Core::state()->vars().get<std::string>("currentfilename");
-    Core::gdb()->insertBreakpoint(filename + ":" + std::to_string(row));
+//    std::cout << "ongutterclicked " << row << std::endl;
+    auto &state = Core::state();
+    auto filename = state->vars().get<std::string>("currentfilename");
+    state->breakpoints().toggleBreakpoint(filename, row);
 }
 
 void
@@ -261,6 +263,12 @@ Editor::onShowBreakpointMarkerSignal(int row, bool enabled)
 }
 
 void
+Editor::onClearBreakpointMarkerSignal(int row)
+{
+    QMetaObject::invokeMethod(this, "clearBreakpointMarker", Qt::QueuedConnection, Q_ARG(int, row));
+}
+
+void
 Editor::onSetCursorPositionSignal(int row, int column)
 {
     QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
@@ -297,6 +305,12 @@ Editor::showBreakpointMarker(int row, bool enabled)
         m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint\")").arg(row-1));
     else
         m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint_disabled\")").arg(row-1));
+}
+
+void
+Editor::clearBreakpointMarker(int row)
+{
+    m_impl->executeJavaScript(QString("editor.getSession().clearBreakpoint(%1)").arg(row-1));
 }
 
 void

@@ -24,27 +24,26 @@
 namespace Gdb
 {
 
-namespace Handlers
+namespace Responses
 {
 
 bool
-infolineresponse(const Gdb::Result &result, int token)
+infoline(const Gdb::Result &result, int token, boost::any data)
 {
     static std::regex lineRegex(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
 
-    std::smatch match;
-    auto ret = result.message.type == Gdb::Message::Type::NONE &&
-               result.payload.type == Gdb::Payload::Type::STRING &&
-               std::regex_match(result.payload.string.string, match, lineRegex);
+    std::smatch smatch;
+    auto match = result.token.value == -1 &&
+                 std::regex_match(result.payload.string.string, smatch, lineRegex);
 
-    if (ret)
+    if (match)
     {
         auto &state = Core::state();
         auto &vars = state->vars();
-        auto filename = match[2].str();
+        auto filename = smatch[2].str();
 
         // if filename is relative, convert to absolute based on buildpath
-        if (!boost::filesystem::path(match[2].str()).is_absolute())
+        if (!boost::filesystem::path(smatch[2].str()).is_absolute())
         {
             auto buildpath = vars.get<std::string>("buildpath");
             filename = boost::filesystem::absolute(filename, buildpath).string();
@@ -53,12 +52,12 @@ infolineresponse(const Gdb::Result &result, int token)
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::loadFileSignal(filename);
-            Core::setCursorPositionSignal(std::stoi(match[1]), 0);
+            Core::setCursorPositionSignal(std::stoi(smatch[1]), 0);
             vars.set("initialdisplay", true);
         }
     }
 
-    return ret;
+    return match;
 }
 
 }

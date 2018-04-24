@@ -22,7 +22,7 @@
 #include "core/optionsManager.h"
 #include "core/signal.h"
 
-#include <gdb/handlers.h>
+#include "gdb/responses.h"
 #include "controller.h"
 
 namespace Gdb
@@ -42,7 +42,7 @@ class ControllerImpl
     void            resultHandler(const Result &result);
     void            resultReaderThread();
 
-    int             executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent);
+    int             executeCommand(const std::string &command, Controller::ResponseFunc response, boost::any data);
     void            addResponse(Controller::ResponseFunc response);
 
     void            loadProgram(const std::string &filename);
@@ -64,7 +64,7 @@ class ControllerImpl
     {
         Controller::ResponseFunc    response;
         int                         token;
-        bool                        persistent;
+        boost::any                  data;
     };
 
     std::vector<ResponseData>       m_responses;
@@ -85,7 +85,7 @@ ControllerImpl::~ControllerImpl()
         // waits for result thread to finish
         m_readerThread->join();
 
-//        Py_Finalize();
+//        Py_Finalize();        // TODO : fixme!
     }
 }
 
@@ -217,16 +217,23 @@ ControllerImpl::createInstance(const std::string &modulename, const std::string 
 void
 ControllerImpl::resultHandler(const Result &result)
 {
-    std::vector<ResponseData> todelete;
-
-    for (const auto &item : m_responses)
+    bool match = false;
+    auto it=std::begin(m_responses);
+    for (; it != std::end(m_responses); ++it)
     {
-        if (item.response(result, item.token) && !item.persistent)
+        if (it->response(result, it->token, it->data))
         {
+            match = true;
             break;
-//            todelete.push_back(item);
         }
     }
+
+    if (match)
+        m_responses.erase(it);
+    else
+        std::cout << "no match!" << std::endl;
+
+    std::cout << m_responses.size() << std::endl;
 }
 
 void
@@ -264,7 +271,7 @@ ControllerImpl::resultReaderThread()
 }
 
 int
-ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, bool persistent)
+ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, boost::any data)
 {
     Result result;
 
@@ -276,7 +283,7 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
 
     // store response data
     if (response != nullptr)
-        m_responses.push_back({response, m_token, persistent});
+        m_responses.push_back({response, m_token, data});
 
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
@@ -309,9 +316,9 @@ Controller::~Controller()
 }
 
 int
-Controller::executeCommand(const std::string &command, ResponseFunc response, bool persistent)
+Controller::executeCommand(const std::string &command, ResponseFunc response, boost::any data)
 {
-    return m_impl->executeCommand(command, response, persistent);
+    return m_impl->executeCommand(command, response, data);
 }
 
 void

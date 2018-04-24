@@ -56,6 +56,7 @@ class Editor : public QWidget
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);
     void    onShowBreakpointMarkerSignal(int row, bool enabled);
+    void    onClearBreakpointMarkerSignal(int row);
     void    onSetCursorPositionSignal(int row, int column);
 
     std::unique_ptr<EditorImpl> m_impl;
@@ -63,6 +64,7 @@ class Editor : public QWidget
   private Q_SLOTS:
     void    loadFile(const QString &filename);
     void    showBreakpointMarker(int row, bool enabled);
+    void    clearBreakpointMarker(int row);
     void    setCursorPosition(int row, int column);
 };
 
