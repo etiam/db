@@ -9,6 +9,8 @@
 # include "config.h"
 #endif
 
+#include <iostream>
+
 #include "core/signal.h"
 
 #include "console.h"
@@ -30,10 +32,15 @@ Console::~Console()
 }
 
 void
-Console::appendText(const QString &text, bool newline)
+Console::appendText(const QString &text)
 {
-    insertPlainText(text);
-    if (newline)
+    auto sanitized = text;
+    sanitized.replace("\\n", "\n");
+    sanitized.replace("\\t", "    ");
+
+    insertPlainText(sanitized);
+
+    if (!sanitized.endsWith('\n'))
     {
         moveCursor(QTextCursor::Up);
         moveCursor(QTextCursor::EndOfLine);
@@ -43,10 +50,9 @@ Console::appendText(const QString &text, bool newline)
 // wink signal handlers
 
 void
-Console::onAppendConsoleTextSignal(const std::string &text, bool newline)
+Console::onAppendConsoleTextSignal(const std::string &text)
 {
-    QMetaObject::invokeMethod(this, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)),
-                                                                        Q_ARG(bool, newline));
+    QMetaObject::invokeMethod(this, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 }

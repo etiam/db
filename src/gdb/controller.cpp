@@ -65,6 +65,7 @@ class ControllerImpl
         Controller::ResponseFunc    response;
         int                         token;
         boost::any                  data;
+        bool                        persistent = false;
     };
 
     std::vector<ResponseData>       m_responses;
@@ -228,12 +229,12 @@ ControllerImpl::resultHandler(const Result &result)
         }
     }
 
-    if (match)
+    if (match && !it->persistent)
         m_responses.erase(it);
     else
-        std::cout << "no match!" << std::endl;
-
-    std::cout << m_responses.size() << std::endl;
+    {
+        std::cout << "no match : " << result << std::endl;
+    }
 }
 
 void
@@ -301,7 +302,7 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
 void
 ControllerImpl::addResponse(Controller::ResponseFunc response)
 {
-    m_responses.push_back({response, m_token, true});
+    m_responses.push_back({response, m_token, nullptr, true});
 }
 
 ///////////////////////////////////

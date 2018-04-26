@@ -32,11 +32,18 @@ class MainWindow : public QMainWindow
     MainWindow(QWidget *parent=0);
     ~MainWindow();
 
+  private Q_SLOTS:
+    void            run();
+    void            pause();
+    void            stepover();
+    void            stepinto();
+    void            stepout();
+
   private:
     void            readSettings();
     void            writeSettings() const;
 
-    // menu creation
+    void            createToolbar();
     void            createMenus();
     void            createFileMenu();
 

@@ -18,6 +18,6 @@ wink::signal<wink::slot<void (const std::string &filename)>>            loadFile
 wink::signal<wink::slot<void (int row, int col)>>                       setCursorPositionSignal;
 wink::signal<wink::slot<void (int row, bool enabled)>>                  showBreakpointMarkerSignal;
 wink::signal<wink::slot<void (int row)>>                                clearBreakpointMarkerSignal;
-wink::signal<wink::slot<void (const std::string &text, bool newline)>>  appendConsoleTextSignal;
+wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleTextSignal;
 
 } // namespace Core

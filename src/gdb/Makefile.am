@@ -3,6 +3,8 @@ db_SOURCES               +=                                                     
                             src/gdb/controller.cpp                              \
                             src/gdb/result.cpp                                  \
                                                                                 \
+                            src/gdb/handlers/console.cpp                        \
+                                                                                \
                             src/gdb/responses/file-exec.cpp                     \
                             src/gdb/responses/break-insert.cpp                  \
                             src/gdb/responses/break-disable.cpp                 \

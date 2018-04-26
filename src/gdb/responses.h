@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef GDB_UTIL_H_
-#define GDB_UTIL_H_
+#ifndef GDB_RESPONSES_H_
+#define GDB_RESPONSES_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -35,4 +35,4 @@ bool infoline(const Result &result, int token, boost::any data);
 
 }
 
-#endif // GDB_UTIL_H_
+#endif // GDB_RESPONSES_H_

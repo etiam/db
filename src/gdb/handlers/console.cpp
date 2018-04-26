@@ -24,16 +24,21 @@
 namespace Gdb
 {
 
-namespace Responses
+namespace Handlers
 {
 
 bool
-fileexec(const Gdb::Result &result, int token, boost::any data)
+console(const Result &result, int token, boost::any data)
 {
-    auto match = result.token.value == token;
+    auto match = result.message.type == Message::Type::NONE &&
+                 result.payload.type == Payload::Type::STRING &&
+                 result.stream == Stream::STDOUT &&
+                 result.type == Type::CONSOLE;
 
     if (match)
-        Core::appendConsoleTextSignal(result.message.string.string);
+    {
+        Core::appendConsoleTextSignal(result.payload.string.string);
+    }
 
     return match;
 }

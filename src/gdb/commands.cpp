@@ -10,6 +10,7 @@
 #endif
 
 #include "responses.h"
+#include "handlers.h"
 #include "controller.h"
 #include "commands.h"
 
@@ -19,6 +20,7 @@ namespace Gdb
 Commands::Commands() :
     m_controller(std::make_unique<Controller>())
 {
+    m_controller->addResponse(Handlers::console);
 }
 
 Commands::~Commands()
@@ -36,6 +38,14 @@ Commands::loadProgram(const std::string &filename)
 {
     std::string cmd = "file-exec-and-symbols " + filename;
     m_controller->executeCommand(cmd, Responses::fileexec);
+}
+
+void
+Commands::infoAddress(const std::string &function)
+{
+    std::string cmd = "interpreter-exec console \"info address " + function + "\"";
+    m_controller->executeCommand(cmd);
+
 }
 
 void
@@ -60,12 +70,38 @@ Commands::deleteBreakpoint(int number)
 }
 
 void
-Commands::infoAddress(const std::string &function)
+Commands::run()
 {
-    std::string cmd = "interpreter-exec console \"info address " + function + "\"";
+    std::string cmd = "exec-run";
     m_controller->executeCommand(cmd);
-
 }
 
+void
+Commands::pause()
+{
+    std::string cmd = "exec-interrupt --all";
+    m_controller->executeCommand(cmd);
+}
+
+void
+Commands::stepover()
+{
+    std::string cmd = "exec-next";
+    m_controller->executeCommand(cmd);
+}
+
+void
+Commands::stepinto()
+{
+    std::string cmd = "exec-step";
+    m_controller->executeCommand(cmd);
+}
+
+void
+Commands::stepout()
+{
+    std::string cmd = "exec-finish";
+    m_controller->executeCommand(cmd);
+}
 
 } // namespace Gdb

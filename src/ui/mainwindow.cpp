@@ -16,8 +16,12 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
+#include <QToolBar>
 
 #include "core/signal.h"
+#include "core/global.h"
+
+#include "gdb/commands.h"
 
 #include "editor.h"
 #include "console.h"
@@ -62,12 +66,43 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
 
     createMenus();
+    createToolbar();
     createHotkeys();
 }
 
 MainWindow::~MainWindow()
 {
     writeSettings();
+}
+
+void
+MainWindow::run()
+{
+    Core::gdb()->run();
+}
+
+void
+MainWindow::pause()
+{
+    Core::gdb()->pause();
+}
+
+void
+MainWindow::stepover()
+{
+    Core::gdb()->stepover();
+}
+
+void
+MainWindow::stepinto()
+{
+    Core::gdb()->stepinto();
+}
+
+void
+MainWindow::stepout()
+{
+    Core::gdb()->stepout();
 }
 
 void
@@ -113,6 +148,44 @@ MainWindow::createMenus()
 }
 
 void
+MainWindow::createToolbar()
+{
+    auto toolbar = addToolBar(tr("Debug"));
+    toolbar->setAllowedAreas(Qt::TopToolBarArea);
+
+    auto runact = new QAction(QIcon(":/img/run"), tr("Run/Continue"), this);
+    runact->setStatusTip(tr("Start/continue debugging"));
+    runact->setShortcut(Qt::Key_R);
+    connect(runact, SIGNAL(triggered()), this, SLOT(run()));
+
+    auto pauseact = new QAction(QIcon(":/img/pause"), tr("Pause"), this);
+    pauseact->setStatusTip(tr("Pause execution"));
+    pauseact->setShortcut(Qt::Key_P);
+    connect(pauseact, SIGNAL(triggered()), this, SLOT(pause()));
+
+    auto stepoveract = new QAction(QIcon(":/img/stepover"), tr("Step over"), this);
+    stepoveract->setStatusTip(tr("Step over"));
+    stepoveract->setShortcut(Qt::Key_N);
+    connect(stepoveract, SIGNAL(triggered()), this, SLOT(stepover()));
+
+    auto stepintoact = new QAction(QIcon(":/img/stepinto"), tr("Step into"), this);
+    stepintoact->setStatusTip(tr("Step into"));
+    stepintoact->setShortcut(Qt::Key_S);
+    connect(stepintoact, SIGNAL(triggered()), this, SLOT(stepinto()));
+
+    auto stepoutact = new QAction(QIcon(":/img/stepout"), tr("Step out"), this);
+    stepoutact->setStatusTip(tr("Step out"));
+//    stepoutact->setShortcut(Qt::Key_R);
+    connect(stepoutact, SIGNAL(triggered()), this, SLOT(stepout()));
+
+    toolbar->addAction(runact);
+    toolbar->addAction(pauseact);
+    toolbar->addAction(stepoveract);
+    toolbar->addAction(stepintoact);
+    toolbar->addAction(stepoutact);
+}
+
+void
 MainWindow::createFileMenu()
 {
     auto filemenu = menuBar()->addMenu(tr("&File"));
@@ -125,6 +198,7 @@ MainWindow::createFileMenu()
     fileexitact->setStatusTip(tr("Quit the application"));
     fileexitact->setShortcut(Qt::Key_Q);
     connect(fileexitact, SIGNAL(triggered()), this, SLOT(close()));
+
     filemenu->addAction(fileexitact);
 }
 

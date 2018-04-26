@@ -29,10 +29,18 @@ class Commands
     int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, boost::any data = nullptr);
 
     void    loadProgram(const std::string &filename);
+
+    void    infoAddress(const std::string &function);
+
     void    insertBreakpoint(const std::string &function);
     void    disableBreakpoint(int number);
     void    deleteBreakpoint(int number);
-    void    infoAddress(const std::string &function);
+
+    void    run();
+    void    pause();
+    void    stepover();
+    void    stepinto();
+    void    stepout();
 
   private:
     std::unique_ptr<Controller> m_controller;
