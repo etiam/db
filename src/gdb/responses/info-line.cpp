@@ -51,8 +51,8 @@ infoline(const Gdb::Result &result, int token, boost::any data)
 
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
-            Core::loadFileSignal(filename);
-            Core::setCursorPositionSignal(std::stoi(smatch[1]), 0);
+            Core::Signal::loadFile(filename);
+            Core::Signal::setCursorPosition(std::stoi(smatch[1]), 0);
             vars.set("initialdisplay", true);
         }
     }

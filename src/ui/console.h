@@ -32,7 +32,7 @@ class Console: public QPlainTextEdit
   private:
 
     // wink signal handlers
-    void onAppendConsoleTextSignal(const std::string &text);
+    void onappendConsoleText(const std::string &text);
 };
 
 }

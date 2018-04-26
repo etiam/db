@@ -24,7 +24,7 @@ Console::Console(QWidget *parent) :
     setReadOnly(true);
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
-    Core::appendConsoleTextSignal.connect(this, &Console::onAppendConsoleTextSignal);
+    Core::Signal::appendConsoleText.connect(this, &Console::onappendConsoleText);
 }
 
 Console::~Console()
@@ -50,7 +50,7 @@ Console::appendText(const QString &text)
 // wink signal handlers
 
 void
-Console::onAppendConsoleTextSignal(const std::string &text)
+Console::onappendConsoleText(const std::string &text)
 {
     QMetaObject::invokeMethod(this, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }

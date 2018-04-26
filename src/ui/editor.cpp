@@ -136,10 +136,10 @@ Editor::Editor(QMainWindow *parent) :
     setHighlightMode("c_cpp");
     setTheme("clouds_midnight");
 
-    Core::loadFileSignal.connect(this, &Editor::onLoadFileSignal);
-    Core::showBreakpointMarkerSignal.connect(this, &Editor::onShowBreakpointMarkerSignal);
-    Core::clearBreakpointMarkerSignal.connect(this, &Editor::onClearBreakpointMarkerSignal);
-    Core::setCursorPositionSignal.connect(this, &Editor::onSetCursorPositionSignal);
+    Core::Signal::loadFile.connect(this, &Editor::onLoadFileSignal);
+    Core::Signal::showBreakpointMarker.connect(this, &Editor::onShowBreakpointMarkerSignal);
+    Core::Signal::clearBreakpointMarker.connect(this, &Editor::onClearBreakpointMarkerSignal);
+    Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
 }
 
 Editor::~Editor()

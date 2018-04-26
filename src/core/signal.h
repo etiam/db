@@ -24,12 +24,17 @@
 namespace Core
 {
 
-extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFileSignal;
-extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPositionSignal;
-extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showBreakpointMarkerSignal;
-extern wink::signal<wink::slot<void (int row)>>                                 clearBreakpointMarkerSignal;
-extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleTextSignal;
+namespace Signal
+{
 
-} // namespace Core
+extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFile;
+extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
+extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showBreakpointMarker;
+extern wink::signal<wink::slot<void (int row)>>                                 clearBreakpointMarker;
+extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
+
+}
+
+}
 
 #endif // CORE_SIGNAL_H_

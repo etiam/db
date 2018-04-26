@@ -14,10 +14,15 @@
 namespace Core
 {
 
-wink::signal<wink::slot<void (const std::string &filename)>>            loadFileSignal;
-wink::signal<wink::slot<void (int row, int col)>>                       setCursorPositionSignal;
-wink::signal<wink::slot<void (int row, bool enabled)>>                  showBreakpointMarkerSignal;
-wink::signal<wink::slot<void (int row)>>                                clearBreakpointMarkerSignal;
-wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleTextSignal;
+namespace Signal
+{
 
-} // namespace Core
+wink::signal<wink::slot<void (const std::string &filename)>>            loadFile;
+wink::signal<wink::slot<void (int row, int col)>>                       setCursorPosition;
+wink::signal<wink::slot<void (int row, bool enabled)>>                  showBreakpointMarker;
+wink::signal<wink::slot<void (int row)>>                                clearBreakpointMarker;
+wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleText;
+
+}
+
+}

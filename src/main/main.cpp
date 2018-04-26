@@ -47,7 +47,7 @@ startupThread(const variables_map &vm)
         vars.set("filename", filename);
         vars.set("buildpath", buildpath);
 
-        Core::appendConsoleTextSignal("Reading symbols from " + filename + "...");
+        Core::Signal::appendConsoleText("Reading symbols from " + filename + "...");
         gdb->loadProgram(filename);
 
         if (Core::optionsManager()->get<bool>("breakonmain"))

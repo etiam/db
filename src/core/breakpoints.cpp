@@ -53,15 +53,15 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 void
 Breakpoints::insertBreakpoint(const std::string &filename, int line, int number)
 {
-    Core::showBreakpointMarkerSignal(line, true);
+    Core::Signal::showBreakpointMarker(line, true);
     m_breakpoints.push_back({filename, line, number, false});
 
     auto &state = Core::state();
     auto &vars = state->vars();
     if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
     {
-        Core::loadFileSignal(filename);
-        Core::setCursorPositionSignal(line, 0);
+        Core::Signal::loadFile(filename);
+        Core::Signal::setCursorPosition(line, 0);
         vars.set("initialdisplay", true);
     }
 }
@@ -74,7 +74,7 @@ Breakpoints::disableBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::showBreakpointMarkerSignal(it->line, false);
+        Core::Signal::showBreakpointMarker(it->line, false);
         it->disabled = true;
     }
 }
@@ -87,11 +87,9 @@ Breakpoints::deleteBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::clearBreakpointMarkerSignal(it->line);
+        Core::Signal::clearBreakpointMarker(it->line);
         m_breakpoints.erase(it);
     }
 }
-
-
 
 } // namespace Core
