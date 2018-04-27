@@ -72,7 +72,7 @@ class BuilderImpl
     BuilderImpl();
     ~BuilderImpl();
 
-    void                        setBuildPath(const std::string &path);
+    void                        setBuildPath(const std::string &progpath);
     void                        parseFile(const std::string &filename);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
@@ -105,12 +105,15 @@ BuilderImpl::~BuilderImpl()
 }
 
 void
-BuilderImpl::setBuildPath(const std::string &path)
+BuilderImpl::setBuildPath(const std::string &progpath)
 {
-    if (boost::filesystem::exists(path + "compile_commands.json"))
+    using boost::filesystem::path;
+
+    if (boost::filesystem::exists(path(progpath) / "compile_commands.json"))
     {
+        std::cout << "loading compile_commands.json from " << boost::filesystem::canonical(progpath) << std::endl;
         CXCompilationDatabase_Error errorcode;
-        m_compdb = clang_CompilationDatabase_fromDirectory(path.c_str(), &errorcode);
+        m_compdb = clang_CompilationDatabase_fromDirectory(progpath.c_str(), &errorcode);
         m_index = clang_createIndex(0, 0);
     }
 }
