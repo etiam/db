@@ -17,6 +17,7 @@
 #include <QMenuBar>
 #include <QSplitter>
 #include <QToolBar>
+#include <QDockWidget>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -41,33 +42,43 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle("db");
 
     // gui setup
-    m_splitter = new QSplitter(this);
-    m_splitter->setOrientation(Qt::Vertical);
-    m_splitter->setObjectName("splitter");
-    m_splitter->setContentsMargins(0, 0, 0, 0);
-    setCentralWidget(m_splitter);
+//    m_splitter = new QSplitter(this);
+//    m_splitter->setOrientation(Qt::Vertical);
+//    m_splitter->setObjectName("splitter");
+//    m_splitter->setContentsMargins(0, 0, 0, 0);
 
     // main editor window
-    m_editor = new Editor();
-
-    // tabs window
-    m_tabWidget = new QTabWidget();
-    m_tabWidget->setTabsClosable(true);
-
-    // tabs within tab window
-    m_console = new Console();
-    m_tabWidget->addTab(m_console, tr("Console"));
+    m_editor = new Editor(this);
 
     // add editor and tabwidget to main
-    m_splitter->addWidget(m_editor);
-    m_splitter->addWidget(m_tabWidget);
+//    m_splitter->addWidget(m_editor);
+//    m_splitter->addWidget(m_tabWidget);
+
+    setCentralWidget(m_editor);
 
     // settings
     readSettings();
 
     createMenus();
     createToolbar();
+    createDocks();
     createHotkeys();
+
+/*
+    auto dockwidget1 = new QDockWidget(tr("Tab1"), this);
+    dockwidget1->setObjectName("dw1");
+    dockwidget1->setMinimumSize({0, 0});
+    dockwidget1->setTitleBarWidget(new QWidget(this));
+
+    auto dockwidget2 = new QDockWidget(tr("Tab2"), this);
+    dockwidget2->setObjectName("dw2");
+    dockwidget2->setMinimumSize({0, 0});
+    dockwidget2->setTitleBarWidget(new QWidget(this));
+
+    addDockWidget(Qt::LeftDockWidgetArea , dockwidget1);
+    addDockWidget(Qt::LeftDockWidgetArea , dockwidget2);
+//    tabifyDockWidget(dockwidget1,dockwidget2);
+*/
 }
 
 MainWindow::~MainWindow()
@@ -106,39 +117,52 @@ MainWindow::stepout()
 }
 
 void
+MainWindow::closeTab(int index)
+{
+    m_tabWidget->removeTab(index); 
+}
+
+void
 MainWindow::readSettings()
 {
     QSettings settings("db", "mainwindow");
 
-    resize(settings.value("size", QSize(720, 480)).toSize());
-    move(settings.value("pos", QPoint(10, 10)).toPoint());
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("state").toByteArray());
 
-    if (settings.contains("splitter"))
-    {
-        QList<int> sizes;
-        for (const auto &size : settings.value("splitter").toStringList())
-            sizes.append(size.toInt());
-        m_splitter->setSizes(sizes);
-    }
-    else
-    {
-        auto h = size().height();
-        m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
-    }
+//    resize(settings.value("size", QSize(720, 480)).toSize());
+//    move(settings.value("pos", QPoint(10, 10)).toPoint());
+//
+//    if (settings.contains("splitter"))
+//    {
+//        QList<int> sizes;
+//        for (const auto &size : settings.value("splitter").toStringList())
+//            sizes.append(size.toInt());
+//        m_splitter->setSizes(sizes);
+//    }
+//    else
+//    {
+//        auto h = size().height();
+//        m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
+//    }
 }
 
 void
 MainWindow::writeSettings() const
 {
+//    QSettings settings("db", "mainwindow");
+//
+//    settings.setValue("pos", pos());
+//    settings.setValue("size", size());
+//
+//    QStringList sizes;
+//    for (const auto &size : m_splitter->sizes())
+//        sizes << QString::number(size);
+//    settings.setValue("splitter", sizes);
+
     QSettings settings("db", "mainwindow");
-
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
-
-    QStringList sizes;
-    for (const auto &size : m_splitter->sizes())
-        sizes << QString::number(size);
-    settings.setValue("splitter", sizes);
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
 }
 
 void
@@ -151,6 +175,7 @@ void
 MainWindow::createToolbar()
 {
     auto toolbar = addToolBar(tr("Debug"));
+    toolbar->setObjectName(tr("debugcontrols"));
     toolbar->setAllowedAreas(Qt::TopToolBarArea);
 
     auto runact = new QAction(QIcon(":/img/run"), tr("Run/Continue"), this);
@@ -183,6 +208,39 @@ MainWindow::createToolbar()
     toolbar->addAction(stepoveract);
     toolbar->addAction(stepintoact);
     toolbar->addAction(stepoutact);
+}
+
+void
+MainWindow::createDocks()
+{
+    auto bottomdock = new QDockWidget(tr("bottomdock"), this);
+    bottomdock->setObjectName(tr("bottomdock"));
+    bottomdock->setAllowedAreas(Qt::BottomDockWidgetArea);
+
+    // to hide the title bar completely must replace the default widget with a generic one
+    auto titlewidget = new QWidget(this);
+    bottomdock->setTitleBarWidget(titlewidget);
+
+    // tabs window
+    m_tabWidget = new QTabWidget(this);
+    m_tabWidget->setTabsClosable(true);
+    m_tabWidget->setMovable(true);
+
+    bottomdock->setWidget(m_tabWidget);
+
+    // tabs within tab window
+    auto console = new Console(this);
+    m_tabWidget->addTab(console, tr("Console"));
+
+    {
+    auto console2 = new Console(this);
+    m_tabWidget->addTab(console2, tr("Console2"));
+    }
+
+    // signal connections
+    connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int))); 
+
+    addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 }
 
 void

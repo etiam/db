@@ -5,6 +5,7 @@
         <file alias="qss/custom.qss">custom.qss</file>
 
         <file alias="img/close.png">images/close.png</file>
+        <file alias="img/close-hover.png">images/close-hover.png</file>
         <file alias="img/brkp.png">images/brkp.png</file>
         <file alias="img/brkp_currentline.png">images/brkp_currentline.png</file>
         <file alias="img/brkp_disabled.png">images/brkp_disabled.png</file>

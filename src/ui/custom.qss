@@ -2,3 +2,8 @@
 { 
     image: url(:/img/close.png); 
 }
+
+.QTabBar:close-button:hover
+{
+    image: url(:/img/close-hover.png); 
+}

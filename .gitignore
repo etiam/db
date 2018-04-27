@@ -44,10 +44,10 @@
 /GSYMS
 /GTAGS
 
-Makefile.in
-
-.gdb_history
-
-compile_commands.json
 /scripts
-/*.pyc
+/test/main.json
+
+Makefile.in
+.gdb_history
+compile_commands.json
+*.pyc

@@ -39,20 +39,22 @@ class MainWindow : public QMainWindow
     void            stepinto();
     void            stepout();
 
+    void            closeTab(int index);
+
   private:
     void            readSettings();
     void            writeSettings() const;
 
     void            createToolbar();
+    void            createDocks();
     void            createMenus();
     void            createFileMenu();
 
     void            createHotkeys();
 
     Editor *        m_editor;
-    Console *       m_console;
+//    QSplitter *     m_splitter;
     QTabWidget *    m_tabWidget;
-    QSplitter *     m_splitter;
 };
 
 }
