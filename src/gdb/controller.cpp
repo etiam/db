@@ -22,7 +22,6 @@
 #include "core/optionsManager.h"
 #include "core/signal.h"
 
-#include "gdb/responses.h"
 #include "controller.h"
 
 namespace Gdb
@@ -42,8 +41,8 @@ class ControllerImpl
     void            resultHandler(const Result &result);
     void            resultReaderThread();
 
-    int             executeCommand(const std::string &command, Controller::ResponseFunc response, boost::any data);
-    void            addResponse(Controller::ResponseFunc response);
+    int             executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data);
+    void            addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data);
 
     void            loadProgram(const std::string &filename);
     void            insertBreakpoint(const std::string &location);
@@ -58,17 +57,18 @@ class ControllerImpl
     int             m_token = 1;
 
     PyObject *      m_writeMethod = nullptr;
-    PyObject *      m_getResponseMethod = nullptr;
+    PyObject *      m_getHandlerMethod = nullptr;
 
-    struct ResponseData
+    struct HandlerData
     {
-        Controller::ResponseFunc    response;
+        Controller::HandlerFunc     handler;
         int                         token;
+        int                         priority;
+        bool                        persistent;
         boost::any                  data;
-        bool                        persistent = false;
     };
 
-    std::vector<ResponseData>       m_responses;
+    std::vector<HandlerData>        m_handlers;
 
     std::unique_ptr<std::thread>    m_readerThread;
 };
@@ -140,10 +140,10 @@ ControllerImpl::initialize()
         if (gdbmiinstance)
         {
             m_writeMethod = PyObject_GetAttrString(gdbmiinstance, "write");
-            m_getResponseMethod = PyObject_GetAttrString(gdbmiinstance, "get_gdb_response");
+            m_getHandlerMethod = PyObject_GetAttrString(gdbmiinstance, "get_gdb_response");
 
             if (!m_writeMethod || !PyCallable_Check(m_writeMethod) ||
-                !m_getResponseMethod || !PyCallable_Check(m_getResponseMethod))
+                !m_getHandlerMethod || !PyCallable_Check(m_getHandlerMethod))
                 m_valid = false;
 
             // start read thread
@@ -219,18 +219,21 @@ void
 ControllerImpl::resultHandler(const Result &result)
 {
     bool match = false;
-    auto it=std::begin(m_responses);
-    for (; it != std::end(m_responses); ++it)
+    auto it=std::begin(m_handlers);
+    for (; it != std::end(m_handlers); ++it)
     {
-        if (it->response(result, it->token, it->data))
+        if (it->handler(result, it->token, it->data))
         {
             match = true;
             break;
         }
     }
 
-    if (match && !it->persistent)
-        m_responses.erase(it);
+    if (match)
+    {
+        if (!it->persistent)
+            m_handlers.erase(it);
+    }
     else
     {
         std::cout << "no match : " << result << std::endl;
@@ -248,7 +251,7 @@ ControllerImpl::resultReaderThread()
         auto gstate = PyGILState_Ensure();
 
         auto args = Py_BuildValue("(d,i,i)", 0.1, false, m_verbose);
-        auto value = PyObject_Call(m_getResponseMethod, args, nullptr);
+        auto value = PyObject_Call(m_getHandlerMethod, args, nullptr);
 
         if (value && PyList_Check(value))
         {
@@ -272,7 +275,7 @@ ControllerImpl::resultReaderThread()
 }
 
 int
-ControllerImpl::executeCommand(const std::string &command, Controller::ResponseFunc response, boost::any data)
+ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data)
 {
     Result result;
 
@@ -282,9 +285,9 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
     std::stringstream stream;
     stream << m_token << "-" << command;
 
-    // store response data
-    if (response != nullptr)
-        m_responses.push_back({response, m_token, data});
+    // store handler data
+    if (handler != nullptr)
+        addHandler(handler, 0, false, data);
 
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
@@ -300,9 +303,13 @@ ControllerImpl::executeCommand(const std::string &command, Controller::ResponseF
 }
 
 void
-ControllerImpl::addResponse(Controller::ResponseFunc response)
+ControllerImpl::addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data)
 {
-    m_responses.push_back({response, m_token, nullptr, true});
+    m_handlers.push_back({handler, m_token, priority, persistent, data});
+
+    // sort handlers based on priority
+    std::sort(std::begin(m_handlers), std::end(m_handlers),
+              [](const HandlerData &a, const HandlerData &b) { return a.priority < b.priority; });
 }
 
 ///////////////////////////////////
@@ -317,15 +324,15 @@ Controller::~Controller()
 }
 
 int
-Controller::executeCommand(const std::string &command, ResponseFunc response, boost::any data)
+Controller::executeCommand(const std::string &command, HandlerFunc handler, boost::any data)
 {
-    return m_impl->executeCommand(command, response, data);
+    return m_impl->executeCommand(command, handler, data);
 }
 
 void
-Controller::addResponse(Controller::ResponseFunc response)
+Controller::addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data)
 {
-    m_impl->addResponse(response);
+    m_impl->addHandler(handler, priority, persistent, data);
 }
 
 }

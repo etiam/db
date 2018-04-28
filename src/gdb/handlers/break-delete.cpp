@@ -23,18 +23,18 @@
 namespace Gdb
 {
 
-namespace Responses
+namespace Handlers
 {
 
 bool
-breakdisable(const Gdb::Result &result, int token, boost::any data)
+breakdelete(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
 
     if (match)
     {
         auto number = boost::any_cast<int>(data);
-        Core::state()->breakpoints().disableBreakpoint(number);
+        Core::state()->breakpoints().deleteBreakpoint(number);
     }
 
     return match;

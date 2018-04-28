@@ -31,10 +31,10 @@ class Controller
     explicit Controller();
     ~Controller();
 
-    using ResponseFunc = std::function<bool(const Result, int, boost::any data)>;
+    using HandlerFunc = std::function<bool(const Result, int, boost::any data)>;
 
-    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, boost::any data = nullptr);
-    void    addResponse(Controller::ResponseFunc response);
+    int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
+    void    addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data = nullptr);
 
   private:
     std::unique_ptr<ControllerImpl>   m_impl;

@@ -26,7 +26,7 @@ class Commands
     Commands();
     ~Commands();
 
-    int     executeCommand(const std::string &command, Controller::ResponseFunc response = nullptr, boost::any data = nullptr);
+    int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
     void    loadProgram(const std::string &filename);
 

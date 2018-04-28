@@ -28,11 +28,6 @@ class Console: public QPlainTextEdit
 
   public Q_SLOTS:
     void appendText(const QString &text);
-
-  private:
-
-    // wink signal handlers
-    void onappendConsoleText(const std::string &text);
 };
 
 }

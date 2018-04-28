@@ -111,7 +111,7 @@ BuilderImpl::setBuildPath(const std::string &progpath)
 
     if (boost::filesystem::exists(path(progpath) / "compile_commands.json"))
     {
-        std::cout << "loading compile_commands.json from " << boost::filesystem::canonical(progpath) << std::endl;
+        std::cout << "loading " << boost::filesystem::canonical(path(progpath) / "compile_commands.json").string() << std::endl;
         CXCompilationDatabase_Error errorcode;
         m_compdb = clang_CompilationDatabase_fromDirectory(progpath.c_str(), &errorcode);
         m_index = clang_createIndex(0, 0);

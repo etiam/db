@@ -23,7 +23,7 @@
 namespace Gdb
 {
 
-namespace Responses
+namespace Handlers
 {
 
 bool

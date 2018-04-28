@@ -26,7 +26,7 @@
 
 #include "editor.h"
 #include "console.h"
-#include "mainwindow.h"
+#include "mainWindow.h"
 
 Q_DECLARE_METATYPE(QList<int>)
 
@@ -79,6 +79,10 @@ MainWindow::MainWindow(QWidget *parent) :
     addDockWidget(Qt::LeftDockWidgetArea , dockwidget2);
 //    tabifyDockWidget(dockwidget1,dockwidget2);
 */
+
+    Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
+    Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
+    Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
 }
 
 MainWindow::~MainWindow()
@@ -119,7 +123,7 @@ MainWindow::stepout()
 void
 MainWindow::closeTab(int index)
 {
-    m_tabWidget->removeTab(index); 
+    m_tabWidget->removeTab(index);
 }
 
 void
@@ -229,16 +233,17 @@ MainWindow::createDocks()
     bottomdock->setWidget(m_tabWidget);
 
     // tabs within tab window
-    auto console = new Console(this);
-    m_tabWidget->addTab(console, tr("Console"));
+    m_console = new Console(this);
+    m_tabWidget->addTab(m_console, tr("Console"));
 
-    {
-    auto console2 = new Console(this);
-    m_tabWidget->addTab(console2, tr("Console2"));
-    }
+    m_log = new Console(this);
+    m_tabWidget->addTab(m_log, tr("Log"));
+
+    m_output = new Console(this);
+    m_tabWidget->addTab(m_output, tr("Output"));
 
     // signal connections
-    connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int))); 
+    connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 }
@@ -263,6 +268,26 @@ MainWindow::createFileMenu()
 void
 MainWindow::createHotkeys()
 {
+}
+
+// wink signal handlers
+
+void
+MainWindow::onAppendConsoleText(const std::string &text)
+{
+    QMetaObject::invokeMethod(m_console, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+}
+
+void
+MainWindow::onAppendLogText(const std::string &text)
+{
+    QMetaObject::invokeMethod(m_log, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+}
+
+void
+MainWindow::onAppendOutputText(const std::string &text)
+{
+    QMetaObject::invokeMethod(m_output, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 }

@@ -7,8 +7,8 @@
 
 
 #pragma once
-#ifndef GDB_RESPONSES_H_
-#define GDB_RESPONSES_H_
+#ifndef GDB_HANDLERS_H_
+#define GDB_HANDLERS_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -21,8 +21,14 @@
 namespace Gdb
 {
 
-namespace Responses
+namespace Handlers
 {
+
+bool console(const Result &result, int token, boost::any data);
+bool logging(const Result &result, int token, boost::any data);
+bool output(const Result &result, int token, boost::any data);
+
+bool stopped(const Result &result, int token, boost::any data);
 
 bool fileexec(const Result &result, int token, boost::any data);
 bool breakinsert(const Result &result, int token, boost::any data);
@@ -35,4 +41,4 @@ bool infoline(const Result &result, int token, boost::any data);
 
 }
 
-#endif // GDB_RESPONSES_H_
+#endif // GDB_HANDLERS_H_

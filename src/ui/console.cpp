@@ -9,7 +9,7 @@
 # include "config.h"
 #endif
 
-#include <iostream>
+#include <QScrollBar>
 
 #include "core/signal.h"
 
@@ -23,8 +23,6 @@ Console::Console(QWidget *parent) :
 {
     setReadOnly(true);
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-
-    Core::Signal::appendConsoleText.connect(this, &Console::onappendConsoleText);
 }
 
 Console::~Console()
@@ -45,14 +43,9 @@ Console::appendText(const QString &text)
         moveCursor(QTextCursor::Up);
         moveCursor(QTextCursor::EndOfLine);
     }
-}
 
-// wink signal handlers
-
-void
-Console::onappendConsoleText(const std::string &text)
-{
-    QMetaObject::invokeMethod(this, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    // scroll to bottom of text
+    verticalScrollBar()->setValue(verticalScrollBar()->maximum());
 }
 
 }

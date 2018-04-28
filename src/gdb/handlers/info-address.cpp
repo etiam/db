@@ -18,14 +18,13 @@
 #include "core/state.h"
 #include "core/signal.h"
 
-#include <gdb/responses.h>
 #include "gdb/commands.h"
 #include "gdb/result.h"
 
 namespace Gdb
 {
 
-namespace Responses
+namespace Handlers
 {
 
 bool

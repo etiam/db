@@ -16,7 +16,7 @@
 #include "core/global.h"
 #include "core/optionsManager.h"
 
-#include "mainwindow.h"
+#include "mainWindow.h"
 #include "main.h"
 
 namespace Ui

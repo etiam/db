@@ -21,7 +21,10 @@ wink::signal<wink::slot<void (const std::string &filename)>>            loadFile
 wink::signal<wink::slot<void (int row, int col)>>                       setCursorPosition;
 wink::signal<wink::slot<void (int row, bool enabled)>>                  showBreakpointMarker;
 wink::signal<wink::slot<void (int row)>>                                clearBreakpointMarker;
+
 wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleText;
+wink::signal<wink::slot<void (const std::string &text)>>                appendLogText;
+wink::signal<wink::slot<void (const std::string &text)>>                appendOutputText;
 
 }
 
