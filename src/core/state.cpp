@@ -9,6 +9,7 @@
 # include "config.h"
 #endif
 
+#include "signal.h"
 #include "state.h"
 
 namespace Core
@@ -26,5 +27,18 @@ State::breakpoints()
     return m_breakpoints;
 }
 
+
+const Location &
+State::currentLocation() const
+{
+    return m_currentLocation;
 }
 
+void
+State::setCurrentLocation(const Location& location)
+{
+    m_currentLocation = location;
+    Signal::setCurrentLocation(location);
+}
+
+}

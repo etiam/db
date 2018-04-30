@@ -28,13 +28,16 @@ class Breakpoints
     void    disableBreakpoint(int number);
     void    deleteBreakpoint(int number);
 
+    bool    present(int line) const;
+    bool    enabled(int line) const;
+
   private:
     struct Breakpoint
     {
         std::string filename;
         int         line;
         int         number;
-        bool        disabled;
+        bool        enabled;
     };
 
     std::vector<Breakpoint>     m_breakpoints;

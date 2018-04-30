@@ -21,6 +21,8 @@
 #include "external/wink/wink/signal.hpp"
 #pragma GCC diagnostic pop
 
+#include "location.h"
+
 namespace Core
 {
 
@@ -29,8 +31,11 @@ namespace Signal
 
 extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFile;
 extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
-extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showBreakpointMarker;
-extern wink::signal<wink::slot<void (int row)>>                                 clearBreakpointMarker;
+extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
+
+extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showGutterMarker;
+extern wink::signal<wink::slot<void (int row)>>                                 clearGutterMarker;
+extern wink::signal<wink::slot<void (int row)>>                                 updateGutterMarker;
 
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;

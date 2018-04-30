@@ -39,13 +39,13 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
     }
     else
     {
-       if (it->disabled)
+       if (it->enabled)
        {
-          Core::gdb()->deleteBreakpoint(it->number);
+          Core::gdb()->disableBreakpoint(it->number);
        }
        else
        {
-          Core::gdb()->disableBreakpoint(it->number);
+          Core::gdb()->deleteBreakpoint(it->number);
        }
     }
 }
@@ -53,15 +53,15 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 void
 Breakpoints::insertBreakpoint(const std::string &filename, int line, int number)
 {
-    Core::Signal::showBreakpointMarker(line, true);
-    m_breakpoints.push_back({filename, line, number, false});
+    Core::Signal::showGutterMarker(line, true);
+    m_breakpoints.push_back({filename, line, number, true});
 
-    auto &state = Core::state();
-    auto &vars = state->vars();
+    Core::Signal::updateGutterMarker(line);
+
+    auto &vars = Core::state()->vars();
     if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
     {
-        Core::Signal::loadFile(filename);
-        Core::Signal::setCursorPosition(line, 0);
+        Core::Signal::setCurrentLocation(Location({filename, line}));
         vars.set("initialdisplay", true);
     }
 }
@@ -74,9 +74,11 @@ Breakpoints::disableBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::Signal::showBreakpointMarker(it->line, false);
-        it->disabled = true;
+        Core::Signal::showGutterMarker(it->line, false);
+        it->enabled = false;
     }
+
+    Core::Signal::updateGutterMarker(it->line);
 }
 
 void
@@ -87,9 +89,43 @@ Breakpoints::deleteBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::Signal::clearBreakpointMarker(it->line);
+        Core::Signal::clearGutterMarker(it->line);
         m_breakpoints.erase(it);
     }
+
+    Core::Signal::updateGutterMarker(it->line);
+}
+
+
+bool
+Breakpoints::present(int line) const
+{
+    bool present = false;
+    for (const auto &breakpoint : m_breakpoints)
+    {
+        if (breakpoint.line == line)
+        {
+            present = true;
+            break;
+        }
+    }
+    return present;
+}
+
+bool
+Breakpoints::enabled(int line) const
+{
+    bool enabled = false;
+    for (const auto &breakpoint : m_breakpoints)
+    {
+        if (breakpoint.line == line && breakpoint.enabled)
+        {
+            enabled = true;
+            break;
+        }
+    }
+
+    return enabled;
 }
 
 } // namespace Core

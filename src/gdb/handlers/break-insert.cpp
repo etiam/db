@@ -38,11 +38,11 @@ breakinsert(const Result &result, int token, boost::any data)
         auto &state = Core::state();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
-        auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
+        auto fullname = boost::any_cast<char *>(bkpt.at("fullname"));
         auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         auto number = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
 
-        state->breakpoints().insertBreakpoint(filename, line, number);
+        state->breakpoints().insertBreakpoint(fullname, line, number);
     }
 
     return match;

@@ -16,6 +16,7 @@
 
 #include "anymap.h"
 #include "breakpoints.h"
+#include "location.h"
 
 namespace Core
 {
@@ -26,12 +27,16 @@ class State
     State() = default;
     ~State() = default;
 
-    AnyMap &        vars();
-    Breakpoints &   breakpoints();
+    AnyMap &            vars();
+    Breakpoints &       breakpoints();
+
+    const Location &    currentLocation() const;
+    void                setCurrentLocation(const Location &location);
 
   private:
-    AnyMap          m_vars;
-    Breakpoints     m_breakpoints;
+    AnyMap              m_vars;
+    Breakpoints         m_breakpoints;
+    Location            m_currentLocation;
 };
 
 }
