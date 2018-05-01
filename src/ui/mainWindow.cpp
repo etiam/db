@@ -18,6 +18,7 @@
 #include <QSplitter>
 #include <QToolBar>
 #include <QDockWidget>
+#include <QShortcut>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -268,6 +269,14 @@ MainWindow::createFileMenu()
 void
 MainWindow::createHotkeys()
 {
+    auto zoomin = new QShortcut(Qt::CTRL + Qt::Key_Equal, this);
+    connect(zoomin, &QShortcut::activated, [&](){ m_editor->zoomInText(); });
+
+    auto zoomout = new QShortcut(Qt::CTRL + Qt::Key_Minus, this);
+    connect(zoomout, &QShortcut::activated, [&](){ m_editor->zoomOutText(); });
+
+    auto zoomreset = new QShortcut(Qt::CTRL + Qt::Key_0, this);
+    connect(zoomreset, &QShortcut::activated, [&](){ m_editor->zoomResetText(); });
 }
 
 // wink signal handlers

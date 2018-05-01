@@ -202,6 +202,27 @@ Editor::setKeyboardHandler(const QString &name)
     m_impl->executeJavaScript(request.arg("qrc:/ace/keybinding-"+name+".js").arg(name));
 }
 
+void
+Editor::zoomResetText()
+{
+    auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
+    m_impl->m_webView->setTextSizeMultiplier(factor);
+}
+
+void
+Editor::zoomInText()
+{
+    auto factor = m_impl->m_webView->textSizeMultiplier();
+    m_impl->m_webView->setTextSizeMultiplier(factor + 0.1);
+}
+
+void
+Editor::zoomOutText()
+{
+    auto factor = m_impl->m_webView->textSizeMultiplier();
+    m_impl->m_webView->setTextSizeMultiplier(factor - 0.1);
+}
+
 // public slots
 
 void

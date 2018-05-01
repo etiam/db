@@ -10,9 +10,9 @@
         <file alias="img/brkp.png">images/brkp.png</file>
         <file alias="img/brkp_currentline.png">images/brkp_currentline.png</file>
         <file alias="img/brkp_disabled.png">images/brkp_disabled.png</file>
-        <file alias="img/brkp_currentline_disabled.png">images/brkp_disabled.png</file>
-        
+        <file alias="img/brkp_disabled_currentline.png">images/brkp_disabled_currentline.png</file>
         <file alias="img/currentline.png">images/currentline.png</file>
+        
         <file alias="img/run">images/icons8-play-32.png</file>
         <file alias="img/pause">images/icons8-pause-32.png</file>
         <file alias="img/stepover">images/icons8-step-over-32.png</file>

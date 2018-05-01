@@ -44,6 +44,10 @@ class Editor : public QWidget
 
     void    setKeyboardHandler(const QString &name);
 
+    void    zoomResetText();
+    void    zoomInText();
+    void    zoomOutText();
+
   public Q_SLOTS:
     void    onGutterClicked(int row);
     void    onCursorMoved(int x, int y);
