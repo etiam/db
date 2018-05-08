@@ -7,3 +7,6 @@
 [submodule "src/external/wink"]
 	path = src/external/wink
 	url = https://github.com/miguelmartin75/Wink-Signals.git
+[submodule "src/external/libut"]
+	path = src/external/libut
+	url = https://github.com/etiam/libut.git

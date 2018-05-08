@@ -39,6 +39,14 @@ AX_BOOST_PROGRAM_OPTIONS
 
 # libclang
 AX_LIBCLANG([0], [35])
+CLANG_LIBS=$LIBS
+AC_SUBST(CLANG_LIBS)
+
+# bfd.h
+AC_CHECK_HEADERS(bfd.h,
+[AM_CONDITIONAL([HAVE_BFD_H], [true])],
+[AC_MSG_WARN([Couldn't find bfd.h, verbose stack dumps disabled.])]
+)
 
 # remove autoconf's "-g -O2" defaults
 CFLAGS=`echo $CFLAGS | sed 's/-O.//g'`
@@ -122,6 +130,11 @@ if test "x$host_cpu" == xx86_64; then
     AC_DEFINE(X86_64,,[64 bit arch])
 fi
 
+# some "lazy" m4 macros define LIBS at some point during their execution
+# which causes problems when using subdirs.  so undefine it first.
+unset LIBS
+
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_SUBDIRS([src/external/libut])
 AC_OUTPUT
 

@@ -21,6 +21,7 @@
 #include "core/global.h"
 #include "core/optionsManager.h"
 #include "core/signal.h"
+#include "core/util.h"
 
 #include "controller.h"
 
@@ -259,7 +260,16 @@ ControllerImpl::resultReaderThread()
             for (auto i=0; i < n; i++)
             {
                 auto r = parseResult(PyList_GetItem(value, i));
-                resultHandler(r);
+
+                try
+                {
+                    resultHandler(r);
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Exception caught in Gdb::Controller::resultReaderThread(): " << e.what() << std::endl;
+                    std::cerr << Core::dumpStack() << std::endl;
+                }
             }
         }
         else

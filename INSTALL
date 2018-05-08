@@ -3,4 +3,7 @@
 sudo apt install autoconf clang-5.0++ pkg-config 
 sudo apt install qt5-default qtbase5-dev libqt5webkit5-dev libclang-5.0-dev libboost-filesystem-dev libboost-python-dev libboost-program-options-dev python-dev llvm-5.0
 
+# optional
+sudo apt install binutils-dev
+
 git submodule update --init

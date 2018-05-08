@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS           = -I m4
 
+SUBDIRS                   = src/external/libut
+
 bin_PROGRAMS              =
 nodist_db_SOURCES         =
 noinst_LIBRARIES          =
