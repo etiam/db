@@ -12,7 +12,7 @@
 #include <sstream>
 #include <thread>
 
-#include "external/libut/src/libut/utils.h"
+#include "libut/utils.h"
 
 #include "global.h"
 #include "optionsManager.h"

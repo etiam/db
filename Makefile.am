@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS           = -I m4
 
-SUBDIRS                   = src/external/libut
+SUBDIRS                   = $(subdirs) $(subdirs_extra)
 
 bin_PROGRAMS              =
 nodist_db_SOURCES         =

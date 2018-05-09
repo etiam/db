@@ -41,14 +41,14 @@ stopped(const Result &result, int token, boost::any data)
         Core::Signal::appendConsoleText("* stopped\n");
 
         const auto &dict = result.payload.dict;
-        auto number = std::stoi(boost::any_cast<char *>(dict.at("bkptno")));
+//        auto number = std::stoi(boost::any_cast<char *>(dict.at("bkptno")));
         if (dict.find("frame") != std::end(dict))
         {
             auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
             auto fullname = boost::any_cast<char *>(frame.at("fullname"));
             auto line = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
-            std::cout << fullname << " " << line << " " << number << std::endl;
+//            std::cout << fullname << " " << line << " " << number << std::endl;
             Core::state()->setCurrentLocation(Core::Location({fullname, line}));
         }
 

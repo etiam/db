@@ -98,11 +98,11 @@ AC_ARG_ENABLE([opt],
     *) AC_MSG_ERROR([bad value ${enableval} for --enable-opt]) ;;
   esac],[opt=false])
 if test "x$opt" != xfalse; then
-      CFLAGS="-O3 ${CFLAGS}"
-      CXXFLAGS="-O3 ${CXXFLAGS}"
+  CFLAGS="-O3 ${CFLAGS}"
+  CXXFLAGS="-O3 ${CXXFLAGS}"
 fi
 if test "x$opt" != xfalse; then
-      AC_DEFINE(NDEBUG,1,[strip out asserts])
+  AC_DEFINE(NDEBUG,1,[strip out asserts])
 fi
 
 # --enable-profile
@@ -114,8 +114,8 @@ AC_ARG_ENABLE([profile],
     *) AC_MSG_ERROR([bad value ${enableval} for --enable-profile]) ;;
   esac],[profile=false])
 if test "x$profile" != xfalse; then
-      CFLAGS="-g3 -fno-inline -fno-omit-frame-pointer ${CFLAGS}"
-      CXXFLAGS="-g3 -fno-inline -fno-omit-frame-pointer ${CXXFLAGS}"
+  CFLAGS="-g3 -fno-inline -fno-omit-frame-pointer ${CFLAGS}"
+  CXXFLAGS="-g3 -fno-inline -fno-omit-frame-pointer ${CXXFLAGS}"
 fi
 AM_CONDITIONAL([DO_PROFILER], [test x$profile = xtrue]) 
 
@@ -127,14 +127,28 @@ AC_DEFINE(QT_NO_KEYWORDS,,[do not use qt keywords])
 
 # processor type
 if test "x$host_cpu" == xx86_64; then
-    AC_DEFINE(X86_64,,[64 bit arch])
+  AC_DEFINE(X86_64,,[64 bit arch])
 fi
 
 # some "lazy" m4 macros define LIBS at some point during their execution
 # which causes problems when using subdirs.  so undefine it first.
 unset LIBS
 
+#AC_CONFIG_SUBDIRS([src/external/libut])
+AX_SUBDIRS_CONFIGURE([src/external/libut], [--disable-shared], [], [], [])
+
+#AX_SUBDIRS_CONFIGURE(
+#  [src/external/libut],
+#  [--disable-shared],
+#  [[db_CPPFLAGS=-I${ac_top_srcdir}/src/external/libut/src],
+#   [db_LDADD=-L${ac_abs_top_builddir}/src/external/libut/.libs -lut]],
+#  [],
+#  [])
+
+#AC_SUBST(db_CPPFLAGS)
+#AC_SUBST(db_LDADD)
+
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_SUBDIRS([src/external/libut])
+
 AC_OUTPUT
 
