@@ -70,8 +70,8 @@ AC_ARG_ENABLE([debug],
     *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
   esac],[debug=false])
 if test "x$debug" != xfalse; then
-      CFLAGS="-O0 -g3 -fno-inline ${CFLAGS} -rdynamic"
-      CXXFLAGS="-O0 -g3 -fno-inline ${CXXFLAGS} -rdynamic"
+      CFLAGS="-O0 -g3 -fno-inline ${CFLAGS}"
+      CXXFLAGS="-O0 -g3 -fno-inline ${CXXFLAGS}"
       AC_DEFINE(DEBUG_ENABLED,1,[turn on compiler/opengl debugging])
 fi
 AM_CONDITIONAL([DO_DEBUG], [test x$debug = xtrue]) 
@@ -134,21 +134,14 @@ fi
 # which causes problems when using subdirs.  so undefine it first.
 unset LIBS
 
-#AC_CONFIG_SUBDIRS([src/external/libut])
-AX_SUBDIRS_CONFIGURE([src/external/libut], [--disable-shared], [], [], [])
-
-#AX_SUBDIRS_CONFIGURE(
-#  [src/external/libut],
-#  [--disable-shared],
-#  [[db_CPPFLAGS=-I${ac_top_srcdir}/src/external/libut/src],
-#   [db_LDADD=-L${ac_abs_top_builddir}/src/external/libut/.libs -lut]],
-#  [],
-#  [])
-
-#AC_SUBST(db_CPPFLAGS)
-#AC_SUBST(db_LDADD)
-
 AC_CONFIG_FILES(Makefile)
 
-AC_OUTPUT
+AX_SUBDIRS_CONFIGURE([src/external/libut], [--disable-shared], [], [], [])
 
+# libut 
+LIBUT_CFLAGS="-I${ac_abs_top_srcdir}/src/external/libut/src"
+LIBUT_LIBS=-"L${ac_abs_top_builddir}/src/external/libut/.libs -lut"
+AC_SUBST(LIBUT_CFLAGS)
+AC_SUBST(LIBUT_LIBS)
+
+AC_OUTPUT

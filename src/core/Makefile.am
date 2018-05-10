@@ -6,15 +6,11 @@ db_SOURCES               +=                                             \
                             src/core/signal.cpp
 
 db_CPPFLAGS              +=                                             \
-                            -I$(top_srcdir)/src/external/libut/src
+                            @LIBUT_CFLAGS@
 
 db_LDADD                 +=                                             \
-                            -L$(top_builddir)/src/external/libut/.libs  \
-							-lut -lIex -lboost_iostreams
-
-db_LDFLAGS               +=                                             \
-                            -Wl,--rpath -Wl,$(top_builddir)/src/external/libut/.libs
-
+                            @LIBUT_LIBS@                                \
+                            -lIex -lboost_iostreams
 
 if HAVE_BFD_H
 db_LDADD                 +=                                             \
