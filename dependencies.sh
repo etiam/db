@@ -1,5 +1,8 @@
 #!/bin/bash
 
+locale-gen en_US en_US.UTF-8
+dpkg-reconfigure locales
+
 # add for llvm-5.0
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial main"
