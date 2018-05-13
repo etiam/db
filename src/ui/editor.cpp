@@ -140,8 +140,6 @@ Editor::Editor(QMainWindow *parent) :
     Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signal::setCurrentLocation.connect(this, &Editor::onSetCurrentLocationSignal);
 
-    Core::Signal::showGutterMarker.connect(this, &Editor::onShowGutterMarkerSignal);
-    Core::Signal::clearGutterMarker.connect(this, &Editor::onClearGutterMarkerSignal);
     Core::Signal::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
 }
 
@@ -290,20 +288,8 @@ void
 Editor::onSetCurrentLocationSignal(const Core::Location &location)
 {
     QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(location.m_filename)));
-    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.m_line), Q_ARG(int, 0));
-    QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, location.m_line));
-}
-
-void
-Editor::onShowGutterMarkerSignal(int row, bool enabled)
-{
-    QMetaObject::invokeMethod(this, "showGutterMarker", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(bool, enabled));
-}
-
-void
-Editor::onClearGutterMarkerSignal(int row)
-{
-    QMetaObject::invokeMethod(this, "clearGutterMarker", Qt::QueuedConnection, Q_ARG(int, row));
+    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.m_row), Q_ARG(int, 0));
+    QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, location.m_row));
 }
 
 void
@@ -347,33 +333,10 @@ Editor::setCursorPosition(int row, int column)
 }
 
 void
-Editor::showGutterMarker(int row, bool enabled)
-{
-    if (enabled)
-        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint\")").arg(row-1));
-    else
-        m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"ace_breakpoint_disabled\")").arg(row-1));
-}
-
-void
-Editor::clearGutterMarker(int row)
-{
-    m_impl->executeJavaScript(QString("editor.getSession().clearBreakpoint(%1)").arg(row-1));
-}
-
-void
 Editor::updateGutterMarker(int row)
 {
     const auto &breakpoints = Core::state()->breakpoints();
     const auto &currloc = Core::state()->currentLocation();
-
-    /*
-        ace_breakpoint
-        ace_breakpoint_disabled
-        ace_breakpoint_disabled_currentline
-        ace_breakpoint_currentline
-        ace_currentline
-    */
 
     std::string klass = "ace";
     if (breakpoints.present(row))
@@ -385,13 +348,12 @@ Editor::updateGutterMarker(int row)
         }
     }
 
-    if (currloc.m_line == row)
+    if (currloc.m_row == row)
     {
         klass += "_currentline";
     }
 
     m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(row-1).arg(QString::fromStdString(klass)));
-    std::cout << klass << std::endl;
 }
 
 }

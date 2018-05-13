@@ -64,8 +64,6 @@ class Editor : public QWidget
     void    onSetCursorPositionSignal(int row, int column);
     void    onSetCurrentLocationSignal(const Core::Location &location);
 
-    void    onShowGutterMarkerSignal(int row, bool enabled);
-    void    onClearGutterMarkerSignal(int row);
     void    onUpdateGutterMarkerSignal(int row);
 
     std::unique_ptr<EditorImpl> m_impl;
@@ -74,8 +72,6 @@ class Editor : public QWidget
     void    loadFile(const QString &filename);
     void    setCursorPosition(int row, int column);
 
-    void    showGutterMarker(int row, bool enabled);
-    void    clearGutterMarker(int row);
     void    updateGutterMarker(int row);
 };
 

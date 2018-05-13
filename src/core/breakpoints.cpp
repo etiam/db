@@ -53,9 +53,7 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 void
 Breakpoints::insertBreakpoint(const std::string &filename, int line, int number)
 {
-    Core::Signal::showGutterMarker(line, true);
     m_breakpoints.push_back({filename, line, number, true});
-
     Core::Signal::updateGutterMarker(line);
 
     auto &vars = Core::state()->vars();
@@ -74,7 +72,6 @@ Breakpoints::disableBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::Signal::showGutterMarker(it->line, false);
         it->enabled = false;
     }
 
@@ -89,7 +86,6 @@ Breakpoints::deleteBreakpoint(int number)
 
     if (it != std::end(m_breakpoints))
     {
-        Core::Signal::clearGutterMarker(it->line);
         m_breakpoints.erase(it);
     }
 

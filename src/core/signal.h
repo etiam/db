@@ -33,8 +33,6 @@ extern wink::signal<wink::slot<void (const std::string &filename)>>             
 extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
 extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
 
-extern wink::signal<wink::slot<void (int row, bool enabled)>>                   showGutterMarker;
-extern wink::signal<wink::slot<void (int row)>>                                 clearGutterMarker;
 extern wink::signal<wink::slot<void (int row)>>                                 updateGutterMarker;
 
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
