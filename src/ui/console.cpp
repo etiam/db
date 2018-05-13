@@ -26,7 +26,6 @@ Console::Console(QWidget *parent) :
     setReadOnly(true);
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     auto f = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    std::cout << f.toString().toStdString() << std::endl;
 }
 
 Console::~Console()

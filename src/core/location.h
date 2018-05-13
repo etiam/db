@@ -21,7 +21,7 @@ namespace Core
 struct Location
 {
 	std::string     m_filename;
-	int             m_line;
+	int             m_row;
 };
 
 } // namespace Core
