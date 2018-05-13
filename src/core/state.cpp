@@ -37,6 +37,9 @@ State::currentLocation() const
 void
 State::setCurrentLocation(const Location& location)
 {
+    // update previous current location
+    Signal::updateGutterMarker(m_currentLocation.m_row);
+
     m_currentLocation = location;
     Signal::setCurrentLocation(location);
 }
