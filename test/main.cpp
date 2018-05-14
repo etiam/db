@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "func.h"
+
 class A
 {
   public:
@@ -21,5 +23,9 @@ main(int, char **)
 {
     std::cout << A::type << std::endl;
     std::cout << B::type << std::endl;
+
+    auto c = somefunc(1, 3.14);
+    std::cout << c << std::endl;
+
     return 0;
 }
