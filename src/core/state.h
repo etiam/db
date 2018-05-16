@@ -24,6 +24,14 @@ namespace Core
 class State
 {
   public:
+    enum class Debugger : char
+    {
+        LAUNCHED,
+        RUNNING,
+        PAUSED,
+        NONE
+    };
+
     State() = default;
     ~State() = default;
 
@@ -33,10 +41,14 @@ class State
     const Location &    currentLocation() const;
     void                setCurrentLocation(const Location &location);
 
+    Debugger            debuggerState() const;
+    void                setDebuggerState(Debugger state);
+
   private:
     AnyMap              m_vars;
     Breakpoints         m_breakpoints;
     Location            m_currentLocation;
+    Debugger            m_gdbState = Debugger::NONE;
 };
 
 }

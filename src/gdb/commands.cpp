@@ -48,7 +48,6 @@ Commands::infoAddress(const std::string &function)
 {
     std::string cmd = "interpreter-exec console \"info address " + function + "\"";
     m_controller->executeCommand(cmd);
-
 }
 
 void
@@ -76,7 +75,7 @@ void
 Commands::run()
 {
     std::string cmd = "exec-run";
-    m_controller->executeCommand(cmd);
+    m_controller->executeCommand(cmd, Handlers::running);
 }
 
 void
@@ -84,6 +83,16 @@ Commands::pause()
 {
     std::string cmd = "exec-interrupt --all";
     m_controller->executeCommand(cmd);
+}
+
+void
+Commands::stop()
+{
+}
+
+void
+Commands::reload()
+{
 }
 
 void

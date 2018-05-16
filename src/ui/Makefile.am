@@ -2,6 +2,7 @@ db_SOURCES               +=                                             \
                             src/ui/mainWindow.cpp                       \
                             src/ui/editor.cpp                           \
                             src/ui/console.cpp                          \
+                            src/ui/debugControls.cpp                    \
                             src/ui/main.cpp
                             
 nodist_db_SOURCES        +=                                             \

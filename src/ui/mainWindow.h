@@ -15,6 +15,8 @@
 #include <QMap>
 #include <QMainWindow>
 
+#include "core/state.h"
+
 class QTabWidget;
 class QSplitter;
 
@@ -23,6 +25,7 @@ namespace Ui
 
 class Editor;
 class Console;
+class DebugControls;
 
 class MainWindow : public QMainWindow
 {
@@ -35,11 +38,14 @@ class MainWindow : public QMainWindow
   private Q_SLOTS:
     void            run();
     void            pause();
+    void            stop();
+    void            reload();
     void            stepover();
     void            stepinto();
     void            stepout();
 
     void            closeTab(int index);
+    void            switchTab(int index);
 
   private:
     void            readSettings();
@@ -56,6 +62,7 @@ class MainWindow : public QMainWindow
     void            onAppendConsoleText(const std::string &text);
     void            onAppendLogText(const std::string &text);
     void            onAppendOutputText(const std::string &text);
+    void            onSetDebuggerState(Core::State::Debugger state);
 
     Editor *        m_editor;
     QTabWidget *    m_tabWidget;
@@ -63,6 +70,8 @@ class MainWindow : public QMainWindow
     Console *       m_console;
     Console *       m_log;
     Console *       m_output;
+
+    DebugControls * m_debugControls;
 };
 
 }

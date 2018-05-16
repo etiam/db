@@ -41,6 +41,8 @@ Console::appendText(const QString &text)
 
     insertPlainText(sanitized);
 
+//    std::cout << "at \"" << sanitized.toStdString() << "\"" << std::endl;
+
     if (!sanitized.endsWith('\n'))
     {
         moveCursor(QTextCursor::Up);

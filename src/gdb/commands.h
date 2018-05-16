@@ -38,6 +38,8 @@ class Commands
 
     void    run();
     void    pause();
+    void    stop();
+    void    reload();
     void    stepover();
     void    stepinto();
     void    stepout();

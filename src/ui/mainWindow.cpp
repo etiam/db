@@ -9,6 +9,7 @@
 # include "config.h"
 #endif
 
+#include <iostream>
 #include <sstream>
 
 #include <QFile>
@@ -19,6 +20,7 @@
 #include <QToolBar>
 #include <QDockWidget>
 #include <QShortcut>
+#include <QScrollBar>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -27,6 +29,7 @@
 
 #include "editor.h"
 #include "console.h"
+#include "debugControls.h"
 #include "mainWindow.h"
 
 Q_DECLARE_METATYPE(QList<int>)
@@ -84,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
     Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
     Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
+
+    Core::Signal::setDebuggerState.connect(this, &MainWindow::onSetDebuggerState);
 }
 
 MainWindow::~MainWindow()
@@ -101,6 +106,18 @@ void
 MainWindow::pause()
 {
     Core::gdb()->pause();
+}
+
+void
+MainWindow::stop()
+{
+    Core::gdb()->stop();
+}
+
+void
+MainWindow::reload()
+{
+    Core::gdb()->reload();
 }
 
 void
@@ -125,6 +142,19 @@ void
 MainWindow::closeTab(int index)
 {
     m_tabWidget->removeTab(index);
+}
+
+void
+MainWindow::switchTab(int index)
+{
+    auto console = qobject_cast<Console*>(m_tabWidget->widget(index));
+    if (console)
+    {
+        console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
+        std::cout << index << " " << console->verticalScrollBar()->maximum() << std::endl;
+    }
+//    qobject_cast<Console*>(m_tabWidget->widget(index))->ensureCursorVisible();
+//    std::cout << "st " << index << std::endl;
 }
 
 void
@@ -179,40 +209,9 @@ MainWindow::createMenus()
 void
 MainWindow::createToolbar()
 {
-    auto toolbar = addToolBar(tr("Debug"));
-    toolbar->setObjectName(tr("debugcontrols"));
-    toolbar->setAllowedAreas(Qt::TopToolBarArea);
-
-    auto runact = new QAction(QIcon(":/img/run"), tr("Run/Continue"), this);
-    runact->setStatusTip(tr("Start/continue debugging"));
-    runact->setShortcut(Qt::Key_R);
-    connect(runact, SIGNAL(triggered()), this, SLOT(run()));
-
-    auto pauseact = new QAction(QIcon(":/img/pause"), tr("Pause"), this);
-    pauseact->setStatusTip(tr("Pause execution"));
-    pauseact->setShortcut(Qt::Key_P);
-    connect(pauseact, SIGNAL(triggered()), this, SLOT(pause()));
-
-    auto stepoveract = new QAction(QIcon(":/img/stepover"), tr("Step over"), this);
-    stepoveract->setStatusTip(tr("Step over"));
-    stepoveract->setShortcut(Qt::Key_N);
-    connect(stepoveract, SIGNAL(triggered()), this, SLOT(stepover()));
-
-    auto stepintoact = new QAction(QIcon(":/img/stepinto"), tr("Step into"), this);
-    stepintoact->setStatusTip(tr("Step into"));
-    stepintoact->setShortcut(Qt::Key_S);
-    connect(stepintoact, SIGNAL(triggered()), this, SLOT(stepinto()));
-
-    auto stepoutact = new QAction(QIcon(":/img/stepout"), tr("Step out"), this);
-    stepoutact->setStatusTip(tr("Step out"));
-//    stepoutact->setShortcut(Qt::Key_R);
-    connect(stepoutact, SIGNAL(triggered()), this, SLOT(stepout()));
-
-    toolbar->addAction(runact);
-    toolbar->addAction(pauseact);
-    toolbar->addAction(stepoveract);
-    toolbar->addAction(stepintoact);
-    toolbar->addAction(stepoutact);
+    m_debugControls = new DebugControls(this);
+    m_debugControls->setState(Core::State::Debugger::LAUNCHED);
+    addToolBar(m_debugControls);
 }
 
 void
@@ -245,6 +244,8 @@ MainWindow::createDocks()
 
     // signal connections
     connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
+
 
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 }
@@ -297,6 +298,12 @@ void
 MainWindow::onAppendOutputText(const std::string &text)
 {
     QMetaObject::invokeMethod(m_output, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+}
+
+void
+MainWindow::onSetDebuggerState(Core::State::Debugger state)
+{
+    m_debugControls->setState(state);
 }
 
 }

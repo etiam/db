@@ -46,6 +46,8 @@ stopped(const Result &result, int token, boost::any data)
             auto row = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
             Core::state()->setCurrentLocation(Core::Location({fullname, row}));
+
+            Core::Signal::setDebuggerState(Core::State::Debugger::PAUSED);
         }
     }
 

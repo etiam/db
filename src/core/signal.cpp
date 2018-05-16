@@ -27,6 +27,8 @@ wink::signal<wink::slot<void (const std::string &text)>>                appendCo
 wink::signal<wink::slot<void (const std::string &text)>>                appendLogText;
 wink::signal<wink::slot<void (const std::string &text)>>                appendOutputText;
 
+wink::signal<wink::slot<void (State::Debugger state)>>                  setDebuggerState;
+
 }
 
 }

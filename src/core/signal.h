@@ -22,6 +22,7 @@
 #pragma GCC diagnostic pop
 
 #include "location.h"
+#include "state.h"
 
 namespace Core
 {
@@ -38,6 +39,8 @@ extern wink::signal<wink::slot<void (int row)>>                                 
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendOutputText;
+
+extern wink::signal<wink::slot<void (State::Debugger state)>>                   setDebuggerState;
 
 }
 

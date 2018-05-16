@@ -6,7 +6,9 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/console.cpp                        \
                             src/gdb/handlers/logging.cpp                        \
                             src/gdb/handlers/output.cpp                         \
+                                                                                \
                             src/gdb/handlers/stopped.cpp                        \
+                            src/gdb/handlers/running.cpp                        \
                                                                                 \
                             src/gdb/handlers/file-exec.cpp                      \
                             src/gdb/handlers/break-insert.cpp                   \
