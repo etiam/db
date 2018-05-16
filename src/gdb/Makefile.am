@@ -8,14 +8,15 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/output.cpp                         \
                                                                                 \
                             src/gdb/handlers/stopped.cpp                        \
-                            src/gdb/handlers/running.cpp                        \
+                            src/gdb/handlers/execrun.cpp                        \
+                            src/gdb/handlers/execnext.cpp                       \
                                                                                 \
-                            src/gdb/handlers/file-exec.cpp                      \
-                            src/gdb/handlers/break-insert.cpp                   \
-                            src/gdb/handlers/break-disable.cpp                  \
-                            src/gdb/handlers/break-delete.cpp                   \
-                            src/gdb/handlers/info-line.cpp                      \
-                            src/gdb/handlers/info-address.cpp
+                            src/gdb/handlers/fileexec.cpp                       \
+                            src/gdb/handlers/breakinsert.cpp                    \
+                            src/gdb/handlers/breakdisable.cpp                   \
+                            src/gdb/handlers/breakdelete.cpp                    \
+                            src/gdb/handlers/infoline.cpp                       \
+                            src/gdb/handlers/infoaddress.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

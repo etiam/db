@@ -28,7 +28,7 @@ namespace Handlers
 {
 
 bool
-running(const Result &result, int token, boost::any data)
+execrun(const Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
 

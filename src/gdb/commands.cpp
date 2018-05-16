@@ -75,7 +75,7 @@ void
 Commands::run()
 {
     std::string cmd = "exec-run";
-    m_controller->executeCommand(cmd, Handlers::running);
+    m_controller->executeCommand(cmd, Handlers::execrun);
 }
 
 void
@@ -99,7 +99,7 @@ void
 Commands::stepover()
 {
     std::string cmd = "exec-next";
-    m_controller->executeCommand(cmd);
+    m_controller->executeCommand(cmd, Handlers::execnext);
 }
 
 void

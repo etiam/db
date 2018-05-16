@@ -29,7 +29,8 @@ bool logging(const Result &result, int token, boost::any data);
 bool output(const Result &result, int token, boost::any data);
 
 bool stopped(const Result &result, int token, boost::any data);
-bool running(const Result &result, int token, boost::any data);
+bool execrun(const Result &result, int token, boost::any data);
+bool execnext(const Result &result, int token, boost::any data);
 
 bool fileexec(const Result &result, int token, boost::any data);
 bool breakinsert(const Result &result, int token, boost::any data);
