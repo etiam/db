@@ -19,24 +19,29 @@ namespace Core
 class Breakpoints
 {
   public:
-    Breakpoints();
-    ~Breakpoints();
+    Breakpoints() = default;
+    ~Breakpoints() = default;
 
+    // this function sends a request to gdb to insert, disable or delete a breakpoint.
+    // the gdb handlers will call the three functions below when they are called when
+    // gdb responds.
     void    toggleBreakpoint(const std::string &filename, int line);
 
-    void    insertBreakpoint(const std::string &filename, int line, int number);
-    void    disableBreakpoint(int number);
-    void    deleteBreakpoint(int number);
+    // these functions modify the list of breakpoints
+    void    insertBreakpoint(const std::string &filename, int line, int breakpointnumber);
+    void    disableBreakpoint(int breakpointnumber);
+    void    deleteBreakpoint(int breakpointnumber);
 
     bool    present(int line) const;
     bool    enabled(int line) const;
 
   private:
+
     struct Breakpoint
     {
         std::string filename;
-        int         line;
-        int         number;
+        int         row;
+        int         breakpointnumber;
         bool        enabled;
     };
 

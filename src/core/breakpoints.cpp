@@ -19,19 +19,11 @@
 namespace Core
 {
 
-Breakpoints::Breakpoints()
-{
-}
-
-Breakpoints::~Breakpoints()
-{
-}
-
 void
 Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.filename == filename && b.line == line; });
+        [&](const Breakpoint &b) { return b.filename == filename && b.row == line; });
 
     if (it == std::end(m_breakpoints))
     {
@@ -41,55 +33,48 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
     {
        if (it->enabled)
        {
-          Core::gdb()->disableBreakpoint(it->number);
+          Core::gdb()->disableBreakpoint(it->breakpointnumber);
        }
        else
        {
-          Core::gdb()->deleteBreakpoint(it->number);
+          Core::gdb()->deleteBreakpoint(it->breakpointnumber);
        }
     }
 }
 
 void
-Breakpoints::insertBreakpoint(const std::string &filename, int line, int number)
+Breakpoints::insertBreakpoint(const std::string &filename, int row, int breakpointnumber)
 {
-    m_breakpoints.push_back({filename, line, number, true});
-    Core::Signal::updateGutterMarker(line);
-
-    auto &vars = Core::state()->vars();
-    if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
-    {
-        Core::Signal::setCurrentLocation(Location({filename, line}));
-        vars.set("initialdisplay", true);
-    }
+    m_breakpoints.push_back({filename, row, breakpointnumber, true});
+    Core::Signal::updateGutterMarker(row);
 }
 
 void
 Breakpoints::disableBreakpoint(int number)
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.number == number; });
+        [&](const Breakpoint &b) { return b.breakpointnumber == number; });
 
     if (it != std::end(m_breakpoints))
     {
         it->enabled = false;
     }
 
-    Core::Signal::updateGutterMarker(it->line);
+    Core::Signal::updateGutterMarker(it->row);
 }
 
 void
 Breakpoints::deleteBreakpoint(int number)
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.number == number; });
+        [&](const Breakpoint &b) { return b.breakpointnumber == number; });
 
     if (it != std::end(m_breakpoints))
     {
         m_breakpoints.erase(it);
     }
 
-    Core::Signal::updateGutterMarker(it->line);
+    Core::Signal::updateGutterMarker(it->row);
 }
 
 
@@ -99,7 +84,7 @@ Breakpoints::present(int line) const
     bool present = false;
     for (const auto &breakpoint : m_breakpoints)
     {
-        if (breakpoint.line == line)
+        if (breakpoint.row == line)
         {
             present = true;
             break;
@@ -114,7 +99,7 @@ Breakpoints::enabled(int line) const
     bool enabled = false;
     for (const auto &breakpoint : m_breakpoints)
     {
-        if (breakpoint.line == line && breakpoint.enabled)
+        if (breakpoint.row == line && breakpoint.enabled)
         {
             enabled = true;
             break;

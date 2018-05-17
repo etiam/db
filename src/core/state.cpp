@@ -15,6 +15,12 @@
 namespace Core
 {
 
+State::State()
+{
+    Core::Signal::loadFile.connect(this, &State::onLoadFileSignal);
+    Core::Signal::setCurrentLocation.connect(this, &State::onSetCurrentLocationSignal);
+}
+
 AnyMap &
 State::vars()
 {
@@ -27,21 +33,34 @@ State::breakpoints()
     return m_breakpoints;
 }
 
-
 const Location &
 State::currentLocation() const
 {
     return m_currentLocation;
 }
 
+State::Debugger
+State::debuggerState() const
+{
+    return m_debuggerState;
+}
+
+// wink signal handlers
+
 void
-State::setCurrentLocation(const Location& location)
+State::onLoadFileSignal(const std::string &filename)
+{
+    m_currentLocation.m_filename = filename;
+}
+
+void
+State::onSetCurrentLocationSignal(const Core::Location &location)
 {
     // update previous current location
     Signal::updateGutterMarker(m_currentLocation.m_row);
 
     m_currentLocation = location;
-    Signal::setCurrentLocation(location);
 }
+
 
 }

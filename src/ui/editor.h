@@ -62,7 +62,6 @@ class Editor : public QWidget
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);
     void    onSetCursorPositionSignal(int row, int column);
-    void    onSetCurrentLocationSignal(const Core::Location &location);
 
     void    onUpdateGutterMarkerSignal(int row);
 

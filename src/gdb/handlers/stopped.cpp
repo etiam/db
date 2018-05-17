@@ -42,10 +42,14 @@ stopped(const Result &result, int token, boost::any data)
         if (dict.find("frame") != std::end(dict))
         {
             auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
-            auto fullname = boost::any_cast<char *>(frame.at("fullname"));
+            auto filename = boost::any_cast<char *>(frame.at("fullname"));
             auto row = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
-            Core::state()->setCurrentLocation(Core::Location({fullname, row}));
+            Core::Signal::loadFile(filename);
+            Core::Signal::setCursorPosition(row, 0);
+            Core::Signal::updateGutterMarker(row);
+
+            Core::Signal::setCurrentLocation(Core::Location({filename, row}));
 
             Core::Signal::setDebuggerState(Core::State::Debugger::PAUSED);
         }

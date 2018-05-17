@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include <QFile>
+#include <QFileInfo>
 #include <QSettings>
 #include <QMenu>
 #include <QMenuBar>
@@ -84,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
 //    tabifyDockWidget(dockwidget1,dockwidget2);
 */
 
+    Core::Signal::loadFile.connect(this, &MainWindow::onLoadFileSignal);
+
     Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
     Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
     Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
@@ -153,8 +156,6 @@ MainWindow::switchTab(int index)
         console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
         std::cout << index << " " << console->verticalScrollBar()->maximum() << std::endl;
     }
-//    qobject_cast<Console*>(m_tabWidget->widget(index))->ensureCursorVisible();
-//    std::cout << "st " << index << std::endl;
 }
 
 void
@@ -246,7 +247,6 @@ MainWindow::createDocks()
     connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
 
-
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 }
 
@@ -281,6 +281,16 @@ MainWindow::createHotkeys()
 }
 
 // wink signal handlers
+
+void
+MainWindow::onLoadFileSignal(const std::string &filename)
+{
+    QFileInfo checkfile(QString::fromStdString(filename));
+    if (checkfile.exists() && checkfile.isFile())
+    {
+        setWindowTitle("db " + QString::fromStdString(filename));
+    }
+}
 
 void
 MainWindow::onAppendConsoleText(const std::string &text)

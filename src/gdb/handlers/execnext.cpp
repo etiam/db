@@ -33,7 +33,6 @@ execnext(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
-        std::cout << "NEXT" << std::endl;
     }
 
     return match;

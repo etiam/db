@@ -32,23 +32,26 @@ class State
         NONE
     };
 
-    State() = default;
+    State();
     ~State() = default;
 
     AnyMap &            vars();
     Breakpoints &       breakpoints();
 
     const Location &    currentLocation() const;
-    void                setCurrentLocation(const Location &location);
 
     Debugger            debuggerState() const;
-    void                setDebuggerState(Debugger state);
 
   private:
+
+    // wink signal handlers
+    void                onLoadFileSignal(const std::string &filename);
+    void                onSetCurrentLocationSignal(const Core::Location &location);
+
     AnyMap              m_vars;
     Breakpoints         m_breakpoints;
     Location            m_currentLocation;
-    Debugger            m_gdbState = Debugger::NONE;
+    Debugger            m_debuggerState = Debugger::NONE;
 };
 
 }

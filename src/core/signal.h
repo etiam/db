@@ -32,9 +32,10 @@ namespace Signal
 
 extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFile;
 extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
-extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
-
 extern wink::signal<wink::slot<void (int row)>>                                 updateGutterMarker;
+
+// set the debugger's current location
+extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
 
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;

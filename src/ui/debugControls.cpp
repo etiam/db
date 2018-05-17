@@ -73,7 +73,7 @@ DebugControls::DebugControls(QWidget *parent) :
     m_stepintoAct = new QAction(stepintoicon, tr("Step into"), this);
     m_stepintoAct->setStatusTip(tr("Step into"));
     m_stepintoAct->setShortcut(Qt::Key_S);
-    connect(m_stepintoAct, SIGNAL(triggered()), parent, SLOT(stepintoicon()));
+    connect(m_stepintoAct, SIGNAL(triggered()), parent, SLOT(stepinto()));
     addAction(m_stepintoAct);
 
     QIcon stepouticon;

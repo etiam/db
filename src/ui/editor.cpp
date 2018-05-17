@@ -138,8 +138,6 @@ Editor::Editor(QMainWindow *parent) :
 
     Core::Signal::loadFile.connect(this, &Editor::onLoadFileSignal);
     Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
-    Core::Signal::setCurrentLocation.connect(this, &Editor::onSetCurrentLocationSignal);
-
     Core::Signal::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
 }
 
@@ -226,22 +224,19 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-//    std::cout << "ongutterclicked " << row << std::endl;
     auto &state = Core::state();
-    auto filename = state->vars().get<std::string>("currentfilename");
+    auto filename = Core::state()->currentLocation().m_filename;
     state->breakpoints().toggleBreakpoint(filename, row);
 }
 
 void
 Editor::onCursorMoved(int x, int y)
 {
-//    std::cout << "oncursormoved " << x << ", " << y << std::endl;
 }
 
 void
 Editor::onMouseMoved(int x, int y)
 {
-//    std::cout << "onmousemoved " << x << ", " << y << std::endl;
 }
 
 // private functions
@@ -285,14 +280,6 @@ Editor::onSetCursorPositionSignal(int row, int column)
 }
 
 void
-Editor::onSetCurrentLocationSignal(const Core::Location &location)
-{
-    QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(location.m_filename)));
-    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.m_row), Q_ARG(int, 0));
-    QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, location.m_row));
-}
-
-void
 Editor::onUpdateGutterMarkerSignal(int row)
 {
     QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, row));
@@ -303,22 +290,27 @@ Editor::onUpdateGutterMarkerSignal(int row)
 void
 Editor::loadFile(const QString &filename)
 {
+    static QString currentfilename;
+
     // read file into editor
-    if (!filename.isEmpty())
+    if (!filename.isEmpty() && filename != currentfilename)
     {
-        QFile file(filename);
-        QTextStream stream(&file);
+        QFileInfo checkfile(filename);
+        if (checkfile.exists() && checkfile.isFile())
+        {
+            QFile file(filename);
+            QTextStream stream(&file);
 
-        file.open(QFile::ReadOnly | QFile::Text);
-        auto text = stream.readAll();
-        setText(text);
+            file.open(QFile::ReadOnly | QFile::Text);
+            auto text = stream.readAll();
+            setText(text);
 
-        auto numlines = text.count("\n");
-        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
-        setGutterWidth(numdigits);
+            auto numlines = text.count("\n");
+            auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+            setGutterWidth(numdigits);
 
-        // store the current filename
-        Core::state()->vars().set("currentfilename", filename.toStdString());
+            currentfilename = filename;
+        }
     }
 }
 
