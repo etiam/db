@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "func.h"
+#include "multiunitB.h"
 
 class A
 {

@@ -1,6 +1,9 @@
 verbose:
 	$(MAKE) all V=1
 
+extras:
+	$(MAKE) $(EXTRA_PROGRAMS)
+
 # build .pyc from .py
 %.pyc: %.py 
 	$(MKDIR_P) $(@D)
