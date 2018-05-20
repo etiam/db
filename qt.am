@@ -22,4 +22,3 @@ clean-qrc-extra:
 clean-uic-extra:
 	find . -name 'ui_*.h' -print0|xargs -0 rm -vf
 
-clean-local: clean-moc-extra clean-qrc-extra clean-uic-extra

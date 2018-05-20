@@ -1,5 +1,0 @@
-clang++ -std=c++14 -g3 -O0 -c main.cpp -MJ main.json
-clang++ -std=c++14 -g3 -O0 -c func.cpp -MJ func.json
-clang++ -o a.out main.o func.o
-rm -f ./compile_commands.json
-sed -e '1s/^/[\n/' -e '$s/,$/\n]/' `find . -name '*.json'` > ./compile_commands.json

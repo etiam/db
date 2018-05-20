@@ -1,24 +1,19 @@
-EXTRA_PROGRAMS             +=                                               \
-                              helloworld                                    \
-                              multiunit                                     \
-                              infiniteloop
+EXTRA_PROGRAMS             +=                                                   \
+                              $(top_builddir)/tests/helloworld/helloworld       \
+                              $(top_builddir)/tests/multiunit/multiunit         \
+                              $(top_builddir)/tests/infiniteloop/infiniteloop
 
-ALL_CPPFLAGS                =                                               \
-                              -I$(top_srcdir)/src
+__top_builddir__tests_helloworld_helloworld_SOURCES            = tests/helloworld.cpp
+__top_builddir__tests_helloworld_helloworld_LDFLAGS            = $(ALL_LDFLAGS)
+__top_builddir__tests_helloworld_helloworld_CPPFLAGS           = $(ALL_CPPFLAGS)
+__top_builddir__tests_helloworld_helloworld_LDADD              = $(ALL_LDADD)
 
-ALL_LDADD                   =
+__top_builddir__tests_multiunit_multiunit_SOURCES              = tests/multiunitA.cpp tests/multiunitB.cpp
+__top_builddir__tests_multiunit_multiunit_LDFLAGS              = $(ALL_LDFLAGS)
+__top_builddir__tests_multiunit_multiunit_CPPFLAGS             = $(ALL_CPPFLAGS)
+__top_builddir__tests_multiunit_multiunit_LDADD                = $(ALL_LDADD)
 
-helloworld_SOURCES          = tests/helloworld.cpp
-helloworld_LDFLAGS          = $(ALL_LDFLAGS)
-helloworld_CPPFLAGS         = $(ALL_CPPFLAGS)
-helloworld_LDADD            = $(ALL_LDADD)
-
-multiunit_SOURCES           = tests/multiunitA.cpp tests/multiunitB.cpp
-multiunit_LDFLAGS           = $(ALL_LDFLAGS)
-multiunit_CPPFLAGS          = $(ALL_CPPFLAGS)
-multiunit_LDADD             = $(ALL_LDADD)
-
-infiniteloop_SOURCES        = tests/infiniteloop.cpp
-infiniteloop_LDFLAGS        = $(ALL_LDFLAGS)
-infiniteloop_CPPFLAGS       = $(ALL_CPPFLAGS)
-infiniteloop_LDADD          = $(ALL_LDADD)
+__top_builddir__tests_infiniteloop_infiniteloop_SOURCES        = tests/infiniteloop.cpp
+__top_builddir__tests_infiniteloop_infiniteloop_LDFLAGS        = $(ALL_LDFLAGS)
+__top_builddir__tests_infiniteloop_infiniteloop_CPPFLAGS       = $(ALL_CPPFLAGS)
+__top_builddir__tests_infiniteloop_infiniteloop_LDADD          = $(ALL_LDADD)

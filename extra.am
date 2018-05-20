@@ -15,7 +15,23 @@ extras:
 
 # concat all generated compile_command json files together
 # from https://sarcasm.github.io/notes/dev/compilation-database.html
-compilecommands: $(BUILT_SOURCES) config.h
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+compile_commands: all extras
 	$(AM_V_at) rm -f $(abs_builddir)/compile_commands.json
-	$(AM_V_at) sed -e '1s/^/[\n/' -e '$$s/,$$/\n]/' `find $(abs_builddir) -name '*.o.json'` > $(abs_builddir)/compile_commands.json
+	$(AM_V_at) sed -e '1s/^/[\n/' -e '$$s/,$$/\n]/' `find $(abs_builddir)/src -name '*.o.json'` > $(abs_builddir)/compile_commands.json
+	for extradir in $(notdir $(EXTRA_PROGRAMS)); do \
+		rm -f $(abs_builddir)/tests/$$extradir/compile_commands.json; \
+		sed -e '1s/^/[\n/' -e '$$s/,$$/\n]/' `find $(abs_builddir)/tests -name '*.o.json' | grep $$extradir` > $(abs_builddir)/tests/$$extradir/compile_commands.json; \
+	done
+
+clean-compile_commands:
+	find . -name '*.json' -print0|xargs -0 rm -vf
+	find . -name 'compile_commands.json' -print0|xargs -0 rm -vf
+
+clean-extras:
+	rm -f $(EXTRA_PROGRAMS)
+
+clean-pyc:
+	find . -name '*.pyc' -print0|xargs -0 rm -vf
+
+clean-qrc:
+	find . -name '*.qrc' -print0|xargs -0 rm -vf

@@ -9,8 +9,10 @@ BUILT_SOURCES             =
 MOSTLYCLEANFILES          =
 EXTRA_PROGRAMS            =
 
+ALL_CPPFLAGS              = -I$(top_srcdir)/src -MJ $@.json
+
 db_SOURCES                = 
-db_CPPFLAGS               = -I$(top_srcdir)/src -MJ $@.json
+db_CPPFLAGS               = $(ALL_CPPFLAGS)
 db_LDFLAGS                =
 db_LDADD                  =
 
@@ -22,9 +24,9 @@ include $(top_srcdir)/src/ast/Makefile.am
 include $(top_srcdir)/src/external/Makefile.am
 include $(top_srcdir)/tests/Makefile.am
 
-EXTRA_DIST                = $(nodist_db_la_SOURCES:moc_%.cpp=%.h)
-CLEANFILES                = $(filter moc_%.cpp,$(db_la_SOURCES))
-
 include $(top_srcdir)/extra.am
 include $(top_srcdir)/analyze.am
 include $(top_srcdir)/qt.am     
+
+clean-local: clean-moc-extra clean-qrc-extra clean-uic-extra \
+	         clean-compile_commands clean-extras clean-pyc clean-qrc
