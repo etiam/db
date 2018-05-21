@@ -8,6 +8,7 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/output.cpp                         \
                                                                                 \
                             src/gdb/handlers/stopped.cpp                        \
+                            src/gdb/handlers/threadgroupstarted.cpp             \
                             src/gdb/handlers/execrun.cpp                        \
                             src/gdb/handlers/execnext.cpp                       \
                                                                                 \

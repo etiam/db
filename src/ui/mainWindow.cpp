@@ -100,6 +100,13 @@ MainWindow::~MainWindow()
 }
 
 void
+MainWindow::quit()
+{
+    Core::gdb()->stop();
+    close();
+}
+
+void
 MainWindow::run()
 {
     Core::gdb()->run();
@@ -255,14 +262,14 @@ MainWindow::createFileMenu()
 {
     auto filemenu = menuBar()->addMenu(tr("&File"));
 
-//    // File actions
+    // File actions
 
     filemenu->addSeparator();
 
     auto fileexitact = new QAction(tr("Quit"), this);
     fileexitact->setStatusTip(tr("Quit the application"));
     fileexitact->setShortcut(Qt::Key_Q);
-    connect(fileexitact, SIGNAL(triggered()), this, SLOT(close()));
+    connect(fileexitact, SIGNAL(triggered()), this, SLOT(quit()));
 
     filemenu->addAction(fileexitact);
 }

@@ -21,6 +21,8 @@
 #include "gdb/commands.h"
 #include "gdb/result.h"
 
+#include "handlers.h"
+
 namespace Gdb
 {
 
@@ -39,7 +41,7 @@ infoaddress(const Gdb::Result &result, int token, boost::any data)
     if (match)
     {
         std::string cmd = "interpreter-exec console \"info line *" + smatch[2].str() + "\"";
-        Core::gdb()->executeCommand(cmd);
+        Core::gdb()->executeCommand(cmd, Handlers::infoline);
     }
 
     return match;

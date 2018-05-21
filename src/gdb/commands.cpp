@@ -9,6 +9,14 @@
 # include "config.h"
 #endif
 
+#include <sys/types.h>
+#include <signal.h>
+
+#include <iostream>
+
+#include "core/global.h"
+#include "core/state.h"
+
 #include "handlers/handlers.h"
 #include "controller.h"
 #include "commands.h"
@@ -19,11 +27,12 @@ namespace Gdb
 Commands::Commands() :
     m_controller(std::make_unique<Controller>())
 {
-    m_controller->addHandler(Handlers::stopped, 10, true);
-
-    m_controller->addHandler(Handlers::console, 99, true);
-    m_controller->addHandler(Handlers::logging, 99, true);
-    m_controller->addHandler(Handlers::output, 99, true);
+    // add persistent handlers
+    m_controller->addHandler(Handlers::stopped,             10, true);
+    m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
+    m_controller->addHandler(Handlers::console,             99, true);
+    m_controller->addHandler(Handlers::logging,             99, true);
+    m_controller->addHandler(Handlers::output,              99, true);
 }
 
 Commands::~Commands()
@@ -47,7 +56,7 @@ void
 Commands::infoAddress(const std::string &function)
 {
     std::string cmd = "interpreter-exec console \"info address " + function + "\"";
-    m_controller->executeCommand(cmd);
+    m_controller->executeCommand(cmd, Handlers::infoaddress);
 }
 
 void
@@ -81,13 +90,23 @@ Commands::run()
 void
 Commands::pause()
 {
-    std::string cmd = "exec-interrupt --all";
-    m_controller->executeCommand(cmd);
+    if(Core::state()->vars().has("pid"))
+    {
+        auto pid = Core::state()->vars().get<int>("pid");
+        kill(pid, SIGINT);
+    }
+
+//    std::string cmd = "exec-interrupt --all";
+//    m_controller->executeCommand(cmd);
 }
 
 void
 Commands::stop()
 {
+    pause();
+
+    std::string cmd = "interpreter-exec console \"kill\"";
+    m_controller->executeCommand(cmd);
 }
 
 void

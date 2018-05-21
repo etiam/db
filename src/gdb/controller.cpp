@@ -43,6 +43,17 @@ class ControllerImpl
     void            resultReaderThread();
 
     int             executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data);
+
+    /** Add a gdb command handler to the queue of handlers.  When a gdb response is received the handlers are called
+     * in priority order (lower is higher priority).  Further checking of handlers stop after the first handler
+     * that returns true.
+     *
+     * @param handler function object to add to the queue.
+     * @param priority lower priority is better.
+     * @param persistent handler will not be removed from queue if true.
+     * @param blind data sent to handler.
+     *
+     */
     void            addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data);
 
     void            loadProgram(const std::string &filename);

@@ -36,6 +36,8 @@ class MainWindow : public QMainWindow
     ~MainWindow();
 
   private Q_SLOTS:
+    void            quit();
+
     void            run();
     void            pause();
     void            stop();

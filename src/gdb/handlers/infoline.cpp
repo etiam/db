@@ -46,7 +46,7 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         if (!boost::filesystem::path(smatch[2].str()).is_absolute())
         {
             auto buildpath = vars.get<std::string>("buildpath");
-            filename = boost::filesystem::absolute(filename, buildpath).string();
+            filename = boost::filesystem::canonical(filename).string();
         }
 
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
