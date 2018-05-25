@@ -34,7 +34,7 @@ execrun(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signal::setDebuggerState(Core::State::Debugger::RUNNING);
+        Core::state()->setDebuggerState(Core::State::Debugger::RUNNING);
     }
 
     return match;

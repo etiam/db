@@ -26,7 +26,7 @@ class State
   public:
     enum class Debugger : char
     {
-        LAUNCHED,
+        LOADED,
         RUNNING,
         PAUSED,
         NONE
@@ -40,6 +40,7 @@ class State
 
     const Location &    currentLocation() const;
 
+    void                setDebuggerState(Debugger state);
     Debugger            debuggerState() const;
 
   private:

@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
     Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
 
-    Core::Signal::setDebuggerState.connect(this, &MainWindow::onSetDebuggerState);
+    Core::Signal::debuggerStateSet.connect(this, &MainWindow::onDebuggerStateSet);
 }
 
 MainWindow::~MainWindow()
@@ -218,7 +218,7 @@ void
 MainWindow::createToolbar()
 {
     m_debugControls = new DebugControls(this);
-    m_debugControls->setState(Core::State::Debugger::LAUNCHED);
+    m_debugControls->setState(Core::State::Debugger::NONE);
     addToolBar(m_debugControls);
 }
 
@@ -318,7 +318,7 @@ MainWindow::onAppendOutputText(const std::string &text)
 }
 
 void
-MainWindow::onSetDebuggerState(Core::State::Debugger state)
+MainWindow::onDebuggerStateSet(Core::State::Debugger state)
 {
     m_debugControls->setState(state);
 }

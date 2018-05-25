@@ -102,7 +102,7 @@ DebugControls::setState(Core::State::Debugger state)
 
     switch(state)
     {
-        case Core::State::Debugger::LAUNCHED:
+        case Core::State::Debugger::LOADED:
             m_runAct->setDisabled(false);
             break;
 

@@ -95,9 +95,6 @@ Commands::pause()
         auto pid = Core::state()->vars().get<int>("pid");
         kill(pid, SIGINT);
     }
-
-//    std::string cmd = "exec-interrupt --all";
-//    m_controller->executeCommand(cmd);
 }
 
 void
@@ -105,8 +102,11 @@ Commands::stop()
 {
     pause();
 
-    std::string cmd = "interpreter-exec console \"kill\"";
-    m_controller->executeCommand(cmd);
+    if (Core::state()->debuggerState() == Core::State::Debugger::RUNNING)
+    {
+        std::string cmd = "interpreter-exec console \"kill\"";
+        m_controller->executeCommand(cmd);
+    }
 }
 
 void

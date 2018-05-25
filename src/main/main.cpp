@@ -28,6 +28,37 @@
 
 using namespace boost::program_options;
 
+// https://stackoverflow.com/questions/11295019/environment-path-directories-iteration
+const std::vector<std::string> &
+get_environment_path()
+{
+    static std::vector<std::string> result;
+    if (!result.empty())
+        return result;
+
+#if _WIN32
+    const std::string path = convert_to_utf8( _wgetenv(L"PATH") ); // Handle Unicode, just remove if you don't want/need this. convert_to_utf8 uses WideCharToMultiByte in the Win32 API
+    const char delimiter = ';';
+#else
+    const std::string path = getenv("PATH");
+    const char delimiter = ':';
+#endif
+    if (path.empty())
+        throw std::runtime_error("PATH should not be empty");
+
+    size_t previous = 0;
+    size_t index = path.find(delimiter);
+    while (index != std::string::npos)
+    {
+        result.push_back(path.substr(previous, index - previous));
+        previous = index + 1;
+        index = path.find(delimiter, previous);
+    }
+    result.push_back(path.substr(previous));
+
+    return result;
+}
+
 void
 startupThread(const variables_map &vm)
 {
@@ -41,14 +72,14 @@ startupThread(const variables_map &vm)
     // load prog
     if (vm.count("prog"))
     {
-        auto filename = vm["prog"].as<std::string>();
-        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(filename).parent_path()).string();
+        auto prog = vm["prog"].as<std::string>();
+        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(prog).parent_path()).string();
 
-        vars.set("filename", filename);
+        vars.set("filename", prog);
         vars.set("buildpath", buildpath);
 
-        Core::Signal::appendConsoleText("Reading symbols from " + filename + "...");
-        gdb->loadProgram(filename);
+        Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
+        gdb->loadProgram(prog);
 
         if (Core::optionsManager()->get<bool>("breakonmain"))
             gdb->insertBreakpoint("main");
@@ -122,7 +153,46 @@ main(int argc, char *argv[])
         Core::optionsManager()->set("verbose", true);
     }
 
+    // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
+
+    // make sure prog exists in search path and if so expand the filename out to
+    // full pathname
+    if (vm.count("prog"))
+    {
+        auto prog = vm["prog"].as<std::string>();
+        if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
+        {
+            bool found = false;
+            auto path = get_environment_path();
+            for (const auto &p : path)
+            {
+                if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
+                {
+                    auto fullpath = (boost::filesystem::path(p) / prog).string();
+
+                    // replace "prog" with full path
+                    // https://groups.google.com/forum/#!topic/boost-list/rmuB9iwtQ34
+                    auto it(vm.find("prog"));
+                    boost::program_options::variable_value & vx(it->second);
+                    vx.value() = fullpath;
+
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                std::stringstream msg;
+                msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
+                Core::Signal::appendConsoleText(msg.str());
+                vm.erase(vm.find("prog"));
+            }
+        }
+    }
+
+    // start startup thread
     auto startupthread = std::make_unique<std::thread>(&startupThread, vm);
 
     std::cout << "startup in " << timer << std::endl;

@@ -65,7 +65,7 @@ class MainWindow : public QMainWindow
     void            onAppendConsoleText(const std::string &text);
     void            onAppendLogText(const std::string &text);
     void            onAppendOutputText(const std::string &text);
-    void            onSetDebuggerState(Core::State::Debugger state);
+    void            onDebuggerStateSet(Core::State::Debugger state);
 
     Editor *        m_editor;
     QTabWidget *    m_tabWidget;

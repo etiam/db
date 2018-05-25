@@ -51,7 +51,7 @@ stopped(const Result &result, int token, boost::any data)
 
             Core::Signal::setCurrentLocation(Core::Location({filename, row}));
 
-            Core::Signal::setDebuggerState(Core::State::Debugger::PAUSED);
+            Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
         }
     }
 

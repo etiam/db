@@ -39,6 +39,13 @@ State::currentLocation() const
     return m_currentLocation;
 }
 
+void
+State::setDebuggerState(State::Debugger state)
+{
+    m_debuggerState = state;
+    Core::Signal::debuggerStateSet(state);
+}
+
 State::Debugger
 State::debuggerState() const
 {
