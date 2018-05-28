@@ -267,7 +267,7 @@ MainWindow::createDocks()
     bottomdock->setWidget(m_tabWidget);
 
     // tabs within tab window
-    m_consoleTab = new Console(this);
+    m_consoleTab = new Console(this, true);
     m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
 
     m_outputTab = new Console(this);
