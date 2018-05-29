@@ -113,11 +113,6 @@ Commands::stop()
 }
 
 void
-Commands::reload()
-{
-}
-
-void
 Commands::stepover()
 {
     std::string cmd = "exec-next";

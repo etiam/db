@@ -31,7 +31,6 @@ class DebugControls : public QToolBar
     QAction * m_runAct;
     QAction * m_pauseAct;
     QAction * m_stopAct;
-    QAction * m_reloadAct;
     QAction * m_stepoverAct;
     QAction * m_stepintoAct;
     QAction * m_stepoutAct;

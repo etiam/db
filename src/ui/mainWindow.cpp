@@ -125,12 +125,6 @@ MainWindow::stop()
 }
 
 void
-MainWindow::reload()
-{
-    Core::gdb()->reload();
-}
-
-void
 MainWindow::stepover()
 {
     Core::gdb()->stepover();

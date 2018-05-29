@@ -50,14 +50,6 @@ DebugControls::DebugControls(QWidget *parent) :
     connect(m_stopAct, SIGNAL(triggered()), parent, SLOT(stop()));
     addAction(m_stopAct);
 
-    QIcon reloadicon;
-    reloadicon.addFile(":/img/reload", QSize(32, 32), QIcon::Normal, QIcon::On);
-    reloadicon.addFile(":/img/reload-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
-    m_reloadAct = new QAction(reloadicon, tr("Reload"), this);
-    m_reloadAct->setStatusTip(tr("Reload program"));
-    connect(m_reloadAct, SIGNAL(triggered()), parent, SLOT(reload()));
-    addAction(m_reloadAct);
-
     QIcon stepovericon;
     stepovericon.addFile(":/img/stepover", QSize(32, 32), QIcon::Normal, QIcon::On);
     stepovericon.addFile(":/img/stepover-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
@@ -95,7 +87,6 @@ DebugControls::setState(Core::State::Debugger state)
     m_runAct->setDisabled(true);
     m_pauseAct->setDisabled(true);
     m_stopAct->setDisabled(true);
-    m_reloadAct->setDisabled(true);
     m_stepoverAct->setDisabled(true);
     m_stepintoAct->setDisabled(true);
     m_stepoutAct->setDisabled(true);
@@ -109,13 +100,11 @@ DebugControls::setState(Core::State::Debugger state)
         case Core::State::Debugger::RUNNING:
             m_pauseAct->setDisabled(false);
             m_stopAct->setDisabled(false);
-            m_reloadAct->setDisabled(false);
             break;
 
         case Core::State::Debugger::PAUSED:
             m_runAct->setDisabled(false);
             m_stopAct->setDisabled(false);
-            m_reloadAct->setDisabled(false);
             m_stepoverAct->setDisabled(false);
             m_stepintoAct->setDisabled(false);
             m_stepoutAct->setDisabled(false);

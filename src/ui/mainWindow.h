@@ -41,7 +41,6 @@ class MainWindow : public QMainWindow
     void            run();
     void            pause();
     void            stop();
-    void            reload();
     void            stepover();
     void            stepinto();
     void            stepout();
