@@ -28,12 +28,15 @@ namespace Handlers
 {
 
 bool
-infoline(const Gdb::Result &result, int token, boost::any data)
+notify(const Result &result, int token, boost::any data)
 {
-    auto match = result.token.value == token;
+    auto match = result.message.type == Message::Type::STRING &&
+                 result.stream == Stream::STDOUT &&
+                 result.type == Type::NOTIFY;
 
     if (match)
     {
+        Core::Signal::appendLogText(result.message.string.string + '\n');
     }
 
     return match;

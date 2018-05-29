@@ -38,6 +38,7 @@ Console::appendText(const QString &text)
     auto sanitized = text;
     sanitized.replace("\\n", "\n");
     sanitized.replace("\\t", "    ");
+//    sanitized.replace("\"", """);
 
     insertPlainText(sanitized);
 

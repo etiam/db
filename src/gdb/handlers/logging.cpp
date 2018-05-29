@@ -30,13 +30,13 @@ namespace Handlers
 bool
 logging(const Result &result, int token, boost::any data)
 {
-    auto match = result.message.type == Message::Type::STRING &&
+    auto match = result.payload.type == Payload::Type::STRING &&
                  result.stream == Stream::STDOUT &&
-                 result.type == Type::NOTIFY;
+                 result.type == Type::LOG;
 
     if (match)
     {
-        Core::Signal::appendLogText(result.message.string.string + '\n');
+        Core::Signal::appendLogText(result.payload.string.string + '\n');
     }
 
     return match;
