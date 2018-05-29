@@ -49,6 +49,10 @@ class MainWindow : public QMainWindow
     void            closeTab(int index);
     void            switchTab(int index);
 
+    void            toggleConsoleTab();
+    void            toggleOutputTab();
+    void            toggleGdbTab();
+
   private:
     void            readSettings();
     void            writeSettings() const;
@@ -57,6 +61,7 @@ class MainWindow : public QMainWindow
     void            createDocks();
     void            createMenus();
     void            createFileMenu();
+    void            createViewMenu();
 
     void            createHotkeys();
 
@@ -70,9 +75,9 @@ class MainWindow : public QMainWindow
     Editor *        m_editor;
     QTabWidget *    m_tabWidget;
 
-    Console *       m_console;
-    Console *       m_log;
-    Console *       m_output;
+    Console *       m_consoleTab;
+    Console *       m_gdbTab;
+    Console *       m_outputTab;
 
     DebugControls * m_debugControls;
 };

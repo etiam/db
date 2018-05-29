@@ -23,11 +23,17 @@ class Console: public QPlainTextEdit
   Q_OBJECT
 
   public:
-    Console(QWidget *parent=0);
+    explicit Console(QWidget *parent = nullptr, bool editable = false);
     virtual ~Console();
 
   public Q_SLOTS:
     void appendText(const QString &text);
+
+  private:
+    bool m_editable;
+
+  protected:
+    void keyPressEvent(QKeyEvent *e) override;
 };
 
 }

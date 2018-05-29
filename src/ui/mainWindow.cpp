@@ -64,9 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // settings
     readSettings();
 
+    createDocks();
     createMenus();
     createToolbar();
-    createDocks();
     createHotkeys();
 
 /*
@@ -166,6 +166,31 @@ MainWindow::switchTab(int index)
 }
 
 void
+MainWindow::toggleConsoleTab()
+{
+    m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
+}
+
+void
+MainWindow::toggleOutputTab()
+{
+    m_tabWidget->insertTab(1, m_outputTab, tr("Output"));
+}
+
+void
+MainWindow::toggleGdbTab()
+{
+    std::vector<QWidget*> tabs;
+    for (auto n=0; n < m_tabWidget->count(); ++n)
+        tabs.push_back(m_tabWidget->widget(n));
+
+    if (std::find(std::begin(tabs), std::end(tabs), m_gdbTab) != std::end(tabs))
+        m_tabWidget->removeTab(2);
+    else
+        m_tabWidget->insertTab(2, m_gdbTab, tr("Gdb"));
+}
+
+void
 MainWindow::readSettings()
 {
     QSettings settings("db", "mainwindow");
@@ -212,6 +237,7 @@ void
 MainWindow::createMenus()
 {
     createFileMenu();
+    createViewMenu();
 }
 
 void
@@ -241,14 +267,15 @@ MainWindow::createDocks()
     bottomdock->setWidget(m_tabWidget);
 
     // tabs within tab window
-    m_console = new Console(this);
-    m_tabWidget->addTab(m_console, tr("Console"));
+    m_consoleTab = new Console(this, true);
+    m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
 
-    m_log = new Console(this);
-    m_tabWidget->addTab(m_log, tr("Log"));
+    m_outputTab = new Console(this);
+    m_tabWidget->insertTab(1, m_outputTab, tr("Output"));
 
-    m_output = new Console(this);
-    m_tabWidget->addTab(m_output, tr("Output"));
+    // hidden by default
+    m_gdbTab = new Console(this);
+    m_gdbTab->hide();
 
     // signal connections
     connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -262,8 +289,6 @@ MainWindow::createFileMenu()
 {
     auto filemenu = menuBar()->addMenu(tr("&File"));
 
-    // File actions
-
     filemenu->addSeparator();
 
     auto fileexitact = new QAction(tr("Quit"), this);
@@ -272,6 +297,37 @@ MainWindow::createFileMenu()
     connect(fileexitact, SIGNAL(triggered()), this, SLOT(quit()));
 
     filemenu->addAction(fileexitact);
+}
+
+void
+MainWindow::createViewMenu()
+{
+    std::vector<QWidget*> tabs;
+    for (auto n=0; n < m_tabWidget->count(); ++n)
+        tabs.push_back(m_tabWidget->widget(n));
+
+    auto viewmenu = menuBar()->addMenu(tr("&View"));
+
+    auto viewconsoletabact = new QAction(tr("Console"), this);
+    viewconsoletabact->setStatusTip(tr("Show console tab"));
+    connect(viewconsoletabact, SIGNAL(triggered()), this, SLOT(toggleConsoleTab()));
+    viewconsoletabact->setCheckable(true);
+    viewconsoletabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_consoleTab) != std::end(tabs));
+    viewmenu->addAction(viewconsoletabact);
+
+    auto viewoutputtabact = new QAction(tr("Output"), this);
+    viewoutputtabact->setStatusTip(tr("Show output tab"));
+    connect(viewoutputtabact, SIGNAL(triggered()), this, SLOT(toggleOutputTab()));
+    viewoutputtabact->setCheckable(true);
+    viewoutputtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_outputTab) != std::end(tabs));
+    viewmenu->addAction(viewoutputtabact);
+
+    auto viewgdbtabact = new QAction(tr("Gdb"), this);
+    viewgdbtabact->setStatusTip(tr("Show Gdb tab"));
+    connect(viewgdbtabact, SIGNAL(triggered()), this, SLOT(toggleGdbTab()));
+    viewgdbtabact->setCheckable(true);
+    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_gdbTab) != std::end(tabs));
+    viewmenu->addAction(viewgdbtabact);
 }
 
 void
@@ -302,19 +358,19 @@ MainWindow::onLoadFileSignal(const std::string &filename)
 void
 MainWindow::onAppendConsoleText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_console, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void
 MainWindow::onAppendLogText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_log, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_gdbTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void
 MainWindow::onAppendOutputText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_output, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_outputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void
