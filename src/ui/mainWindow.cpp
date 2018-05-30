@@ -22,6 +22,8 @@
 #include <QDockWidget>
 #include <QShortcut>
 #include <QScrollBar>
+#include <QStatusBar>
+#include <QLabel>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -68,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenus();
     createToolbar();
     createHotkeys();
+
+    setupStatusbar();
 
 /*
     auto dockwidget1 = new QDockWidget(tr("Tab1"), this);
@@ -347,6 +351,17 @@ MainWindow::createHotkeys()
     connect(zoomreset, &QShortcut::activated, [&](){ m_editor->zoomResetText(); });
 }
 
+void
+MainWindow::setupStatusbar()
+{
+    m_statusIcon = new QLabel(this);
+    m_statusIcon->setScaledContents(true);
+
+    statusBar()->insertPermanentWidget(0, m_statusIcon);
+    statusBar()->setSizeGripEnabled(false);
+    statusBar()->show();
+}
+
 // wink signal handlers
 
 void
@@ -381,6 +396,25 @@ void
 MainWindow::onDebuggerStateSet(Core::State::Debugger state)
 {
     m_debugControls->setState(state);
+
+    switch (state)
+    {
+        case Core::State::Debugger::LOADED :
+            m_statusIcon->setPixmap(QPixmap(":/img/loaded"));
+            break;
+
+        case Core::State::Debugger::RUNNING :
+            m_statusIcon->setPixmap(QPixmap(":/img/running"));
+            break;
+
+        case Core::State::Debugger::PAUSED :
+            m_statusIcon->setPixmap(QPixmap(":/img/paused"));
+            break;
+
+        default:
+            m_statusIcon->setPixmap(QPixmap(24, 24));
+            break;
+    }
 }
 
 }

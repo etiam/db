@@ -19,6 +19,7 @@
 
 class QTabWidget;
 class QSplitter;
+class QLabel;
 
 namespace Ui
 {
@@ -64,6 +65,8 @@ class MainWindow : public QMainWindow
 
     void            createHotkeys();
 
+    void            setupStatusbar();
+
     // wink signal handlers
     void            onLoadFileSignal(const std::string &filename);
     void            onAppendConsoleText(const std::string &text);
@@ -79,6 +82,8 @@ class MainWindow : public QMainWindow
     Console *       m_outputTab;
 
     DebugControls * m_debugControls;
+
+    QLabel *        m_statusIcon;
 };
 
 }

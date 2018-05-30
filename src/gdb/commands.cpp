@@ -116,10 +116,11 @@ Commands::stop()
 {
     pause();
 
-    if (Core::state()->debuggerState() == Core::State::Debugger::RUNNING)
+    if (Core::state()->debuggerState() == Core::State::Debugger::RUNNING ||
+        Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
     {
         std::string cmd = "interpreter-exec console \"kill\"";
-        m_controller->executeCommand(cmd);
+        m_controller->executeCommand(cmd, Handlers::killprog);
     }
 }
 

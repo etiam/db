@@ -27,7 +27,9 @@ namespace Handlers
 bool stopped(const Result &result, int token, boost::any data);
 bool threadgroupstarted(const Result &result, int token, boost::any data);
 bool interpreterexec(const Result &result, int token, boost::any data);
+
 bool processexited(const Result &result, int token, boost::any data);
+bool killprog(const Result &result, int token, boost::any data);
 
 bool console(const Result &result, int token, boost::any data);
 bool logging(const Result &result, int token, boost::any data);

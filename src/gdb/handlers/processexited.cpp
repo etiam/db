@@ -57,7 +57,6 @@ processexited(const Gdb::Result &result, int token, boost::any data)
                 // if response msg pid matched current process pid set state to LOADED
                 if (payloadpid == pid)
                 {
-                    std::cout << "DONE " << pid << " " << payloadpid << std::endl;
                     Core::state()->setDebuggerState(Core::State::Debugger::LOADED);
                 }
             }
