@@ -14,6 +14,7 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/execnext.cpp                       \
                                                                                 \
                             src/gdb/handlers/interpreterexec.cpp                \
+                            src/gdb/handlers/processexited.cpp                  \
                                                                                 \
                             src/gdb/handlers/fileexec.cpp                       \
                             src/gdb/handlers/breakinsert.cpp                    \

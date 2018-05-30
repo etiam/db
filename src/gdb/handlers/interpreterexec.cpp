@@ -55,6 +55,8 @@ interpreterexec(const Gdb::Result &result, int token, boost::any data)
 
         else if (std::regex_match(result.payload.string.string, smatch, startsataddress))
         {
+            regexmatch = true;
+
             auto &state = Core::state();
             auto &vars = state->vars();
             auto filename = smatch[2].str();

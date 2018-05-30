@@ -37,6 +37,7 @@ class Commands
     void    deleteBreakpoint(int number);
 
     void    run();
+    void    cont();
     void    pause();
     void    stop();
     void    stepover();

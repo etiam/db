@@ -46,11 +46,11 @@ Console::appendText(const QString &text)
 
     insertPlainText(sanitized);
 
-//    if (!sanitized.endsWith('\n'))
-//    {
-//        moveCursor(QTextCursor::Up);
-//        moveCursor(QTextCursor::EndOfLine);
-//    }
+    if (!sanitized.endsWith('\n'))
+    {
+        moveCursor(QTextCursor::Up);
+        moveCursor(QTextCursor::EndOfLine);
+    }
 
     // scroll to bottom of text
     verticalScrollBar()->setValue(verticalScrollBar()->maximum());

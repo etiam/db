@@ -106,10 +106,20 @@ MainWindow::quit()
     close();
 }
 
+template<typename E>
+constexpr auto toIntegral(E e) -> typename std::underlying_type<E>::type
+{
+   return static_cast<typename std::underlying_type<E>::type>(e);
+}
+
+
 void
 MainWindow::run()
 {
-    Core::gdb()->run();
+    if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
+        Core::gdb()->cont();
+    else
+        Core::gdb()->run();
 }
 
 void

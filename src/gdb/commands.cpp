@@ -16,6 +16,7 @@
 
 #include "core/global.h"
 #include "core/state.h"
+#include "core/signal.h"
 
 #include "handlers/handlers.h"
 #include "controller.h"
@@ -31,6 +32,7 @@ Commands::Commands() :
     m_controller->addHandler(Handlers::stopped,             10, true);
     m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
     m_controller->addHandler(Handlers::interpreterexec,     10, true);
+    m_controller->addHandler(Handlers::processexited,       10, true);
 
     m_controller->addHandler(Handlers::console,             99, true);
     m_controller->addHandler(Handlers::logging,             99, true);
@@ -87,6 +89,15 @@ void
 Commands::run()
 {
     std::string cmd = "exec-run";
+    Core::Signal::appendConsoleText("run\n");
+    m_controller->executeCommand(cmd, Handlers::execrun);
+}
+
+void
+Commands::cont()
+{
+    std::string cmd = "exec-continue";
+    Core::Signal::appendConsoleText("continue\n");
     m_controller->executeCommand(cmd, Handlers::execrun);
 }
 
