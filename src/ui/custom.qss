@@ -7,3 +7,9 @@
 {
     image: url(:/img/close-hover.png); 
 }
+
+// no frame around status bar widgets
+QStatusBar::item 
+{ 
+    border: 0px solid black 
+};
