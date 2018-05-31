@@ -26,8 +26,8 @@ DebugControls::DebugControls(QWidget *parent) :
     QIcon runicon;
     runicon.addFile(":/img/run", QSize(32, 32), QIcon::Normal, QIcon::On);
     runicon.addFile(":/img/run-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
-    m_runAct = new QAction(runicon, tr("Run/Continue"), this);
-    m_runAct->setStatusTip(tr("Start/continue debugging"));
+    m_runAct = new QAction(runicon, tr("Run"), this);
+    m_runAct->setStatusTip(tr("Start execution"));
     m_runAct->setShortcut(Qt::Key_R);
     connect(m_runAct, SIGNAL(triggered()), parent, SLOT(run()));
     addAction(m_runAct);
@@ -95,11 +95,17 @@ DebugControls::setState(Core::State::Debugger state)
     {
         case Core::State::Debugger::LOADED:
             m_runAct->setDisabled(false);
+
+            m_runAct->setStatusTip(tr("Start execution"));
+            m_runAct->setText(tr("Run"));
             break;
 
         case Core::State::Debugger::RUNNING:
             m_pauseAct->setDisabled(false);
             m_stopAct->setDisabled(false);
+
+            m_runAct->setStatusTip(tr("Start execution"));
+            m_runAct->setText(tr("Run"));
             break;
 
         case Core::State::Debugger::PAUSED:
@@ -108,6 +114,9 @@ DebugControls::setState(Core::State::Debugger state)
             m_stepoverAct->setDisabled(false);
             m_stepintoAct->setDisabled(false);
             m_stepoutAct->setDisabled(false);
+
+            m_runAct->setStatusTip(tr("Continue execution"));
+            m_runAct->setText(tr("Continue"));
             break;
 
         default:
