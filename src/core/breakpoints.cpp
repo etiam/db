@@ -109,4 +109,13 @@ Breakpoints::enabled(int line) const
     return enabled;
 }
 
+void
+Breakpoints::visit(std::function<void(const std::string&, int, int, bool)> visitor)
+{
+    for (const auto &breakpoint : m_breakpoints)
+    {
+        visitor(breakpoint.filename, breakpoint.row, breakpoint.breakpointnumber, breakpoint.enabled);
+    }
+}
+
 } // namespace Core

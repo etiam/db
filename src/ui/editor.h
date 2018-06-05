@@ -58,6 +58,8 @@ class Editor : public QWidget
     int     getNumLines() const;
     int     getLineLength(int row) const;
     int     getCharacterHeight() const;
+    void    clearGutterMarkers();
+    void    updateGutterMarkers(const QString &filename);
 
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);

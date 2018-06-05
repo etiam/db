@@ -265,6 +265,25 @@ Editor::getCharacterHeight() const
     return m_impl->executeJavaScript("editor.renderer.lineHeight").toInt();
 }
 
+void
+Editor::clearGutterMarkers()
+{
+    m_impl->executeJavaScript(QString("editor.getSession().clearBreakpoints()"));
+}
+
+void
+Editor::updateGutterMarkers(const QString &filename)
+{
+    // call updateGutterMarker on all breakpoints with filename
+    auto visitor = [&filename, this](const std::string &fn, int rw, int bn, bool en)
+    {
+        if (fn == filename.toStdString())
+            updateGutterMarker(rw);
+    };
+
+    Core::state()->breakpoints().visit(visitor);
+}
+
 // wink signal handlers
 
 void
@@ -310,6 +329,9 @@ Editor::loadFile(const QString &filename)
             setGutterWidth(numdigits);
 
             currentfilename = filename;
+
+            clearGutterMarkers();
+            updateGutterMarkers(filename);
         }
     }
 }

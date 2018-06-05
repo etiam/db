@@ -120,6 +120,9 @@ constexpr auto toIntegral(E e) -> typename std::underlying_type<E>::type
 void
 MainWindow::run()
 {
+    // this will make the current location marker disappear
+    Core::Signal::setCurrentLocation(Core::Location({"", -1}));
+
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
         Core::gdb()->cont();
     else

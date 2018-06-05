@@ -13,6 +13,8 @@
 # include "config.h"
 #endif
 
+#include <functional>
+
 namespace Core
 {
 
@@ -22,12 +24,10 @@ class Breakpoints
     Breakpoints() = default;
     ~Breakpoints() = default;
 
-    // this function sends a request to gdb to insert, disable or delete a breakpoint.
-    // the gdb handlers will call the three functions below when they are called when
-    // gdb responds.
+    // this function only sends a request to gdb to insert, disable or delete a breakpoint.
     void    toggleBreakpoint(const std::string &filename, int line);
 
-    // these functions modify the list of breakpoints
+    // these functions directly modify m_breakpoints
     void    insertBreakpoint(const std::string &filename, int line, int breakpointnumber);
     void    disableBreakpoint(int breakpointnumber);
     void    deleteBreakpoint(int breakpointnumber);
@@ -35,8 +35,9 @@ class Breakpoints
     bool    present(int line) const;
     bool    enabled(int line) const;
 
-  private:
+    void    visit(std::function<void(const std::string &, int, int, bool)> visitor);
 
+  private:
     struct Breakpoint
     {
         std::string filename;
