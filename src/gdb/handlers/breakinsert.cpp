@@ -44,6 +44,7 @@ breakinsert(const Result &result, int token, boost::any data)
 
         state->breakpoints().insertBreakpoint(filename, row, breakpointnumber);
 
+        // if the editor has not displayed anything yet
         auto &vars = Core::state()->vars();
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {

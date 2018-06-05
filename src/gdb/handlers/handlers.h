@@ -24,7 +24,9 @@ namespace Gdb
 namespace Handlers
 {
 
+// execution has stopped due to a breakpoint, signal, etc
 bool stopped(const Result &result, int token, boost::any data);
+
 bool threadgroupstarted(const Result &result, int token, boost::any data);
 bool interpreterexec(const Result &result, int token, boost::any data);
 
