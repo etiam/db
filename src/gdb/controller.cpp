@@ -14,6 +14,10 @@
 #include <thread>
 #include <regex>
 
+#include <boost/any.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
@@ -78,6 +82,7 @@ class ControllerImpl
         int                         priority;
         bool                        persistent;
         boost::any                  data;
+        boost::uuids::uuid          uuid;
     };
 
     std::vector<HandlerData>        m_handlers;
@@ -231,9 +236,13 @@ void
 ControllerImpl::resultHandler(const Result &result)
 {
     bool match = false;
-    auto it=std::begin(m_handlers);
-    for (; it != std::end(m_handlers); ++it)
+
+    // since m_handlers can get modified inside the loop store the uuid
+    // of the matched handler to possibly delete it later
+    boost::uuids::uuid uuid;
+    for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
     {
+        uuid = it->uuid;
         if (it->handler(result, it->token, it->data))
         {
             match = true;
@@ -243,8 +252,12 @@ ControllerImpl::resultHandler(const Result &result)
 
     if (match)
     {
-        if (!it->persistent)
-            m_handlers.erase(it);
+        // remove matched handler if non-persistent
+        for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
+        {
+            if (uuid == it->uuid && !it->persistent)
+                m_handlers.erase(it);
+        }
     }
     else
     {
@@ -326,7 +339,8 @@ ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFu
 void
 ControllerImpl::addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data)
 {
-    m_handlers.push_back({handler, m_token, priority, persistent, data});
+    static boost::uuids::random_generator gen;
+    m_handlers.push_back({handler, m_token, priority, persistent, data, gen()});
 
     // sort handlers based on priority
     std::sort(std::begin(m_handlers), std::end(m_handlers),

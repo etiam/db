@@ -1,5 +1,5 @@
 /*
- * gdbUtiil.cpp
+ * stopped.cpp
  *
  *  Created on: Apr 10, 2018
  *      Author: jasonr
@@ -20,6 +20,8 @@
 
 #include "gdb/commands.h"
 #include "gdb/result.h"
+
+#include "handlers.h"
 
 namespace Gdb
 {
@@ -45,13 +47,21 @@ stopped(const Result &result, int token, boost::any data)
             auto filename = boost::any_cast<char *>(frame.at("fullname"));
             auto row = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
-            Core::Signal::loadFile(filename);
-            Core::Signal::setCursorPosition(row, 0);
-            Core::Signal::updateGutterMarker(row);
+            // update global state
+            Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
 
+            // update editor with current filename
+            Core::Signal::loadFile(filename);
+
+            // update global current location
             Core::Signal::setCurrentLocation(Core::Location({filename, row}));
 
-            Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
+            // update current gutter marker
+            Core::Signal::updateGutterMarker(row);
+
+            // get current call stack from gdb
+            std::string cmd = "stack-list-frames";
+            Core::gdb()->executeCommand(cmd, Gdb::Handlers::stacklistframes);
         }
     }
 

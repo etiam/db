@@ -61,7 +61,7 @@ void
 Commands::infoAddress(const std::string &function)
 {
     std::string cmd = "interpreter-exec console \"info address " + function + "\"";
-    m_controller->executeCommand(cmd, Handlers::infoaddress);
+    m_controller->executeCommand(cmd);
 }
 
 void

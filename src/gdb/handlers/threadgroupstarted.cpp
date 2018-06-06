@@ -43,8 +43,6 @@ threadgroupstarted(const Gdb::Result &result, int token, boost::any data)
     {
         auto pid = std::stoi(boost::any_cast<char *>(result.payload.dict.at("pid")));
         Core::state()->vars().set("pid", pid);
-
-        std::cout << "**** " << pid << std::endl;
     }
 
     return match;

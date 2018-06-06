@@ -9,6 +9,7 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/output.cpp                         \
                                                                                 \
                             src/gdb/handlers/stopped.cpp                        \
+                            src/gdb/handlers/stacklistframes.cpp                \
                             src/gdb/handlers/threadgroupstarted.cpp             \
                             src/gdb/handlers/execrun.cpp                        \
                             src/gdb/handlers/execnext.cpp                       \
@@ -20,9 +21,7 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/fileexec.cpp                       \
                             src/gdb/handlers/breakinsert.cpp                    \
                             src/gdb/handlers/breakdisable.cpp                   \
-                            src/gdb/handlers/breakdelete.cpp                    \
-                            src/gdb/handlers/infoline.cpp                       \
-                            src/gdb/handlers/infoaddress.cpp
+                            src/gdb/handlers/breakdelete.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

@@ -29,12 +29,29 @@ namespace Handlers
 bool
 breakinsert(const Result &result, int token, boost::any data)
 {
-    bool match = false;
+    auto match = result.token.value == token;
 
-    const auto &payload = result.payload;
-    if (payload.type == Payload::Type::DICT && payload.dict.find("bkpt") != std::end(payload.dict))
+    /*
+    {'message': u'done',
+     'payload': {u'bkpt': {u'addr': u'0x0000000000400d9a',
+                           u'disp': u'keep',
+                           u'enabled': u'y',
+                           u'file': u'../tests/multiunitA.cpp',
+                           u'fullname': u'/home/jasonr/workspace/db/tests/multiunitA.cpp',
+                           u'func': u'main(int, char**)',
+                           u'line': u'24',
+                           u'number': u'1',
+                           u'original-location': u'main',
+                           u'thread-groups': [u'i1'],
+                           u'times': u'0',
+                           u'type': u'breakpoint'}},
+     'stream': 'stdout',
+     'token': 2,
+     'type': 'result'}
+    */
+
+    if (match)
     {
-        match = true;
         auto &state = Core::state();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 

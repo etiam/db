@@ -38,7 +38,7 @@ infoaddress(const Gdb::Result &result)
     {
         match = true;
         std::string cmd = "interpreter-exec console \"info line *" + smatch[2].str() + "\"";
-        Core::gdb()->executeCommand(cmd, Gdb::Handlers::infoline);
+        Core::gdb()->executeCommand(cmd);
     }
 
     return match;
