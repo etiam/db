@@ -25,7 +25,7 @@ namespace Gdb
 
 struct String
 {
-    std::string     string;
+    std::string     data;
 };
 
 struct Message

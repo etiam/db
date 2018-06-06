@@ -33,7 +33,7 @@ bool
 stopped(const Result &result, int token, boost::any data)
 {
     auto match = result.message.type == Message::Type::STRING &&
-                 result.message.string.string == "stopped" &&
+                 result.message.string.data == "stopped" &&
                  result.payload.type == Payload::Type::DICT &&
                  result.stream == Stream::STDOUT &&
                  result.type == Type::NOTIFY;

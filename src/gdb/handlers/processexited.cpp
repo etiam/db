@@ -45,7 +45,7 @@ processexited(const Gdb::Result &result, int token, boost::any data)
 
         std::smatch smatch;
 
-        if (std::regex_match(result.payload.string.string, smatch, pattern))
+        if (std::regex_match(result.payload.string.data, smatch, pattern))
         {
             regexmatch = true;
             auto payloadpid = std::stoi(smatch[1]);

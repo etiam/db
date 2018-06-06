@@ -34,7 +34,7 @@ threadgroupstarted(const Gdb::Result &result, int token, boost::any data)
     */
 
     auto match = result.token.value == -1 &&
-                 result.message.string.string == "thread-group-started" &&
+                 result.message.string.data == "thread-group-started" &&
                  result.type == Type::NOTIFY &&
                  result.payload.type == Payload::Type::DICT &&
                  result.payload.dict.find("pid") != std::end(result.payload.dict);

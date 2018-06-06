@@ -37,7 +37,7 @@ output(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signal::appendOutputText(result.payload.string.string + '\n');
+        Core::Signal::appendOutputText(result.payload.string.data + '\n');
     }
 
     return match;

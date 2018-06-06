@@ -34,7 +34,7 @@ infoaddress(const Gdb::Result &result)
     bool match = false;
 
     std::smatch smatch;
-    if (std::regex_match(result.payload.string.string, smatch, regex))
+    if (std::regex_match(result.payload.string.data, smatch, regex))
     {
         match = true;
         std::string cmd = "interpreter-exec console \"info line *" + smatch[2].str() + "\"";
@@ -52,7 +52,7 @@ infoline(const Gdb::Result &result)
     bool match = false;
 
     std::smatch smatch;
-    if (std::regex_match(result.payload.string.string, smatch, startsataddress))
+    if (std::regex_match(result.payload.string.data, smatch, startsataddress))
     {
         match = true;
 

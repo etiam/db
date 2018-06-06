@@ -37,7 +37,7 @@ console(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signal::appendConsoleText(result.payload.string.string);
+        Core::Signal::appendConsoleText(result.payload.string.data);
     }
 
     return match;

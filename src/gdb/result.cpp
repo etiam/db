@@ -78,7 +78,7 @@ parseMessage(PyObject *object)
     else if (PyString_Check(object) || PyUnicode_Check(object))
     {
         message.type = Message::Type::STRING;
-        message.string.string = PyString_AsString(object);
+        message.string.data = PyString_AsString(object);
     }
 
     return message;
@@ -145,7 +145,7 @@ parsePayload(PyObject* object)
     else if (PyString_Check(object) || PyUnicode_Check(object))
     {
         payload.type = Payload::Type::STRING;
-        payload.string.string = PyString_AsString(object);
+        payload.string.data = PyString_AsString(object);
     }
     else if (PyDict_Check(object))
     {
@@ -274,7 +274,7 @@ parseResult(PyObject *object)
 std::ostream &
 operator <<(std::ostream &out, const String &string)
 {
-    out << "'" << std::regex_replace(string.string, std::regex("(\n)"),"\\n") << "'";
+    out << "'" << std::regex_replace(string.data, std::regex("(\n)"),"\\n") << "'";
     return out;
 }
 
