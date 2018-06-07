@@ -2,6 +2,8 @@ db_SOURCES               +=                                             \
                             src/ui/mainWindow.cpp                       \
                             src/ui/editor.cpp                           \
                             src/ui/console.cpp                          \
+                            src/ui/callStack.cpp                        \
+                                                                        \
                             src/ui/debugControls.cpp                    \
                             src/ui/main.cpp
                             
@@ -9,6 +11,7 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainWindow.cpp                   \
                             src/ui/moc_editor.cpp                       \
                             src/ui/moc_console.cpp                      \
+                            src/ui/moc_callStack.cpp                    \
                                                                         \
                             src/ui/qrc_editor.cpp
 

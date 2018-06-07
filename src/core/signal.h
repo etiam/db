@@ -41,7 +41,11 @@ extern wink::signal<wink::slot<void (const std::string &text)>>                 
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendOutputText;
 
-extern wink::signal<wink::slot<void (State::Debugger state)>>                   debuggerStateSet;
+// emitted when gdb's running state is updated
+extern wink::signal<wink::slot<void ()>>                                        debuggerStateUpdated;
+
+// emitted when the global callstack is updated
+extern wink::signal<wink::slot<void ()>>                                        callStackUpdated;
 
 }
 

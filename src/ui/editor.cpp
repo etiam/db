@@ -339,6 +339,8 @@ Editor::loadFile(const QString &filename)
 void
 Editor::setCursorPosition(int row, int column)
 {
+    std::cout << row << "  " << column << std::endl;
+
     if (getNumLines() > row && getLineLength(row) >= column)
     {
         m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));

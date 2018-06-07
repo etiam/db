@@ -24,7 +24,7 @@ class Console: public QPlainTextEdit
 
   public:
     explicit Console(QWidget *parent = nullptr, bool editable = false);
-    virtual ~Console();
+    ~Console() = default;
 
   public Q_SLOTS:
     void appendText(const QString &text);

@@ -43,7 +43,7 @@ void
 State::setDebuggerState(State::Debugger state)
 {
     m_debuggerState = state;
-    Core::Signal::debuggerStateSet(state);
+    Core::Signal::debuggerStateUpdated();
 }
 
 State::Debugger
@@ -71,5 +71,19 @@ State::onSetCurrentLocationSignal(const Core::Location &location)
     m_currentLocation = location;
 }
 
+
+void
+State::setCallStack(const CallStack& callstack)
+{
+    m_callStack = callstack;
+
+    Signal::callStackUpdated();
+}
+
+const CallStack &
+State::callStack() const
+{
+    return m_callStack;
+}
 
 }

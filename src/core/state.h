@@ -21,6 +21,23 @@
 namespace Core
 {
 
+struct CallStackEntry
+{
+    CallStackEntry(std::string file, std::string full, std::string func, int le, int li) :
+        filename(std::move(file)),
+        fullname(std::move(full)),
+        function(std::move(func)),
+        level(le),
+        line(li) {};
+    std::string filename;
+    std::string fullname;
+    std::string function;
+    int level;
+    int line;
+};
+
+using CallStack = std::vector<CallStackEntry>;
+
 class State
 {
   public:
@@ -43,12 +60,15 @@ class State
     void                setDebuggerState(Debugger state);
     Debugger            debuggerState() const;
 
-  private:
+    void                setCallStack(const CallStack &callstack);
+    const CallStack &   callStack() const;
 
+  private:
     // wink signal handlers
     void                onLoadFileSignal(const std::string &filename);
     void                onSetCurrentLocationSignal(const Core::Location &location);
 
+    CallStack           m_callStack;
     AnyMap              m_vars;
     Breakpoints         m_breakpoints;
     Location            m_currentLocation;

@@ -26,6 +26,7 @@ namespace Ui
 
 class Editor;
 class Console;
+class CallStack;
 class DebugControls;
 
 class MainWindow : public QMainWindow
@@ -72,10 +73,13 @@ class MainWindow : public QMainWindow
     void            onAppendConsoleText(const std::string &text);
     void            onAppendLogText(const std::string &text);
     void            onAppendOutputText(const std::string &text);
-    void            onDebuggerStateSet(Core::State::Debugger state);
+
+    void            onDebuggerStateUpdated();
 
     Editor *        m_editor;
     QTabWidget *    m_tabWidget;
+
+    CallStack *     m_callStack;
 
     Console *       m_consoleTab;
     Console *       m_gdbTab;

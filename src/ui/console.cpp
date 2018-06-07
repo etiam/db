@@ -32,10 +32,6 @@ Console::Console(QWidget *parent, bool editable) :
     setCursorWidth(7);
 }
 
-Console::~Console()
-{
-}
-
 void
 Console::appendText(const QString &text)
 {

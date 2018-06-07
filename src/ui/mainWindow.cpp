@@ -32,6 +32,7 @@
 
 #include "editor.h"
 #include "console.h"
+#include "callStack.h"
 #include "debugControls.h"
 #include "mainWindow.h"
 
@@ -95,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
     Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
 
-    Core::Signal::debuggerStateSet.connect(this, &MainWindow::onDebuggerStateSet);
+    Core::Signal::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 }
 
 MainWindow::~MainWindow()
@@ -288,6 +289,9 @@ MainWindow::createDocks()
     m_gdbTab = new Console(this);
     m_gdbTab->hide();
 
+    m_callStack = new CallStack(this);
+    m_tabWidget->insertTab(2, m_callStack, tr("Call Stack"));
+
     // signal connections
     connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
@@ -396,8 +400,10 @@ MainWindow::onAppendOutputText(const std::string &text)
 }
 
 void
-MainWindow::onDebuggerStateSet(Core::State::Debugger state)
+MainWindow::onDebuggerStateUpdated()
 {
+    auto state = Core::state()->debuggerState();
+
     m_debugControls->setState(state);
 
     switch (state)

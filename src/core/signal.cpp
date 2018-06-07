@@ -21,13 +21,16 @@ wink::signal<wink::slot<void (const std::string &filename)>>            loadFile
 wink::signal<wink::slot<void (int row, int col)>>                       setCursorPosition;
 wink::signal<wink::slot<void (int row)>>                                updateGutterMarker;
 
+
 wink::signal<wink::slot<void (const Location &location)>>               setCurrentLocation;
 
 wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleText;
 wink::signal<wink::slot<void (const std::string &text)>>                appendLogText;
 wink::signal<wink::slot<void (const std::string &text)>>                appendOutputText;
 
-wink::signal<wink::slot<void (State::Debugger state)>>                  debuggerStateSet;
+wink::signal<wink::slot<void ()>>                                       callStackUpdated;
+
+wink::signal<wink::slot<void ()>>                                       debuggerStateUpdated;
 
 }
 

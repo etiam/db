@@ -52,6 +52,9 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
+        Core::CallStack callstack;
+
+        // build callstack from results
         const auto &dict = result.payload.dict;
         if (dict.find("stack") != std::end(dict))
         {
@@ -59,10 +62,17 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
             for (const auto &anyentry : stack)
             {
                 const auto &entry = boost::any_cast<Gdb::Payload::Dict>(anyentry);
-                auto fullname = boost::any_cast<char *>(entry.at("fullname"));
-                std::cout << fullname << std::endl;
+                auto file = boost::any_cast<char *>(entry.at("file"));
+                auto full = boost::any_cast<char *>(entry.at("fullname"));
+                auto func = boost::any_cast<char *>(entry.at("func"));
+                auto level = std::stoi(boost::any_cast<char *>(entry.at("level")));
+                auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));
+                callstack.emplace_back(file, full, func, level, line);
             }
         }
+
+        // set the callstack global state
+        Core::state()->setCallStack(callstack);
     }
 
     return match;
