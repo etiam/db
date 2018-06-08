@@ -34,6 +34,9 @@ CallStack::CallStack(QWidget *parent) :
 
     setModel(m_model);
 
+    // needed for int types in QStandardItemModel
+    qRegisterMetaType<QVector<int>>("QVector<int>");
+
     Core::Signal::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
 }
 

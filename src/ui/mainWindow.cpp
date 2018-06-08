@@ -173,7 +173,6 @@ MainWindow::switchTab(int index)
     if (console)
     {
         console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
-        std::cout << index << " " << console->verticalScrollBar()->maximum() << std::endl;
     }
 }
 
