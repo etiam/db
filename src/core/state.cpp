@@ -66,7 +66,7 @@ State::onSetCurrentLocationSignal(const Core::Location &location)
     // update previous position's gutter marker
     Signal::updateGutterMarker(m_currentLocation.m_row);
 
-    Signal::setCursorPosition(m_currentLocation.m_row, 0);
+    Signal::setCursorPosition(location.m_row, 0);
 
     m_currentLocation = location;
 }
