@@ -11,5 +11,5 @@
 /* no frame around status bar widgets */
 QStatusBar::item 
 { 
-    border: 0px solid black 
+    border: 0px solid black; 
 }

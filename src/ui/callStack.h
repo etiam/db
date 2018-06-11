@@ -19,6 +19,8 @@ class QStandardItemModel;
 namespace Ui
 {
 
+class CallStackItemModel;
+
 class CallStack : public QTreeView
 {
   Q_OBJECT
@@ -27,10 +29,10 @@ class CallStack : public QTreeView
     CallStack(QWidget *parent = nullptr);
     ~CallStack() = default;
 
-    void            onCallStackUpdated();
+    void                    onCallStackUpdated();
 
   private:
-    QStandardItemModel *    m_model;
+    CallStackItemModel *    m_model;
 };
 
 } // namespace Ui
