@@ -26,39 +26,4 @@ CallStackItemModel::CallStackItemModel(int rows, int columns, QObject* parent) :
 {
 }
 
-/*
-QVariant
-CallStackItemModel::data(const QModelIndex& index, int role) const
-{
-    QVariant result = QVariant();
-
-    std::cout << index.row() << " " << index.column() << std::endl;
-//
-//    if (index.isValid())
-//    {
-//        if (role == Qt::DecorationRole && index.column() == 0)
-//            result = QPixmap(":/img/paused");
-//
-//        else
-            result = QStandardItemModel::data(index, role);
-//    }
-
-//    if (index.isValid())
-//    {
-//        switch (role)
-//        {
-//            case Qt::DecorationRole:
-//                result = QPixmap(":/img/paused");
-//                break;
-//
-//            default:
-//                result = QStandardItemModel::data(index, role);
-//                break;
-//        }
-//    }
-
-    return result;
-}
-*/
-
 } // namespace Ui

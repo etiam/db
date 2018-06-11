@@ -11,6 +11,7 @@
 
 #include <iostream>
 
+#include <QHeaderView>
 #include <QStandardItemModel>
 #include <QFontDatabase>
 
@@ -36,12 +37,21 @@ CallStack::CallStack(QWidget *parent) :
     m_model->setHeaderData(2, Qt::Horizontal, QObject::tr("Filename"));
     m_model->setHeaderData(3, Qt::Horizontal, QObject::tr("Line"));
 
+    setRootIsDecorated(false);
+    setIndentation(10);
+
     setModel(m_model);
 
     // column width defaults
-//    setColumnWidth(0, 20);
+    setColumnWidth(0, 30);
     setColumnWidth(1, 150);
     setColumnWidth(2, 300);
+
+    // prevent resize of 1st column width
+    header()->setSectionResizeMode(0, QHeaderView::Fixed);
+
+    // don't allow columns to be re-ordered
+    header()->setSectionsMovable(false);
 
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
@@ -54,18 +64,20 @@ CallStack::onCallStackUpdated()
 {
     m_model->removeRows(0, m_model->rowCount());
 
+    const auto currentlocation = Core::state()->currentLocation();
+
     for (const auto &entry : Core::state()->callStack())
     {
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);
 
         m_model->setData(m_model->index(rowcount, 0), "");
-        m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
-//        m_model->item(rowcount, 0)->setIcon();
-//        m_model->setData(m_model->index(rowcount, 0), "");
         m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(entry.function));
         m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(entry.filename));
-        m_model->setData(m_model->index(rowcount, 3), entry.line);
+        m_model->setData(m_model->index(rowcount, 3), entry.location.row);
+
+        if (currentlocation == entry.location)
+            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
     }
 }
 

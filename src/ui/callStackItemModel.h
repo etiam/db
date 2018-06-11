@@ -26,8 +26,6 @@ class CallStackItemModel : public QStandardItemModel
     CallStackItemModel(int rows, int columns, QObject *parent = nullptr);
 
     ~CallStackItemModel() = default;
-
-//    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 };
 
 } // namespace Ui
