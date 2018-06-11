@@ -21,7 +21,6 @@
 #include "external/wink/wink/signal.hpp"
 #pragma GCC diagnostic pop
 
-#include "location.h"
 #include "state.h"
 
 namespace Core

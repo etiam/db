@@ -225,7 +225,7 @@ void
 Editor::onGutterClicked(int row)
 {
     auto &state = Core::state();
-    auto filename = Core::state()->currentLocation().m_filename;
+    auto filename = Core::state()->currentLocation().filename;
     state->breakpoints().toggleBreakpoint(filename, row);
 }
 
@@ -362,7 +362,7 @@ Editor::updateGutterMarker(int row)
         }
     }
 
-    if (currloc.m_row == row)
+    if (currloc.row == row)
     {
         klass += "_currentline";
     }

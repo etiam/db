@@ -16,7 +16,7 @@
 #include <memory>
 #include <QWidget>
 
-#include "core/location.h"
+#include "core/state.h"
 
 class QMainWindow;
 

@@ -16,24 +16,32 @@
 
 #include "anymap.h"
 #include "breakpoints.h"
-#include "location.h"
 
 namespace Core
 {
 
+struct Location
+{
+    std::string     filename;
+    int             row;
+
+    bool operator ==(const Location &other) const
+    {
+        return other.filename == filename && other.row == row;
+    }
+};
+
 struct CallStackEntry
 {
-    CallStackEntry(std::string file, std::string full, std::string func, int le, int li) :
+    CallStackEntry(Location loc, std::string file, std::string func, int le) :
+        location(std::move(loc)),
         filename(std::move(file)),
-        fullname(std::move(full)),
         function(std::move(func)),
-        level(le),
-        line(li) {};
+        level(le) {}
+    Location    location;
     std::string filename;
-    std::string fullname;
     std::string function;
     int level;
-    int line;
 };
 
 using CallStack = std::vector<CallStackEntry>;

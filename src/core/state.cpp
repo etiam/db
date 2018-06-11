@@ -57,16 +57,16 @@ State::debuggerState() const
 void
 State::onLoadFileSignal(const std::string &filename)
 {
-    m_currentLocation.m_filename = filename;
+    m_currentLocation.filename = filename;
 }
 
 void
 State::onSetCurrentLocationSignal(const Core::Location &location)
 {
     // update previous position's gutter marker
-    Signal::updateGutterMarker(m_currentLocation.m_row);
+    Signal::updateGutterMarker(m_currentLocation.row);
 
-    Signal::setCursorPosition(location.m_row, 0);
+    Signal::setCursorPosition(location.row, 0);
 
     m_currentLocation = location;
 }

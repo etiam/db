@@ -44,20 +44,20 @@ stopped(const Result &result, int token, boost::any data)
         if (dict.find("frame") != std::end(dict))
         {
             auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
-            auto filename = boost::any_cast<char *>(frame.at("fullname"));
-            auto row = std::stoi(boost::any_cast<char *>(frame.at("line")));
+            auto fullname = boost::any_cast<char *>(frame.at("fullname"));
+            auto line = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
             // update global state
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
 
             // update editor with current filename
-            Core::Signal::loadFile(filename);
+            Core::Signal::loadFile(fullname);
 
             // update global current location
-            Core::Signal::setCurrentLocation(Core::Location({filename, row}));
+            Core::Signal::setCurrentLocation(Core::Location({fullname, line}));
 
             // update current gutter marker
-            Core::Signal::updateGutterMarker(row);
+            Core::Signal::updateGutterMarker(line);
 
             // get current call stack from gdb
             std::string cmd = "stack-list-frames";

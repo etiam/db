@@ -63,11 +63,11 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
             {
                 const auto &entry = boost::any_cast<Gdb::Payload::Dict>(anyentry);
                 auto file = boost::any_cast<char *>(entry.at("file"));
-                auto full = boost::any_cast<char *>(entry.at("fullname"));
+                auto fullname = boost::any_cast<char *>(entry.at("fullname"));
                 auto func = boost::any_cast<char *>(entry.at("func"));
                 auto level = std::stoi(boost::any_cast<char *>(entry.at("level")));
                 auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));
-                callstack.emplace_back(file, full, func, level, line);
+                callstack.emplace_back(Core::Location({fullname, line}), file, func, level);
             }
         }
 
