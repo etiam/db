@@ -66,6 +66,7 @@ class Editor : public QWidget
     void    onSetCursorPositionSignal(int row, int column);
 
     void    onUpdateGutterMarkerSignal(int row);
+    void    onClearCurrentLocationSignal();
 
     std::unique_ptr<EditorImpl> m_impl;
 
@@ -73,7 +74,11 @@ class Editor : public QWidget
     void    loadFile(const QString &filename);
     void    setCursorPosition(int row, int column);
 
+    // update the gutter marker at the current row
     void    updateGutterMarker(int row);
+
+    // remove the current location marker from the gutter
+    void    clearCurrentLocation();
 };
 
 }

@@ -139,6 +139,7 @@ Editor::Editor(QMainWindow *parent) :
     Core::Signal::loadFile.connect(this, &Editor::onLoadFileSignal);
     Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signal::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
+    Core::Signal::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
 }
 
 Editor::~Editor()
@@ -304,6 +305,12 @@ Editor::onUpdateGutterMarkerSignal(int row)
     QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, row));
 }
 
+void
+Editor::onClearCurrentLocationSignal()
+{
+    QMetaObject::invokeMethod(this, "clearCurrentLocation", Qt::QueuedConnection);
+}
+
 // private slots
 
 void
@@ -365,6 +372,25 @@ Editor::updateGutterMarker(int row)
     if (currloc.row == row)
     {
         klass += "_currentline";
+    }
+
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(row-1).arg(QString::fromStdString(klass)));
+}
+
+void
+Editor::clearCurrentLocation()
+{
+    const auto &breakpoints = Core::state()->breakpoints();
+    const auto row = Core::state()->currentLocation().row;
+
+    std::string klass = "ace";
+    if (breakpoints.present(row))
+    {
+        klass += "_breakpoint";
+        if (!breakpoints.enabled(row))
+        {
+            klass += "_disabled";
+        }
     }
 
     m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(row-1).arg(QString::fromStdString(klass)));

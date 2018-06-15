@@ -36,6 +36,9 @@ extern wink::signal<wink::slot<void (int row)>>                                 
 // set the debugger's current location
 extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
 
+// clear current location gutter marker
+extern wink::signal<wink::slot<void ()>>                                        clearCurrentLocation;
+
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;
 extern wink::signal<wink::slot<void (const std::string &text)>>                 appendOutputText;

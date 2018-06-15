@@ -122,7 +122,7 @@ void
 MainWindow::run()
 {
     // this will make the current location marker disappear
-    Core::Signal::setCurrentLocation(Core::Location({"", -1}));
+    Core::Signal::clearCurrentLocation();
 
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
         Core::gdb()->cont();

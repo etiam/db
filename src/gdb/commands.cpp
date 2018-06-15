@@ -128,6 +128,7 @@ void
 Commands::stepover()
 {
     std::string cmd = "exec-next";
+    Core::Signal::appendConsoleText("next\n");
     m_controller->executeCommand(cmd, Handlers::execnext);
 }
 
@@ -135,6 +136,7 @@ void
 Commands::stepinto()
 {
     std::string cmd = "exec-step";
+    Core::Signal::appendConsoleText("step\n");
     m_controller->executeCommand(cmd);
 }
 

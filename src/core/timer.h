@@ -38,9 +38,10 @@ class Timer
         m_stop = std::chrono::high_resolution_clock::now();
     }
 
-    double  elapsedTime() const
+    // return time in milliseconds
+    double  elapsed() const
     {
-        // for some reason, returning the count casted to milliseconds has less precision
+        // for some reason, returning the count duration_casted to milliseconds has less precision
         // than casting to microseconds and dividing by 1000.0.
         if(m_stopped)
             return std::chrono::duration_cast<std::chrono::microseconds>(m_stop - m_start).count() / 1000.0f;
@@ -60,7 +61,7 @@ inline
 std::ostream &
 operator <<(std::ostream &out, const Core::Timer &timer)
 {
-    out << timer.elapsedTime();
+    out << timer.elapsed();
 
     return out;
 }

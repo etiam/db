@@ -63,12 +63,15 @@ State::onLoadFileSignal(const std::string &filename)
 void
 State::onSetCurrentLocationSignal(const Core::Location &location)
 {
-    // update previous position's gutter marker
-    Signal::updateGutterMarker(m_currentLocation.row);
-
-    Signal::setCursorPosition(location.row, 0);
+    auto oldloc = m_currentLocation.row;
 
     m_currentLocation = location;
+
+    // update previous position's gutter marker
+    Signal::updateGutterMarker(oldloc);
+
+    Signal::setCursorPosition(m_currentLocation.row, 0);
+
 }
 
 

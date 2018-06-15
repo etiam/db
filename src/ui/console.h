@@ -15,6 +15,8 @@
 
 #include <QPlainTextEdit>
 
+#include "core/timer.h"
+
 namespace Ui
 {
 
@@ -27,13 +29,19 @@ class Console: public QPlainTextEdit
     ~Console() = default;
 
   public Q_SLOTS:
-    void appendText(const QString &text);
-
-  private:
-    bool m_editable;
+    void        appendText(const QString &text);
 
   protected:
-    void keyPressEvent(QKeyEvent *e) override;
+    void        keyPressEvent(QKeyEvent *e) override;
+    void        mousePressEvent(QMouseEvent *e) override;
+
+  private:
+    bool        m_editable;
+    bool        m_promptDisplayed = false;
+    Core::Timer m_consoleUpdateTimer;
+
+  private Q_SLOTS:
+    void        showPrompt();
 };
 
 }
