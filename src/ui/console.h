@@ -35,13 +35,16 @@ class Console: public QPlainTextEdit
     void        keyPressEvent(QKeyEvent *e) override;
     void        mousePressEvent(QMouseEvent *e) override;
 
-  private:
-    bool        m_editable;
-    bool        m_promptDisplayed = false;
-    Core::Timer m_consoleUpdateTimer;
-
   private Q_SLOTS:
     void        showPrompt();
+
+  private:
+    void        insertText(const QString &text);
+
+    int         m_textCursorPos = 0;
+    bool        m_editable;
+    bool        m_showPrompt = false;
+    Core::Timer m_consoleUpdateTimer;
 };
 
 }
