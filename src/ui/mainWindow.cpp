@@ -31,6 +31,7 @@
 #include "gdb/commands.h"
 
 #include "editor.h"
+#include "output.h"
 #include "console.h"
 #include "callStack.h"
 #include "debugControls.h"
@@ -195,10 +196,10 @@ MainWindow::toggleGdbTab()
     for (auto n=0; n < m_tabWidget->count(); ++n)
         tabs.push_back(m_tabWidget->widget(n));
 
-    if (std::find(std::begin(tabs), std::end(tabs), m_gdbTab) != std::end(tabs))
+    if (std::find(std::begin(tabs), std::end(tabs), m_debuggerMessagesTab) != std::end(tabs))
         m_tabWidget->removeTab(2);
     else
-        m_tabWidget->insertTab(2, m_gdbTab, tr("Gdb"));
+        m_tabWidget->insertTab(2, m_debuggerMessagesTab, tr("Gdb"));
 }
 
 void
@@ -281,12 +282,12 @@ MainWindow::createDocks()
     m_consoleTab = new Console(this, true);
     m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
 
-    m_outputTab = new Console(this);
+    m_outputTab = new Output(this);
     m_tabWidget->insertTab(1, m_outputTab, tr("Output"));
 
     // hidden by default
-    m_gdbTab = new Console(this);
-    m_gdbTab->hide();
+    m_debuggerMessagesTab = new Output(this);
+    m_debuggerMessagesTab->hide();
 
     m_callStack = new CallStack(this);
     m_tabWidget->insertTab(2, m_callStack, tr("Call Stack"));
@@ -340,7 +341,7 @@ MainWindow::createViewMenu()
     viewgdbtabact->setStatusTip(tr("Show Gdb tab"));
     connect(viewgdbtabact, SIGNAL(triggered()), this, SLOT(toggleGdbTab()));
     viewgdbtabact->setCheckable(true);
-    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_gdbTab) != std::end(tabs));
+    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_debuggerMessagesTab) != std::end(tabs));
     viewmenu->addAction(viewgdbtabact);
 }
 
@@ -389,7 +390,7 @@ MainWindow::onAppendConsoleText(const std::string &text)
 void
 MainWindow::onAppendLogText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_gdbTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_debuggerMessagesTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void

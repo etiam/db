@@ -25,6 +25,7 @@ namespace Ui
 {
 
 class Editor;
+class Output;
 class Console;
 class CallStack;
 class DebugControls;
@@ -82,8 +83,8 @@ class MainWindow : public QMainWindow
     CallStack *     m_callStack;
 
     Console *       m_consoleTab;
-    Console *       m_gdbTab;
-    Console *       m_outputTab;
+    Output *        m_debuggerMessagesTab;
+    Output *        m_outputTab;
 
     DebugControls * m_debugControls;
 
