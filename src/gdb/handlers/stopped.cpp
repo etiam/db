@@ -50,7 +50,7 @@ stopped(const Result &result, int token, boost::any data)
             // update global state
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
 
-            // update editor with current filename
+            // load editor with contents of filename
             Core::Signal::loadFile(fullname);
 
             // update global current location
