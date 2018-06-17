@@ -31,6 +31,9 @@ class CallStack : public QTreeView
 
     void                    onCallStackUpdated();
 
+  protected:
+    void                    mouseDoubleClickEvent(QMouseEvent *) override;
+
   private:
     CallStackItemModel *    m_model;
 };

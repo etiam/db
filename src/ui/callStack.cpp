@@ -14,6 +14,7 @@
 #include <QHeaderView>
 #include <QStandardItemModel>
 #include <QFontDatabase>
+#include <QMouseEvent>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -78,6 +79,25 @@ CallStack::onCallStackUpdated()
 
         if (currentlocation == entry.location)
             m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
+    }
+}
+
+void
+CallStack::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    const auto row = indexAt(event->pos()).row();
+    const auto &stack = Core::state()->callStack();
+    if (row <= stack.size())
+    {
+        const auto callback = stack[row];
+
+        std::cout << callback.location.filename << std::endl;
+
+        // load editor with contents of filename
+        Core::Signal::loadFile(callback.location.filename);
+
+        // update global current location
+        Core::Signal::setCurrentLocation(callback.location);
     }
 }
 
