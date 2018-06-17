@@ -72,8 +72,8 @@ class ControllerImpl
 
     int             m_token = 1;
 
-    PyObject *      m_writeMethod = nullptr;
-    PyObject *      m_getHandlerMethod = nullptr;
+    PyObject *      m_writeMethod = nullptr;        // pyobject holding ref to function that sends command to gdb
+    PyObject *      m_getHandlerMethod = nullptr;   // pyobject holding ref to function that get's next gdb response
 
     struct HandlerData
     {
@@ -303,6 +303,8 @@ ControllerImpl::resultReaderThread()
 
         // release python GIL
         PyGILState_Release(gstate);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     m_resultThreadDone = true;
