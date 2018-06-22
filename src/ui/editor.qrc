@@ -33,6 +33,7 @@
         
         <file alias="ace/ace.js">../external/ace-builds/src/ace.js</file>
         <file alias="ace/mode-c_cpp.js">../external/ace-builds/src/mode-c_cpp.js</file>
+        <file alias="ace/mode-xml.js">../external/ace-builds/src/mode-xml.js</file>
         <file alias="ace/theme-clouds_midnight.js">../external/ace-builds/src/theme-clouds_midnight.js</file>
         <file alias="ace/keybinding-vim.js">../external/ace-builds/src/keybinding-vim.js</file>
         

@@ -61,6 +61,9 @@ class Editor : public QWidget
     void    clearGutterMarkers();
     void    updateGutterMarkers(const QString &filename);
 
+    void    showGutter();
+    void    hideGutter();
+
     // wink signal handlers
     void    onLoadFileSignal(const std::string &filename);
     void    onSetCursorPositionSignal(int row, int column);

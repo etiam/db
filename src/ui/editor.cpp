@@ -285,6 +285,18 @@ Editor::updateGutterMarkers(const QString &filename)
     Core::state()->breakpoints().visit(visitor);
 }
 
+void
+Editor::showGutter()
+{
+    m_impl->executeJavaScript(QString("editor.renderer.setShowGutter(true)"));
+}
+
+void
+Editor::hideGutter()
+{
+    m_impl->executeJavaScript(QString("editor.renderer.setShowGutter(false)"));
+}
+
 // wink signal handlers
 
 void
@@ -337,8 +349,20 @@ Editor::loadFile(const QString &filename)
 
             currentfilename = filename;
 
+            setHighlightMode("c_cpp");
+            showGutter();
             clearGutterMarkers();
             updateGutterMarkers(filename);
+        }
+        else
+        {
+            std::stringstream message;
+            message << filename.toStdString() << ": No such file or directory.";
+            setText(QString::fromStdString(message.str()));
+            setHighlightMode("xml");
+            hideGutter();
+            clearGutterMarkers();
+            currentfilename = "";
         }
     }
 }
