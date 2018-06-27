@@ -50,30 +50,18 @@ MainWindow::MainWindow(QWidget *parent) :
     setObjectName("mainwindow");
     setWindowTitle("db");
 
-    // gui setup
-//    m_splitter = new QSplitter(this);
-//    m_splitter->setOrientation(Qt::Vertical);
-//    m_splitter->setObjectName("splitter");
-//    m_splitter->setContentsMargins(0, 0, 0, 0);
-
     // main editor window
     m_editor = new Editor(this);
-
-    // add editor and tabwidget to main
-//    m_splitter->addWidget(m_editor);
-//    m_splitter->addWidget(m_tabWidget);
-
     setCentralWidget(m_editor);
 
-    // settings
+    // restore gui settings
     readSettings();
 
     createDocks();
     createMenus();
     createToolbar();
     createHotkeys();
-
-    setupStatusbar();
+    createStatusbar();
 
 /*
     auto dockwidget1 = new QDockWidget(tr("Tab1"), this);
@@ -91,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    tabifyDockWidget(dockwidget1,dockwidget2);
 */
 
+    // wink signals
     Core::Signal::loadFile.connect(this, &MainWindow::onLoadFileSignal);
 
     Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
@@ -102,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    // save gui settings
     writeSettings();
 }
 
@@ -117,7 +107,6 @@ constexpr auto toIntegral(E e) -> typename std::underlying_type<E>::type
 {
    return static_cast<typename std::underlying_type<E>::type>(e);
 }
-
 
 void
 MainWindow::run()
@@ -177,6 +166,8 @@ MainWindow::switchTab(int index)
     }
 }
 
+
+
 void
 MainWindow::toggleConsoleTab()
 {
@@ -186,7 +177,7 @@ MainWindow::toggleConsoleTab()
 void
 MainWindow::toggleOutputTab()
 {
-    m_tabWidget->insertTab(1, m_outputTab, tr("Output"));
+    m_tabWidget->insertTab(1, m_programOutputTab, tr("Output"));
 }
 
 void
@@ -196,53 +187,28 @@ MainWindow::toggleGdbTab()
     for (auto n=0; n < m_tabWidget->count(); ++n)
         tabs.push_back(m_tabWidget->widget(n));
 
-    if (std::find(std::begin(tabs), std::end(tabs), m_debuggerMessagesTab) != std::end(tabs))
+    if (std::find(std::begin(tabs), std::end(tabs), m_debuggerOutputTab) != std::end(tabs))
         m_tabWidget->removeTab(2);
     else
-        m_tabWidget->insertTab(2, m_debuggerMessagesTab, tr("Gdb"));
+        m_tabWidget->insertTab(2, m_debuggerOutputTab, tr("Gdb"));
 }
 
 void
 MainWindow::readSettings()
 {
-    QSettings settings("db", "mainwindow");
+    QSettings settings;
 
-    restoreGeometry(settings.value("geometry").toByteArray());
-    restoreState(settings.value("state").toByteArray());
-
-//    resize(settings.value("size", QSize(720, 480)).toSize());
-//    move(settings.value("pos", QPoint(10, 10)).toPoint());
-//
-//    if (settings.contains("splitter"))
-//    {
-//        QList<int> sizes;
-//        for (const auto &size : settings.value("splitter").toStringList())
-//            sizes.append(size.toInt());
-//        m_splitter->setSizes(sizes);
-//    }
-//    else
-//    {
-//        auto h = size().height();
-//        m_splitter->setSizes(QList<int>{ static_cast<int>(h*0.85), static_cast<int>(h*0.15) });
-//    }
+    restoreGeometry(settings.value("MainWindow/Geometry").toByteArray());
+    restoreState(settings.value("MainWindow/State").toByteArray());
 }
 
 void
 MainWindow::writeSettings() const
 {
-//    QSettings settings("db", "mainwindow");
-//
-//    settings.setValue("pos", pos());
-//    settings.setValue("size", size());
-//
-//    QStringList sizes;
-//    for (const auto &size : m_splitter->sizes())
-//        sizes << QString::number(size);
-//    settings.setValue("splitter", sizes);
+    QSettings settings;
 
-    QSettings settings("db", "mainwindow");
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("windowState", saveState());
+    settings.setValue("MainWindow/State", saveState());
+    settings.setValue("MainWindow/Geometry", saveGeometry());
 }
 
 void
@@ -263,16 +229,17 @@ MainWindow::createToolbar()
 void
 MainWindow::createDocks()
 {
-    auto bottomdock = new QDockWidget(tr("bottomdock"), this);
-    bottomdock->setObjectName(tr("bottomdock"));
+    auto bottomdock = new QDockWidget("bottomdock", this);
+    bottomdock->setObjectName("bottomdock");
     bottomdock->setAllowedAreas(Qt::BottomDockWidgetArea);
 
-    // to hide the title bar completely must replace the default widget with a generic one
+    // to hide the title bar completely we must replace the default widget with a QWidget
     auto titlewidget = new QWidget(this);
     bottomdock->setTitleBarWidget(titlewidget);
 
     // tabs window
     m_tabWidget = new QTabWidget(this);
+    m_tabWidget->setObjectName("tabwidget");
     m_tabWidget->setTabsClosable(true);
     m_tabWidget->setMovable(true);
 
@@ -282,15 +249,17 @@ MainWindow::createDocks()
     m_consoleTab = new Console(this, true);
     m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
 
-    m_outputTab = new Output(this);
-    m_tabWidget->insertTab(1, m_outputTab, tr("Output"));
-
-    // hidden by default
-    m_debuggerMessagesTab = new Output(this);
-    m_debuggerMessagesTab->hide();
+    m_programOutputTab = new Output(this);
+    m_programOutputTab->setObjectName("programoutput");
+    m_tabWidget->insertTab(1, m_programOutputTab, tr("Output"));
 
     m_callStack = new CallStack(this);
     m_tabWidget->insertTab(2, m_callStack, tr("Call Stack"));
+
+    // debugger tab is hidden by default
+    m_debuggerOutputTab = new Output(this);
+    m_debuggerOutputTab->setObjectName("debugoutput");
+    m_debuggerOutputTab->hide();
 
     // signal connections
     connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -317,6 +286,7 @@ MainWindow::createFileMenu()
 void
 MainWindow::createViewMenu()
 {
+    // build list of currently present tabs
     std::vector<QWidget*> tabs;
     for (auto n=0; n < m_tabWidget->count(); ++n)
         tabs.push_back(m_tabWidget->widget(n));
@@ -334,14 +304,14 @@ MainWindow::createViewMenu()
     viewoutputtabact->setStatusTip(tr("Show output tab"));
     connect(viewoutputtabact, SIGNAL(triggered()), this, SLOT(toggleOutputTab()));
     viewoutputtabact->setCheckable(true);
-    viewoutputtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_outputTab) != std::end(tabs));
+    viewoutputtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_programOutputTab) != std::end(tabs));
     viewmenu->addAction(viewoutputtabact);
 
     auto viewgdbtabact = new QAction(tr("Gdb"), this);
     viewgdbtabact->setStatusTip(tr("Show Gdb tab"));
     connect(viewgdbtabact, SIGNAL(triggered()), this, SLOT(toggleGdbTab()));
     viewgdbtabact->setCheckable(true);
-    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_debuggerMessagesTab) != std::end(tabs));
+    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_debuggerOutputTab) != std::end(tabs));
     viewmenu->addAction(viewgdbtabact);
 }
 
@@ -359,7 +329,7 @@ MainWindow::createHotkeys()
 }
 
 void
-MainWindow::setupStatusbar()
+MainWindow::createStatusbar()
 {
     m_statusIcon = new QLabel(this);
     m_statusIcon->setScaledContents(true);
@@ -390,13 +360,13 @@ MainWindow::onAppendConsoleText(const std::string &text)
 void
 MainWindow::onAppendLogText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_debuggerMessagesTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_debuggerOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void
 MainWindow::onAppendOutputText(const std::string &text)
 {
-    QMetaObject::invokeMethod(m_outputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+    QMetaObject::invokeMethod(m_programOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void

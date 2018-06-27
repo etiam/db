@@ -11,7 +11,6 @@
 
 #include <iostream>
 
-#include <QApplication>
 #include <QScrollBar>
 #include <QPainter>
 #include <QTimer>
@@ -27,6 +26,7 @@ Console::Console(QWidget *parent, bool editable) :
     QPlainTextEdit(parent),
     m_editable(editable)
 {
+    setObjectName("console");
     if (!m_editable)
         setReadOnly(true);
 

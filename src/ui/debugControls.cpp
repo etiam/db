@@ -20,7 +20,7 @@ namespace Ui
 DebugControls::DebugControls(QWidget *parent) :
     QToolBar(parent)
 {
-    setObjectName(tr("debugcontrols"));
+    setObjectName("debugcontrols");
     setAllowedAreas(Qt::TopToolBarArea);
 
     QIcon runicon;

@@ -11,7 +11,6 @@
 
 #include <iostream>
 
-#include <QApplication>
 #include <QScrollBar>
 #include <QPainter>
 #include <QTimer>
@@ -26,6 +25,7 @@ namespace Ui
 Output::Output(QWidget *parent) :
     QPlainTextEdit(parent)
 {
+    setObjectName("output");
     setReadOnly(true);
 
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));

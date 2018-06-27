@@ -29,6 +29,11 @@ Main::Main(int &argc, char *argv[])
     m_app = std::make_unique<QApplication>(argc, argv);
     m_app->setStyle("GTK+");
 
+    // for qsettings
+    m_app->setOrganizationName("jasonrosson");
+    m_app->setOrganizationDomain("jasonrosson.com");
+    m_app->setApplicationName("db");
+
     // apply global stylesheet
     QFile stylefile(":/qss/custom.qss");
     stylefile.open(QFile::ReadOnly);
@@ -66,17 +71,17 @@ Main::initialize()
 void
 Main::readSettings()
 {
-    QSettings settings("db", "core");
+    QSettings settings;
 
-    Core::optionsManager()->set("breakonmain", settings.value("breakonmain", true).toBool());
+    Core::optionsManager()->set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
 }
 
 void
 Main::writeSettings() const
 {
-    QSettings settings("db", "core");
+    QSettings settings;
 
-    settings.setValue("breakonmain", Core::optionsManager()->get<bool>("breakonmain"));
+    settings.setValue("Core/BreakOnMain", Core::optionsManager()->get<bool>("breakonmain"));
 }
 
 }

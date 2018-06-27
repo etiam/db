@@ -122,6 +122,8 @@ Editor::Editor(QMainWindow *parent) :
     QWidget(parent),
     m_impl(std::make_unique<EditorImpl>(this))
 {
+    setObjectName("editor");
+
     m_impl->startAceWidget();
     m_impl->executeJavaScript("editor.focus()");
 

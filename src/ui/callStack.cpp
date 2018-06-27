@@ -29,6 +29,7 @@ namespace Ui
 CallStack::CallStack(QWidget *parent) :
     QTreeView(parent)
 {
+    setObjectName("callstack");
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
     m_model = new CallStackItemModel(0, 4, this);

@@ -67,7 +67,7 @@ class MainWindow : public QMainWindow
 
     void            createHotkeys();
 
-    void            setupStatusbar();
+    void            createStatusbar();
 
     // wink signal handlers
     void            onLoadFileSignal(const std::string &filename);
@@ -83,8 +83,8 @@ class MainWindow : public QMainWindow
     CallStack *     m_callStack;
 
     Console *       m_consoleTab;
-    Output *        m_debuggerMessagesTab;
-    Output *        m_outputTab;
+    Output *        m_debuggerOutputTab;
+    Output *        m_programOutputTab;
 
     DebugControls * m_debugControls;
 
