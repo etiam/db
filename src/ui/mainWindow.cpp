@@ -154,6 +154,11 @@ void
 MainWindow::closeTab(int index)
 {
     m_tabWidget->removeTab(index);
+
+    for (const auto &action : menuBar()->actions())
+    {
+        std::cout << action << std::endl;
+    }
 }
 
 void
@@ -166,31 +171,20 @@ MainWindow::switchTab(int index)
     }
 }
 
-
-
 void
-MainWindow::toggleConsoleTab()
+MainWindow::toggleTab(QWidget *tab)
 {
-    m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
-}
-
-void
-MainWindow::toggleOutputTab()
-{
-    m_tabWidget->insertTab(1, m_programOutputTab, tr("Output"));
-}
-
-void
-MainWindow::toggleGdbTab()
-{
+    // build list of existing tabs
     std::vector<QWidget*> tabs;
     for (auto n=0; n < m_tabWidget->count(); ++n)
         tabs.push_back(m_tabWidget->widget(n));
 
-    if (std::find(std::begin(tabs), std::end(tabs), m_debuggerOutputTab) != std::end(tabs))
-        m_tabWidget->removeTab(2);
+    // remove or insert tab depending on whether it already currently exists
+    auto it = std::find(std::begin(tabs), std::end(tabs), tab);
+    if (it != std::end(tabs))
+        m_tabWidget->removeTab(it - std::begin(tabs));
     else
-        m_tabWidget->insertTab(2, m_debuggerOutputTab, tr("Gdb"));
+        m_tabWidget->insertTab(m_tabWidget->count(), tab, tab->property("tabname").toString());
 }
 
 void
@@ -247,18 +241,24 @@ MainWindow::createDocks()
 
     // tabs within tab window
     m_consoleTab = new Console(this, true);
+    m_consoleTab->setObjectName("console");
+    m_consoleTab->setProperty("tabname", tr("Console"));
     m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
 
     m_programOutputTab = new Output(this);
     m_programOutputTab->setObjectName("programoutput");
+    m_programOutputTab->setProperty("tabname", "Output");
     m_tabWidget->insertTab(1, m_programOutputTab, tr("Output"));
 
-    m_callStack = new CallStack(this);
-    m_tabWidget->insertTab(2, m_callStack, tr("Call Stack"));
+    m_callStackTab = new CallStack(this);
+    m_callStackTab->setObjectName("callstack");
+    m_callStackTab->setProperty("tabname", tr("Call Stack"));
+    m_tabWidget->insertTab(2, m_callStackTab, tr("Call Stack"));
 
     // debugger tab is hidden by default
     m_debuggerOutputTab = new Output(this);
     m_debuggerOutputTab->setObjectName("debugoutput");
+    m_debuggerOutputTab->setProperty("tabname", tr("Gdb"));
     m_debuggerOutputTab->hide();
 
     // signal connections
@@ -295,24 +295,35 @@ MainWindow::createViewMenu()
 
     auto viewconsoletabact = new QAction(tr("Console"), this);
     viewconsoletabact->setStatusTip(tr("Show console tab"));
-    connect(viewconsoletabact, SIGNAL(triggered()), this, SLOT(toggleConsoleTab()));
     viewconsoletabact->setCheckable(true);
     viewconsoletabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_consoleTab) != std::end(tabs));
+    viewconsoletabact->setProperty("tabname", tr("Console"));
+    connect(viewconsoletabact, &QAction::triggered, [=] { toggleTab(m_consoleTab); });
     viewmenu->addAction(viewconsoletabact);
 
     auto viewoutputtabact = new QAction(tr("Output"), this);
     viewoutputtabact->setStatusTip(tr("Show output tab"));
-    connect(viewoutputtabact, SIGNAL(triggered()), this, SLOT(toggleOutputTab()));
     viewoutputtabact->setCheckable(true);
     viewoutputtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_programOutputTab) != std::end(tabs));
+    viewoutputtabact->setProperty("tabname", tr("Output"));
+    connect(viewoutputtabact, &QAction::triggered, [=] { toggleTab(m_programOutputTab); });
     viewmenu->addAction(viewoutputtabact);
 
-    auto viewgdbtabact = new QAction(tr("Gdb"), this);
+    auto viewgdbtabact = new QAction(tr(""), this);
     viewgdbtabact->setStatusTip(tr("Show Gdb tab"));
-    connect(viewgdbtabact, SIGNAL(triggered()), this, SLOT(toggleGdbTab()));
     viewgdbtabact->setCheckable(true);
     viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_debuggerOutputTab) != std::end(tabs));
+    viewgdbtabact->setProperty("tabname", tr("Console"));
+    connect(viewgdbtabact, &QAction::triggered, [=] { toggleTab(m_debuggerOutputTab); });
     viewmenu->addAction(viewgdbtabact);
+
+    auto viewcallstacktabact = new QAction(tr("Call Stack"), this);
+    viewcallstacktabact->setStatusTip(tr("Show Call Stack tab"));
+    viewcallstacktabact->setCheckable(true);
+    viewcallstacktabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_callStackTab) != std::end(tabs));
+    viewcallstacktabact->setProperty("tabname", tr("Call Stack"));
+    connect(viewcallstacktabact, &QAction::triggered, [=] { toggleTab(m_callStackTab); });
+    viewmenu->addAction(viewcallstacktabact);
 }
 
 void

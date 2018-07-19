@@ -51,9 +51,8 @@ class MainWindow : public QMainWindow
     void            closeTab(int index);
     void            switchTab(int index);
 
-    void            toggleConsoleTab();
-    void            toggleOutputTab();
-    void            toggleGdbTab();
+    // toggle the visibility of tab
+    void            toggleTab(QWidget *tab);
 
   private:
     void            readSettings();
@@ -80,11 +79,10 @@ class MainWindow : public QMainWindow
     Editor *        m_editor;
     QTabWidget *    m_tabWidget;
 
-    CallStack *     m_callStack;
-
     Console *       m_consoleTab;
     Output *        m_debuggerOutputTab;
     Output *        m_programOutputTab;
+    CallStack *     m_callStackTab;
 
     DebugControls * m_debugControls;
 
