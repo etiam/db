@@ -264,8 +264,8 @@ MainWindow::createDocks()
     m_debuggerOutputTab->hide();
 
     // signal connections
-    connect(m_tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
+    connect(m_tabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeTab(index); });
+    connect(m_tabWidget, &QTabWidget::currentChanged, [&](int index){ switchTab(index); });
 
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 }
@@ -280,7 +280,7 @@ MainWindow::createFileMenu()
     auto fileexitact = new QAction(tr("Quit"), this);
     fileexitact->setStatusTip(tr("Quit the application"));
     fileexitact->setShortcut(Qt::Key_Q);
-    connect(fileexitact, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(fileexitact, &QAction::triggered, [&](){ quit(); });
 
     filemenu->addAction(fileexitact);
 }

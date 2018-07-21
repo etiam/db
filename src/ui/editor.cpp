@@ -81,7 +81,7 @@ class EditorImpl: public QObject
     {
         QEventLoop loop(m_parent);
 
-        QObject::connect(m_webView, SIGNAL(loadFinished(bool)), &loop, SLOT(quit()));
+        connect(m_webView, &QWebView::loadFinished, [&](bool){ loop.quit(); });
 
         m_webView->load(QUrl("qrc:/ace/ace.html"));
         loop.exec();

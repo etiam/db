@@ -19,10 +19,12 @@
 namespace Ui
 {
 
+class MainWindow;
+
 class DebugControls : public QToolBar
 {
   public:
-    DebugControls(QWidget *parent=0);
+    DebugControls(MainWindow *parent=0);
     ~DebugControls();
 
     void setState(Core::State::Debugger state);

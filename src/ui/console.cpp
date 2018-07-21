@@ -33,8 +33,9 @@ Console::Console(QWidget *parent, bool editable) :
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     setCursorWidth(9);
 
+    // setup timer to show console prompt
     auto prompttimer = new QTimer(this);
-    connect(prompttimer, SIGNAL(timeout()), this, SLOT(showPrompt()));
+    connect(prompttimer, &QTimer::timeout, [&](){ showPrompt(); });
     prompttimer->setInterval(100);
     prompttimer->start();
 }
@@ -89,7 +90,6 @@ Console::keyPressEvent(QKeyEvent *e)
                 QPlainTextEdit::keyPressEvent(e);
     }
 }
-
 
 void
 Console::mousePressEvent(QMouseEvent* e)

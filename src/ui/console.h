@@ -36,6 +36,8 @@ class Console: public QPlainTextEdit
     void        mousePressEvent(QMouseEvent *e) override;
 
   private Q_SLOTS:
+
+    // called regularly from a timer to print a console prompt
     void        showPrompt();
 
   private:
