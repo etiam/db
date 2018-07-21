@@ -12,6 +12,11 @@
 #include <QIcon>
 #include <QAction>
 
+#include "core/global.h"
+#include "core/signal.h"
+
+#include "gdb/commands.h"
+
 #include "mainWindow.h"
 #include "debugControls.h"
 
@@ -30,7 +35,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_runAct = new QAction(runicon, tr("Run"), this);
     m_runAct->setStatusTip(tr("Start execution"));
     m_runAct->setShortcut(Qt::Key_R);
-    connect(m_runAct, &QAction::triggered, [&](){ parent->run(); });
+    connect(m_runAct, &QAction::triggered, [&]() { run(); } );
     addAction(m_runAct);
 
     QIcon pauseicon;
@@ -39,7 +44,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_pauseAct = new QAction(pauseicon, tr("Pause"), this);
     m_pauseAct->setStatusTip(tr("Pause execution"));
     m_pauseAct->setShortcut(Qt::Key_P);
-    connect(m_pauseAct, &QAction::triggered, [&](){ parent->pause(); });
+    connect(m_pauseAct, &QAction::triggered, [&](){ Core::gdb()->pause(); });
     addAction(m_pauseAct);
     m_pauseAct->setDisabled(true);
 
@@ -48,7 +53,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     stopicon.addFile(":/img/stop-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
     m_stopAct = new QAction(stopicon, tr("Stop"), this);
     m_stopAct->setStatusTip(tr("Stop execution"));
-    connect(m_stopAct, &QAction::triggered, [&](){ parent->stop(); });
+    connect(m_stopAct, &QAction::triggered, [&](){ Core::gdb()->stop(); });
     addAction(m_stopAct);
 
     QIcon stepovericon;
@@ -57,7 +62,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_stepoverAct = new QAction(stepovericon, tr("Step over"), this);
     m_stepoverAct->setStatusTip(tr("Step over"));
     m_stepoverAct->setShortcut(Qt::Key_N);
-    connect(m_stepoverAct, &QAction::triggered, [&](){ parent->stepover(); });
+    connect(m_stepoverAct, &QAction::triggered, [&](){ Core::gdb()->stepover(); });
     addAction(m_stepoverAct);
 
     QIcon stepintoicon;
@@ -66,7 +71,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_stepintoAct = new QAction(stepintoicon, tr("Step into"), this);
     m_stepintoAct->setStatusTip(tr("Step into"));
     m_stepintoAct->setShortcut(Qt::Key_S);
-    connect(m_stepintoAct, &QAction::triggered, [&](){ parent->stepinto(); });
+    connect(m_stepintoAct, &QAction::triggered, [&](){ Core::gdb()->stepinto(); });
     addAction(m_stepintoAct);
 
     QIcon stepouticon;
@@ -74,7 +79,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     stepouticon.addFile(":/img/stepout-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
     m_stepoutAct = new QAction(stepouticon, tr("Step out"), this);
     m_stepoutAct->setStatusTip(tr("Step out"));
-    connect(m_stepoutAct, &QAction::triggered, [&](){ parent->stepout(); });
+    connect(m_stepoutAct, &QAction::triggered, [&](){ Core::gdb()->stepout(); });
     addAction(m_stepoutAct);
 }
 
@@ -123,6 +128,18 @@ DebugControls::setState(Core::State::Debugger state)
         default:
             break;
     }
+}
+
+void
+DebugControls::run()
+{
+    // this will make the current location marker disappear
+    Core::Signal::clearCurrentLocation();
+
+    if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
+        Core::gdb()->cont();
+    else
+        Core::gdb()->run();
 }
 
 } // namespace Ui

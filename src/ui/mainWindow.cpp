@@ -110,48 +110,6 @@ constexpr auto toIntegral(E e) -> typename std::underlying_type<E>::type
 }
 
 void
-MainWindow::run()
-{
-    // this will make the current location marker disappear
-    Core::Signal::clearCurrentLocation();
-
-    if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
-        Core::gdb()->cont();
-    else
-        Core::gdb()->run();
-}
-
-void
-MainWindow::pause()
-{
-    Core::gdb()->pause();
-}
-
-void
-MainWindow::stop()
-{
-    Core::gdb()->stop();
-}
-
-void
-MainWindow::stepover()
-{
-    Core::gdb()->stepover();
-}
-
-void
-MainWindow::stepinto()
-{
-    Core::gdb()->stepinto();
-}
-
-void
-MainWindow::stepout()
-{
-    Core::gdb()->stepout();
-}
-
-void
 MainWindow::closeTab(int index)
 {
     // retrieve action pointer from tab widget and use it to uncheck the menu item

@@ -38,16 +38,7 @@ class MainWindow : public QMainWindow
     MainWindow(QWidget *parent=0);
     ~MainWindow();
 
-  public Q_SLOTS:
-
-    void            run();
-    void            pause();
-    void            stop();
-    void            stepover();
-    void            stepinto();
-    void            stepout();
-
-  private Q_SLOTS:
+  private:
     void            quit();
 
     // toggle the visibility of tab
@@ -59,7 +50,6 @@ class MainWindow : public QMainWindow
     // called when tab is switched
     void            switchTab(int index);
 
-  private:
     void            readSettings();
     void            writeSettings() const;
 
