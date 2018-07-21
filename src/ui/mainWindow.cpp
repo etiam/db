@@ -154,9 +154,8 @@ MainWindow::stepout()
 void
 MainWindow::closeTab(int index)
 {
-
+    // retrieve action pointer from tab widget and use it to uncheck the menu item
     const auto &tab = m_tabWidget->widget(index);
-//    const auto action = static_cast<QAction*>(tab->property("action").value<void*>());
     const auto action = tab->property("action").value<QAction*>();
     action->setChecked(false);
 
@@ -295,37 +294,23 @@ MainWindow::createViewMenu()
 
     auto viewmenu = menuBar()->addMenu(tr("&View"));
 
-    auto viewconsoletabact = new QAction(tr("Console"), this);
-    viewconsoletabact->setStatusTip(tr("Show Console tab"));
-    viewconsoletabact->setCheckable(true);
-    viewconsoletabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_consoleTab) != std::end(tabs));
-    connect(viewconsoletabact, &QAction::triggered, [=] { toggleTab(m_consoleTab); });
-    m_consoleTab->setProperty("action", QVariant::fromValue(viewconsoletabact));
-    viewmenu->addAction(viewconsoletabact);
+    // function to create action from tab widget and add to view menu
+    auto addAction = [&](QWidget *tabwidget)
+    {
+        auto name = tabwidget->property("tabname").toString();
+        auto action = new QAction(name, this);
+        action->setStatusTip(tr("Show") + name + tr(" tab"));
+        action->setCheckable(true);
+        action->setChecked(std::find(std::begin(tabs), std::end(tabs), tabwidget) != std::end(tabs));
+        connect(action, &QAction::triggered, [=] { toggleTab(tabwidget); });
+        tabwidget->setProperty("action", QVariant::fromValue(action));
+        viewmenu->addAction(action);
+    };
 
-    auto viewoutputtabact = new QAction(tr("Output"), this);
-    viewoutputtabact->setStatusTip(tr("Show Output tab"));
-    viewoutputtabact->setCheckable(true);
-    viewoutputtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_programOutputTab) != std::end(tabs));
-    connect(viewoutputtabact, &QAction::triggered, [=] { toggleTab(m_programOutputTab); });
-    m_programOutputTab->setProperty("action", QVariant::fromValue(viewoutputtabact));
-    viewmenu->addAction(viewoutputtabact);
-
-    auto viewgdbtabact = new QAction(tr("Gdb"), this);
-    viewgdbtabact->setStatusTip(tr("Show Gdb tab"));
-    viewgdbtabact->setCheckable(true);
-    viewgdbtabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_debuggerOutputTab) != std::end(tabs));
-    connect(viewgdbtabact, &QAction::triggered, [=] { toggleTab(m_debuggerOutputTab); });
-    m_debuggerOutputTab->setProperty("action", QVariant::fromValue(viewgdbtabact));
-    viewmenu->addAction(viewgdbtabact);
-
-    auto viewcallstacktabact = new QAction(tr("Call Stack"), this);
-    viewcallstacktabact->setStatusTip(tr("Show Call Stack tab"));
-    viewcallstacktabact->setCheckable(true);
-    viewcallstacktabact->setChecked(std::find(std::begin(tabs), std::end(tabs), m_callStackTab) != std::end(tabs));
-    connect(viewcallstacktabact, &QAction::triggered, [=] { toggleTab(m_callStackTab); });
-    m_callStackTab->setProperty("action", QVariant::fromValue(viewcallstacktabact));
-    viewmenu->addAction(viewcallstacktabact);
+    addAction(m_consoleTab);
+    addAction(m_programOutputTab);
+    addAction(m_debuggerOutputTab);
+    addAction(m_callStackTab);
 }
 
 void
