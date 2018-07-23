@@ -32,9 +32,15 @@ class Breakpoints
     void    disableBreakpoint(int breakpointnumber);
     void    deleteBreakpoint(int breakpointnumber);
 
+    // TODO replace present and enabled with a state function returning and enum
+
+    // is a breakpoint present at the given location
     bool    present(int line) const;
+
+    // is the breakpoint at the given location enabled
     bool    enabled(int line) const;
 
+    // iterate through list of breakpoints, calling visitor on each breakpoint
     void    visit(std::function<void(const std::string &, int, int, bool)> visitor);
 
   private:
@@ -47,6 +53,9 @@ class Breakpoints
     };
 
     std::vector<Breakpoint>     m_breakpoints;
+
+  public:
+    const std::vector<Breakpoint> & get() const;
 };
 
 } // namespace Core

@@ -49,6 +49,9 @@ extern wink::signal<wink::slot<void ()>>                                        
 // emitted when the global callstack is updated
 extern wink::signal<wink::slot<void ()>>                                        callStackUpdated;
 
+// emitted when the global breakpoint list is updated
+extern wink::signal<wink::slot<void ()>>                                        breakPointsUpdated;
+
 }
 
 }

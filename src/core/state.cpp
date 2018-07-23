@@ -28,7 +28,7 @@ State::vars()
 }
 
 Breakpoints &
-State::breakpoints()
+State::breakPoints()
 {
     return m_breakpoints;
 }

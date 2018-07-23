@@ -61,7 +61,7 @@ class State
     ~State() = default;
 
     AnyMap &            vars();
-    Breakpoints &       breakpoints();
+    Breakpoints &       breakPoints();
 
     const Location &    currentLocation() const;
 

@@ -34,7 +34,7 @@ breakdelete(const Gdb::Result &result, int token, boost::any data)
     if (match)
     {
         auto number = boost::any_cast<int>(data);
-        Core::state()->breakpoints().deleteBreakpoint(number);
+        Core::state()->breakPoints().deleteBreakpoint(number);
     }
 
     return match;

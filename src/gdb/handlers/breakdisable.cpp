@@ -34,7 +34,7 @@ breakdisable(const Gdb::Result &result, int token, boost::any data)
     if (match)
     {
         auto number = boost::any_cast<int>(data);
-        Core::state()->breakpoints().disableBreakpoint(number);
+        Core::state()->breakPoints().disableBreakpoint(number);
     }
 
     return match;

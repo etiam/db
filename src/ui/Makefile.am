@@ -5,7 +5,10 @@ db_SOURCES               +=                                             \
                             src/ui/console.cpp                          \
                                                                         \
                             src/ui/callStack.cpp                        \
+                            src/ui/breakPoints.cpp                      \
+                                                                        \
                             src/ui/callStackItemModel.cpp               \
+                            src/ui/breakPointsItemModel.cpp             \
                                                                         \
                             src/ui/debugControls.cpp                    \
                             src/ui/main.cpp
@@ -17,6 +20,9 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_console.cpp                      \
                                                                         \
                             src/ui/moc_callStack.cpp                    \
+                            src/ui/moc_breakPoints.cpp                  \
+                                                                        \
+                            src/ui/moc_breakPointsItemModel.cpp         \
                             src/ui/moc_callStackItemModel.cpp           \
                                                                         \
                             src/ui/qrc_editor.cpp

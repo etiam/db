@@ -229,7 +229,7 @@ Editor::onGutterClicked(int row)
 {
     auto &state = Core::state();
     auto filename = Core::state()->currentLocation().filename;
-    state->breakpoints().toggleBreakpoint(filename, row);
+    state->breakPoints().toggleBreakpoint(filename, row);
 }
 
 void
@@ -284,7 +284,7 @@ Editor::updateGutterMarkers(const QString &filename)
             updateGutterMarker(rw);
     };
 
-    Core::state()->breakpoints().visit(visitor);
+    Core::state()->breakPoints().visit(visitor);
 }
 
 void
@@ -382,7 +382,7 @@ Editor::setCursorPosition(int row, int column)
 void
 Editor::updateGutterMarker(int row)
 {
-    const auto &breakpoints = Core::state()->breakpoints();
+    const auto &breakpoints = Core::state()->breakPoints();
     const auto &currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
@@ -406,7 +406,7 @@ Editor::updateGutterMarker(int row)
 void
 Editor::clearCurrentLocation()
 {
-    const auto &breakpoints = Core::state()->breakpoints();
+    const auto &breakpoints = Core::state()->breakPoints();
     const auto row = Core::state()->currentLocation().row;
 
     std::string klass = "ace";

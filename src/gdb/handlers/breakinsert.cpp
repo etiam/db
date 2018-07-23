@@ -59,7 +59,7 @@ breakinsert(const Result &result, int token, boost::any data)
         auto row = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
 
-        state->breakpoints().insertBreakpoint(filename, row, breakpointnumber);
+        state->breakPoints().insertBreakpoint(filename, row, breakpointnumber);
 
         // if the editor has not displayed anything yet
         auto &vars = Core::state()->vars();

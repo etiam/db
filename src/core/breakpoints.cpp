@@ -118,4 +118,10 @@ Breakpoints::visit(std::function<void(const std::string&, int, int, bool)> visit
     }
 }
 
+const std::vector<Breakpoints::Breakpoint> &
+Breakpoints::get() const
+{
+    return m_breakpoints;
+}
+
 } // namespace Core

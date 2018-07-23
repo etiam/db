@@ -1,5 +1,5 @@
 /*
- * callStack.cpp
+ * breakPoint.cpp
  *
  *  Created on: Jun 6, 2018
  *      Author: jasonr
@@ -20,19 +20,19 @@
 #include "core/global.h"
 #include "core/state.h"
 
-#include "callStackItemModel.h"
-#include "callStack.h"
+#include "breakPointsItemModel.h"
+#include "breakPoints.h"
 
 namespace Ui
 {
 
-CallStack::CallStack(QWidget *parent) :
+BreakPoint::BreakPoint(QWidget *parent) :
     QTreeView(parent)
 {
-    setObjectName("callstack");
+    setObjectName("breakpoint");
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
-    m_model = new CallStackItemModel(0, 4, this);
+    m_model = new BreakPointsItemModel(0, 4, this);
 
     m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
     m_model->setHeaderData(1, Qt::Horizontal, QObject::tr("Function"));
@@ -58,50 +58,46 @@ CallStack::CallStack(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
-    Core::Signal::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
+    Core::Signal::breakPointsUpdated.connect(this, &BreakPoint::onBreakPointsUpdated);
 }
 
 void
-CallStack::onCallStackUpdated()
+BreakPoint::onBreakPointsUpdated()
 {
     // clear all rows from model
     m_model->removeRows(0, m_model->rowCount());
 
+
     // populate model from call stack data
-    for (const auto &entry : Core::state()->callStack())
+    for (const auto &entry : Core::state()->breakPoints().get())
     {
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);
 
         m_model->setData(m_model->index(rowcount, 0), "");
-        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(entry.function));
+        m_model->setData(m_model->index(rowcount, 1), entry.breakpointnumber);
         m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(entry.filename));
-        m_model->setData(m_model->index(rowcount, 3), entry.location.row);
-
-        // draw indicator in first column if this entry is the current frame
-        const auto currentlocation = Core::state()->currentLocation();
-        if (currentlocation == entry.location)
-            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
+        m_model->setData(m_model->index(rowcount, 3), entry.row);
     }
 }
 
 void
-CallStack::mouseDoubleClickEvent(QMouseEvent *event)
+BreakPoint::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    const auto row = indexAt(event->pos()).row();
-    const auto &stack = Core::state()->callStack();
-
-    // bounds check
-    if (row <= stack.size())
-    {
-        const auto location = stack[row].location;
-
-        // load editor with contents of filename
-        Core::Signal::loadFile(location.filename);
-
-        // update current location
-        Core::Signal::setCurrentLocation(location);
-    }
+//    const auto row = indexAt(event->pos()).row();
+//    const auto &stack = Core::state()->breakPoints();
+//    if (row <= stack.size())
+//    {
+//        const auto callback = stack[row];
+//
+//        std::cout << callback.location.filename << std::endl;
+//
+//        // load editor with contents of filename
+//        Core::Signal::loadFile(callback.location.filename);
+//
+//        // update global current location
+//        Core::Signal::setCurrentLocation(callback.location);
+//    }
 }
 
 } // namespace Ui
