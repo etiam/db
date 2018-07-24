@@ -44,6 +44,7 @@ stopped(const Result &result, int token, boost::any data)
         if (dict.find("frame") != std::end(dict))
         {
             auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
+            auto func = boost::any_cast<char *>(frame.at("func"));
             auto fullname = boost::any_cast<char *>(frame.at("fullname"));
             auto line = std::stoi(boost::any_cast<char *>(frame.at("line")));
 
@@ -54,7 +55,7 @@ stopped(const Result &result, int token, boost::any data)
             Core::Signal::loadFile(fullname);
 
             // update global current location
-            Core::Signal::setCurrentLocation(Core::Location({fullname, line}));
+            Core::Signal::setCurrentLocation(Core::Location({func, fullname, line}));
 
             // update current gutter marker
             Core::Signal::updateGutterMarker(line);

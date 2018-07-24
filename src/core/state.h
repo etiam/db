@@ -22,25 +22,22 @@ namespace Core
 
 struct Location
 {
+    std::string     function;
     std::string     filename;
     int             row;
 
     bool operator ==(const Location &other) const
     {
-        return other.filename == filename && other.row == row;
+        return other.function == function && other.filename == filename && other.row == row;
     }
 };
 
 struct CallStackEntry
 {
-    CallStackEntry(Location loc, std::string file, std::string func, int le) :
+    CallStackEntry(Location loc, int le) :
         location(std::move(loc)),
-        filename(std::move(file)),
-        function(std::move(func)),
         level(le) {}
     Location    location;
-    std::string filename;
-    std::string function;
     int level;
 };
 

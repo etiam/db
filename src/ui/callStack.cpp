@@ -35,9 +35,9 @@ CallStack::CallStack(QWidget *parent) :
     m_model = new CallStackItemModel(0, 4, this);
 
     m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
-    m_model->setHeaderData(1, Qt::Horizontal, QObject::tr("Function"));
-    m_model->setHeaderData(2, Qt::Horizontal, QObject::tr("Filename"));
-    m_model->setHeaderData(3, Qt::Horizontal, QObject::tr("Line"));
+    m_model->setHeaderData(1, Qt::Horizontal, tr("Function"));
+    m_model->setHeaderData(2, Qt::Horizontal, tr("Filename"));
+    m_model->setHeaderData(3, Qt::Horizontal, tr("Line"));
 
     setRootIsDecorated(false);
     setIndentation(10);
@@ -74,8 +74,8 @@ CallStack::onCallStackUpdated()
         m_model->insertRow(rowcount);
 
         m_model->setData(m_model->index(rowcount, 0), "");
-        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(entry.function));
-        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(entry.filename));
+        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(entry.location.function));
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(entry.location.filename));
         m_model->setData(m_model->index(rowcount, 3), entry.location.row);
 
         // draw indicator in first column if this entry is the current frame
