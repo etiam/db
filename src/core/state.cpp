@@ -33,6 +33,12 @@ State::breakPoints()
     return m_breakpoints;
 }
 
+CallStack &
+State::callStack()
+{
+    return m_callStack;
+}
+
 const Location &
 State::currentLocation() const
 {
@@ -74,19 +80,12 @@ State::onSetCurrentLocationSignal(const Core::Location &location)
 
 }
 
-
 void
 State::setCallStack(const CallStack& callstack)
 {
     m_callStack = callstack;
 
     Signal::callStackUpdated();
-}
-
-const CallStack &
-State::callStack() const
-{
-    return m_callStack;
 }
 
 }

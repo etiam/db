@@ -52,14 +52,14 @@ breakinsert(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        auto &state = Core::state();
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
         auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
+        auto func = boost::any_cast<char *>(bkpt.at("func"));
         auto row = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
 
-        state->breakPoints().insertBreakpoint(filename, row, breakpointnumber);
+        Core::state()->breakPoints().insertBreakpoint(Core::Location({func, filename, row}), breakpointnumber);
 
         // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();

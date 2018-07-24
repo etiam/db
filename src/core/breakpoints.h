@@ -15,8 +15,17 @@
 
 #include <functional>
 
+#include "state.h"
+
 namespace Core
 {
+
+struct Breakpoint
+{
+    Location    location;
+    int         breakpointnumber;
+    bool        enabled;
+};
 
 class Breakpoints
 {
@@ -28,7 +37,7 @@ class Breakpoints
     void    toggleBreakpoint(const std::string &filename, int line);
 
     // these functions directly modify m_breakpoints
-    void    insertBreakpoint(const std::string &filename, int line, int breakpointnumber);
+    void    insertBreakpoint(const Location &location, int breakpointnumber);
     void    disableBreakpoint(int breakpointnumber);
     void    deleteBreakpoint(int breakpointnumber);
 
@@ -40,24 +49,11 @@ class Breakpoints
     // is the breakpoint at the given location enabled
     bool    enabled(int line) const;
 
-    // iterate through list of breakpoints, calling visitor on each breakpoint
-    void    visit(std::function<void(const std::string &, int, int, bool)> visitor);
-
-  private:
-    struct Breakpoint
-    {
-        std::string filename;
-        int         row;
-        int         breakpointnumber;
-        bool        enabled;
-    };
-
-    std::vector<Breakpoint>     m_breakpoints;
-
-  public:
-
     // return a const list of breakpoints
     const std::vector<Breakpoint> & get() const;
+
+  private:
+    std::vector<Breakpoint>     m_breakpoints;
 };
 
 } // namespace Core

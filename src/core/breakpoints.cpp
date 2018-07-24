@@ -23,7 +23,7 @@ void
 Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.filename == filename && b.row == line; });
+        [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
 
     if (it == std::end(m_breakpoints))
     {
@@ -43,10 +43,10 @@ Breakpoints::toggleBreakpoint(const std::string &filename, int line)
 }
 
 void
-Breakpoints::insertBreakpoint(const std::string &filename, int row, int breakpointnumber)
+Breakpoints::insertBreakpoint(const Location &location, int breakpointnumber)
 {
-    m_breakpoints.push_back({filename, row, breakpointnumber, true});
-    Core::Signal::updateGutterMarker(row);
+    m_breakpoints.push_back({location, breakpointnumber, true});
+    Core::Signal::updateGutterMarker(location.row);
 }
 
 void
@@ -60,7 +60,7 @@ Breakpoints::disableBreakpoint(int number)
         it->enabled = false;
     }
 
-    Core::Signal::updateGutterMarker(it->row);
+    Core::Signal::updateGutterMarker(it->location.row);
 }
 
 void
@@ -74,7 +74,7 @@ Breakpoints::deleteBreakpoint(int number)
         m_breakpoints.erase(it);
     }
 
-    Core::Signal::updateGutterMarker(it->row);
+    Core::Signal::updateGutterMarker(it->location.row);
 }
 
 
@@ -84,7 +84,7 @@ Breakpoints::present(int line) const
     bool present = false;
     for (const auto &breakpoint : m_breakpoints)
     {
-        if (breakpoint.row == line)
+        if (breakpoint.location.row == line)
         {
             present = true;
             break;
@@ -99,7 +99,7 @@ Breakpoints::enabled(int line) const
     bool enabled = false;
     for (const auto &breakpoint : m_breakpoints)
     {
-        if (breakpoint.row == line && breakpoint.enabled)
+        if (breakpoint.location.row == line && breakpoint.enabled)
         {
             enabled = true;
             break;
@@ -109,16 +109,7 @@ Breakpoints::enabled(int line) const
     return enabled;
 }
 
-void
-Breakpoints::visit(std::function<void(const std::string&, int, int, bool)> visitor)
-{
-    for (const auto &breakpoint : m_breakpoints)
-    {
-        visitor(breakpoint.filename, breakpoint.row, breakpoint.breakpointnumber, breakpoint.enabled);
-    }
-}
-
-const std::vector<Breakpoints::Breakpoint> &
+const std::vector<Breakpoint> &
 Breakpoints::get() const
 {
     return m_breakpoints;

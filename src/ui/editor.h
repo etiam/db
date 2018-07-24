@@ -71,6 +71,7 @@ class Editor : public QWidget
     void    onUpdateGutterMarkerSignal(int row);
     void    onClearCurrentLocationSignal();
 
+    QString                     m_currentFilename;
     std::unique_ptr<EditorImpl> m_impl;
 
   private Q_SLOTS:

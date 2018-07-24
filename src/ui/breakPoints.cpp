@@ -79,8 +79,8 @@ BreakPoints::onBreakPointsUpdated()
         m_model->setData(m_model->index(rowcount, 0), "");
         m_model->setData(m_model->index(rowcount, 1), entry.breakpointnumber);
         m_model->setData(m_model->index(rowcount, 2), entry.breakpointnumber);
-        m_model->setData(m_model->index(rowcount, 3), QString::fromStdString(entry.filename));
-        m_model->setData(m_model->index(rowcount, 4), entry.row);
+        m_model->setData(m_model->index(rowcount, 3), QString::fromStdString(entry.location.filename));
+        m_model->setData(m_model->index(rowcount, 4), entry.location.row);
     }
 }
 

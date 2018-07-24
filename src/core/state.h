@@ -15,22 +15,11 @@
 #endif
 
 #include "anymap.h"
+#include "types.h"
 #include "breakpoints.h"
 
 namespace Core
 {
-
-struct Location
-{
-    std::string     function;
-    std::string     filename;
-    int             row;
-
-    bool operator ==(const Location &other) const
-    {
-        return other.function == function && other.filename == filename && other.row == row;
-    }
-};
 
 struct CallStackEntry
 {
@@ -59,6 +48,7 @@ class State
 
     AnyMap &            vars();
     Breakpoints &       breakPoints();
+    CallStack &         callStack();
 
     const Location &    currentLocation() const;
 
@@ -66,7 +56,6 @@ class State
     Debugger            debuggerState() const;
 
     void                setCallStack(const CallStack &callstack);
-    const CallStack &   callStack() const;
 
   private:
     // wink signal handlers

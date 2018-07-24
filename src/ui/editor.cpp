@@ -25,7 +25,7 @@
 namespace Ui
 {
 
-// EditorImpl
+// For sending java script messages to std::cerr
 
 class MyWebPage : public QWebPage
 {
@@ -40,6 +40,10 @@ class MyWebPage : public QWebPage
     }
 
 };
+
+// TODO : combine EditorImpl into Editor
+
+// EditorImpl
 
 class EditorImpl: public QObject
 {
@@ -63,11 +67,6 @@ class EditorImpl: public QObject
        auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
        std::cout << "setting text size multiplier to " << factor << std::endl;
        m_webView->setTextSizeMultiplier(factor);
-
-       QWebView myView;
-       QWebSettings * settings = m_webView->settings();
-       QUrl myCssFileURL;
-       settings->setUserStyleSheetUrl(myCssFileURL);
     }
 
     ~EditorImpl() {};
@@ -227,9 +226,7 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    auto &state = Core::state();
-    auto filename = Core::state()->currentLocation().filename;
-    state->breakPoints().toggleBreakpoint(filename, row);
+    Core::state()->breakPoints().toggleBreakpoint(m_currentFilename.toStdString(), row);
 }
 
 void
@@ -278,13 +275,11 @@ void
 Editor::updateGutterMarkers(const QString &filename)
 {
     // call updateGutterMarker on all breakpoints with filename
-    auto visitor = [&filename, this](const std::string &fn, int rw, int bn, bool en)
+    for (const auto &breakpoint : Core::state()->breakPoints().get())
     {
-        if (fn == filename.toStdString())
-            updateGutterMarker(rw);
-    };
-
-    Core::state()->breakPoints().visit(visitor);
+        if (breakpoint.location.filename == filename.toStdString())
+            updateGutterMarker(breakpoint.location.row);
+    }
 }
 
 void
@@ -330,10 +325,8 @@ Editor::onClearCurrentLocationSignal()
 void
 Editor::loadFile(const QString &filename)
 {
-    static QString currentfilename;
-
     // read file into editor
-    if (!filename.isEmpty() && filename != currentfilename)
+    if (!filename.isEmpty() && filename != m_currentFilename)
     {
         QFileInfo checkfile(filename);
         if (checkfile.exists() && checkfile.isFile())
@@ -349,7 +342,7 @@ Editor::loadFile(const QString &filename)
             auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
             setGutterWidth(numdigits);
 
-            currentfilename = filename;
+            m_currentFilename = filename;
 
             setHighlightMode("c_cpp");
             showGutter();
@@ -364,7 +357,7 @@ Editor::loadFile(const QString &filename)
             setHighlightMode("xml");
             hideGutter();
             clearGutterMarkers();
-            currentfilename = "";
+            m_currentFilename = "";
         }
     }
 }
