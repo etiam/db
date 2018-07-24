@@ -26,7 +26,7 @@
 namespace Ui
 {
 
-BreakPoint::BreakPoint(QWidget *parent) :
+BreakPoints::BreakPoints(QWidget *parent) :
     QTreeView(parent)
 {
     setObjectName("breakpoint");
@@ -35,9 +35,10 @@ BreakPoint::BreakPoint(QWidget *parent) :
     m_model = new BreakPointsItemModel(0, 4, this);
 
     m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
-    m_model->setHeaderData(1, Qt::Horizontal, QObject::tr("Function"));
-    m_model->setHeaderData(2, Qt::Horizontal, QObject::tr("Filename"));
-    m_model->setHeaderData(3, Qt::Horizontal, QObject::tr("Line"));
+    m_model->setHeaderData(1, Qt::Horizontal, "#");
+    m_model->setHeaderData(2, Qt::Horizontal, tr("Function"));
+    m_model->setHeaderData(3, Qt::Horizontal, tr("Filename"));
+    m_model->setHeaderData(4, Qt::Horizontal, tr("Line"));
 
     setRootIsDecorated(false);
     setIndentation(10);
@@ -46,11 +47,13 @@ BreakPoint::BreakPoint(QWidget *parent) :
 
     // column width defaults
     setColumnWidth(0, 30);
-    setColumnWidth(1, 150);
-    setColumnWidth(2, 300);
+    setColumnWidth(1, 10);
+    setColumnWidth(2, 150);
+    setColumnWidth(3, 300);
 
     // prevent resize of 1st column width
     header()->setSectionResizeMode(0, QHeaderView::Fixed);
+    header()->setSectionResizeMode(1, QHeaderView::Fixed);
 
     // don't allow columns to be re-ordered
     header()->setSectionsMovable(false);
@@ -58,15 +61,14 @@ BreakPoint::BreakPoint(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
-    Core::Signal::breakPointsUpdated.connect(this, &BreakPoint::onBreakPointsUpdated);
+    Core::Signal::breakPointsUpdated.connect(this, &BreakPoints::onBreakPointsUpdated);
 }
 
 void
-BreakPoint::onBreakPointsUpdated()
+BreakPoints::onBreakPointsUpdated()
 {
     // clear all rows from model
     m_model->removeRows(0, m_model->rowCount());
-
 
     // populate model from call stack data
     for (const auto &entry : Core::state()->breakPoints().get())
@@ -76,13 +78,14 @@ BreakPoint::onBreakPointsUpdated()
 
         m_model->setData(m_model->index(rowcount, 0), "");
         m_model->setData(m_model->index(rowcount, 1), entry.breakpointnumber);
-        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(entry.filename));
-        m_model->setData(m_model->index(rowcount, 3), entry.row);
+        m_model->setData(m_model->index(rowcount, 2), entry.breakpointnumber);
+        m_model->setData(m_model->index(rowcount, 3), QString::fromStdString(entry.filename));
+        m_model->setData(m_model->index(rowcount, 4), entry.row);
     }
 }
 
 void
-BreakPoint::mouseDoubleClickEvent(QMouseEvent *event)
+BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
 {
 //    const auto row = indexAt(event->pos()).row();
 //    const auto &stack = Core::state()->breakPoints();

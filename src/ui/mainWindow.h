@@ -29,6 +29,7 @@ class Output;
 class Console;
 class CallStack;
 class DebugControls;
+class BreakPoints;
 
 class MainWindow : public QMainWindow
 {
@@ -53,15 +54,15 @@ class MainWindow : public QMainWindow
     void            readSettings();
     void            writeSettings() const;
 
+    // create various gui elements
     void            createToolbar();
     void            createDocks();
     void            createMenus();
     void            createFileMenu();
     void            createViewMenu();
+    void            createStatusbar();
 
     void            createHotkeys();
-
-    void            createStatusbar();
 
     // wink signal handlers
     void            onLoadFileSignal(const std::string &filename);
@@ -78,6 +79,7 @@ class MainWindow : public QMainWindow
     Output *        m_debuggerOutputTab;
     Output *        m_programOutputTab;
     CallStack *     m_callStackTab;
+    BreakPoints *   m_breakPointsTab;
 
     DebugControls * m_debugControls;
 

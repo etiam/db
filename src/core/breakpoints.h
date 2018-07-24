@@ -32,7 +32,7 @@ class Breakpoints
     void    disableBreakpoint(int breakpointnumber);
     void    deleteBreakpoint(int breakpointnumber);
 
-    // TODO replace present and enabled with a state function returning and enum
+    // TODO replace present() and enabled() with a state function returning and enum
 
     // is a breakpoint present at the given location
     bool    present(int line) const;
@@ -55,6 +55,8 @@ class Breakpoints
     std::vector<Breakpoint>     m_breakpoints;
 
   public:
+
+    // return a const list of breakpoints
     const std::vector<Breakpoint> & get() const;
 };
 

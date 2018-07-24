@@ -21,13 +21,13 @@ namespace Ui
 
 class BreakPointsItemModel;
 
-class BreakPoint : public QTreeView
+class BreakPoints : public QTreeView
 {
   Q_OBJECT
 
   public:
-    BreakPoint(QWidget *parent = nullptr);
-    ~BreakPoint() = default;
+    BreakPoints(QWidget *parent = nullptr);
+    ~BreakPoints() = default;
 
     void                    onBreakPointsUpdated();
 

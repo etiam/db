@@ -61,7 +61,7 @@ breakinsert(const Result &result, int token, boost::any data)
 
         state->breakPoints().insertBreakpoint(filename, row, breakpointnumber);
 
-        // if the editor has not displayed anything yet
+        // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {

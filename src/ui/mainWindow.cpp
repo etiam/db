@@ -34,6 +34,7 @@
 #include "output.h"
 #include "console.h"
 #include "callStack.h"
+#include "breakPoints.h"
 #include "debugControls.h"
 #include "mainWindow.h"
 
@@ -214,6 +215,11 @@ MainWindow::createDocks()
     m_callStackTab->setProperty("tabname", tr("Call Stack"));
     m_tabWidget->insertTab(2, m_callStackTab, tr("Call Stack"));
 
+    m_breakPointsTab = new BreakPoints(this);
+    m_breakPointsTab->setObjectName("breakpoints");
+    m_breakPointsTab->setProperty("tabname", tr("Break Points"));
+    m_tabWidget->insertTab(3, m_breakPointsTab, tr("Break Points"));
+
     // debugger tab is hidden by default
     m_debuggerOutputTab = new Output(this);
     m_debuggerOutputTab->setObjectName("debugoutput");
@@ -269,6 +275,18 @@ MainWindow::createViewMenu()
     addAction(m_programOutputTab);
     addAction(m_debuggerOutputTab);
     addAction(m_callStackTab);
+    addAction(m_breakPointsTab);
+}
+
+void
+MainWindow::createStatusbar()
+{
+    m_statusIcon = new QLabel(this);
+    m_statusIcon->setScaledContents(true);
+
+    statusBar()->insertPermanentWidget(0, m_statusIcon);
+    statusBar()->setSizeGripEnabled(false);
+    statusBar()->show();
 }
 
 void
@@ -282,17 +300,6 @@ MainWindow::createHotkeys()
 
     auto zoomreset = new QShortcut(Qt::CTRL + Qt::Key_0, this);
     connect(zoomreset, &QShortcut::activated, [&](){ m_editor->zoomResetText(); });
-}
-
-void
-MainWindow::createStatusbar()
-{
-    m_statusIcon = new QLabel(this);
-    m_statusIcon->setScaledContents(true);
-
-    statusBar()->insertPermanentWidget(0, m_statusIcon);
-    statusBar()->setSizeGripEnabled(false);
-    statusBar()->show();
 }
 
 // wink signal handlers
