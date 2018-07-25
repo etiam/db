@@ -246,8 +246,6 @@ Editor::onGutterClicked(int row)
             gdb->enableBreakpoint(breakpoint.breakpointnumber);
         }
     }
-
-
 }
 
 void

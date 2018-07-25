@@ -46,7 +46,6 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_pauseAct->setShortcut(Qt::Key_P);
     connect(m_pauseAct, &QAction::triggered, [&](){ Core::gdb()->pause(); });
     addAction(m_pauseAct);
-    m_pauseAct->setDisabled(true);
 
     QIcon stopicon;
     stopicon.addFile(":/img/stop", QSize(32, 32), QIcon::Normal, QIcon::On);
@@ -88,7 +87,7 @@ DebugControls::~DebugControls()
 }
 
 void
-DebugControls::setState(Core::State::Debugger state)
+DebugControls::updateActionsState(Core::State::Debugger state)
 {
     m_runAct->setDisabled(true);
     m_pauseAct->setDisabled(true);

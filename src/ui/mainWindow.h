@@ -51,6 +51,7 @@ class MainWindow : public QMainWindow
     // called when tab is switched
     void            switchTab(int index);
 
+    // save/restore window settings
     void            readSettings();
     void            writeSettings() const;
 
@@ -59,6 +60,7 @@ class MainWindow : public QMainWindow
     void            createDocks();
     void            createMenus();
     void            createFileMenu();
+    void            createDebugMenu();
     void            createViewMenu();
     void            createStatusbar();
 
@@ -73,6 +75,7 @@ class MainWindow : public QMainWindow
     void            onDebuggerStateUpdated();
 
     Editor *        m_editor;
+
     QTabWidget *    m_tabWidget;
 
     Console *       m_consoleTab;

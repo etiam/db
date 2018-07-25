@@ -27,17 +27,18 @@ class DebugControls : public QToolBar
     DebugControls(MainWindow *parent=0);
     ~DebugControls();
 
-    void        setState(Core::State::Debugger state);
+    // update the enabled/disabled state of the debug controls
+    void updateActionsState(Core::State::Debugger state);
 
   private:
-    void        run();
+    void run();
 
-    QAction *   m_runAct;
-    QAction *   m_pauseAct;
-    QAction *   m_stopAct;
-    QAction *   m_stepoverAct;
-    QAction *   m_stepintoAct;
-    QAction *   m_stepoutAct;
+    QAction * m_runAct;
+    QAction * m_pauseAct;
+    QAction * m_stopAct;
+    QAction * m_stepoverAct;
+    QAction * m_stepintoAct;
+    QAction * m_stepoutAct;
 };
 
 } // namespace Ui

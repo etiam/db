@@ -59,9 +59,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // restore gui settings
     readSettings();
 
+    // toolbar must be created before menus (shared actions)
     createDocks();
-    createMenus();
     createToolbar();
+    createMenus();
     createHotkeys();
     createStatusbar();
 
@@ -169,6 +170,7 @@ void
 MainWindow::createMenus()
 {
     createFileMenu();
+    createDebugMenu();
     createViewMenu();
 }
 
@@ -176,7 +178,7 @@ void
 MainWindow::createToolbar()
 {
     m_debugControls = new DebugControls(this);
-    m_debugControls->setState(Core::State::Debugger::NONE);
+    m_debugControls->updateActionsState(Core::State::Debugger::NONE);
     addToolBar(m_debugControls);
 }
 
@@ -237,6 +239,7 @@ void
 MainWindow::createFileMenu()
 {
     auto filemenu = menuBar()->addMenu(tr("&File"));
+    filemenu->setObjectName("file");
 
     filemenu->addSeparator();
 
@@ -249,6 +252,20 @@ MainWindow::createFileMenu()
 }
 
 void
+MainWindow::createDebugMenu()
+{
+    auto debugmenu = menuBar()->addMenu(tr("&Debug"));
+    debugmenu->setObjectName("debug");
+
+    // add actions from debug controls bar to debug menu
+    for (const auto action : m_debugControls->actions())
+    {
+        std::cout << action->text().toStdString() << std::endl;
+        debugmenu->addAction(action);
+    }
+}
+
+void
 MainWindow::createViewMenu()
 {
     // build list of currently present tabs
@@ -257,6 +274,7 @@ MainWindow::createViewMenu()
         tabs.push_back(m_tabWidget->widget(n));
 
     auto viewmenu = menuBar()->addMenu(tr("&View"));
+    viewmenu->setObjectName("view");
 
     // function to create action from tab widget and add to view menu
     auto addAction = [&](QWidget *tabwidget)
@@ -337,7 +355,8 @@ MainWindow::onDebuggerStateUpdated()
 {
     auto state = Core::state()->debuggerState();
 
-    m_debugControls->setState(state);
+    // update debug controls
+    m_debugControls->updateActionsState(state);
 
     switch (state)
     {
