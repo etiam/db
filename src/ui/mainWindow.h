@@ -20,6 +20,7 @@
 class QTabWidget;
 class QSplitter;
 class QLabel;
+class QSettings;
 
 namespace Ui
 {
@@ -46,10 +47,10 @@ class MainWindow : public QMainWindow
     void            toggleTab(QWidget *tab);
 
     // called when tab close is requested
-    void            closeTab(int index);
+    void            closeBottomTab(int index);
 
     // called when tab is switched
-    void            switchTab(int index);
+    void            switchBottomTab(int index);
 
     // save/restore window settings
     void            readSettings();
@@ -76,7 +77,7 @@ class MainWindow : public QMainWindow
 
     Editor *        m_editor;
 
-    QTabWidget *    m_tabWidget;
+    QTabWidget *    m_bottomTabWidget;
 
     Console *       m_consoleTab;
     Output *        m_debuggerOutputTab;
@@ -87,6 +88,8 @@ class MainWindow : public QMainWindow
     DebugControls * m_debugControls;
 
     QLabel *        m_statusIcon;
+
+    QSettings *     m_settings;
 };
 
 }

@@ -105,31 +105,27 @@ MainWindow::quit()
     close();
 }
 
-template<typename E>
-constexpr auto toIntegral(E e) -> typename std::underlying_type<E>::type
-{
-   return static_cast<typename std::underlying_type<E>::type>(e);
-}
-
 void
-MainWindow::closeTab(int index)
+MainWindow::closeBottomTab(int index)
 {
     // retrieve action pointer from tab widget and use it to uncheck the menu item
-    const auto &tab = m_tabWidget->widget(index);
+    const auto &tab = m_bottomTabWidget->widget(index);
     const auto action = tab->property("action").value<QAction*>();
     action->setChecked(false);
 
-    m_tabWidget->removeTab(index);
+    m_bottomTabWidget->removeTab(index);
 }
 
 void
-MainWindow::switchTab(int index)
+MainWindow::switchBottomTab(int index)
 {
-    auto console = qobject_cast<Console*>(m_tabWidget->widget(index));
+    auto console = qobject_cast<Console*>(m_bottomTabWidget->widget(index));
     if (console)
     {
         console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
     }
+
+    std::cout << index << std::endl;
 }
 
 void
@@ -137,33 +133,48 @@ MainWindow::toggleTab(QWidget *tab)
 {
     // build list of existing tabs
     std::vector<QWidget*> tabs;
-    for (auto n=0; n < m_tabWidget->count(); ++n)
-        tabs.push_back(m_tabWidget->widget(n));
+    for (auto n=0; n < m_bottomTabWidget->count(); ++n)
+        tabs.push_back(m_bottomTabWidget->widget(n));
 
     // remove or insert tab depending on whether it already currently exists
     auto it = std::find(std::begin(tabs), std::end(tabs), tab);
     if (it != std::end(tabs))
-        m_tabWidget->removeTab(it - std::begin(tabs));
+        m_bottomTabWidget->removeTab(it - std::begin(tabs));
     else
-        m_tabWidget->insertTab(m_tabWidget->count(), tab, tab->property("tabname").toString());
+        m_bottomTabWidget->insertTab(m_bottomTabWidget->count(), tab, tab->property("tabname").toString());
 }
 
 void
 MainWindow::readSettings()
 {
-    QSettings settings;
+    m_settings = new QSettings(this);
 
-    restoreGeometry(settings.value("MainWindow/Geometry").toByteArray());
-    restoreState(settings.value("MainWindow/State").toByteArray());
+    restoreGeometry(m_settings->value("MainWindow/Geometry").toByteArray());
+    restoreState(m_settings->value("MainWindow/State").toByteArray());
 }
 
 void
 MainWindow::writeSettings() const
 {
-    QSettings settings;
+    m_settings->setValue("MainWindow/State", saveState());
+    m_settings->setValue("MainWindow/Geometry", saveGeometry());
 
-    settings.setValue("MainWindow/State", saveState());
-    settings.setValue("MainWindow/Geometry", saveGeometry());
+    m_settings->setValue("MainWindow/BottomDock/CurrentIndex", m_bottomTabWidget->currentIndex());
+
+//    for (auto n=0; n < m_bottomTabWidget->count(); ++n)
+//    {
+//        const auto widget = m_bottomTabWidget->widget(n);
+//        m_settings->setValue("MainWindow/BottomDock/OutputIndex/" + widget->objectName(), n);
+//    }
+
+    for (const auto child : findChildren<QWidget *>())
+    {
+        auto tabname = child->property("tabname");
+        if (tabname.isValid())
+        {
+            m_settings->setValue("MainWindow/BottomDock/OutputIndex/" + child->objectName(), m_bottomTabWidget->indexOf(child));
+        }
+    }
 }
 
 void
@@ -194,45 +205,67 @@ MainWindow::createDocks()
     bottomdock->setTitleBarWidget(titlewidget);
 
     // tabs window
-    m_tabWidget = new QTabWidget(this);
-    m_tabWidget->setObjectName("tabwidget");
-    m_tabWidget->setTabsClosable(true);
-    m_tabWidget->setMovable(true);
+    m_bottomTabWidget = new QTabWidget(this);
+    m_bottomTabWidget->setObjectName("tabwidget");
+    m_bottomTabWidget->setTabsClosable(true);
+    m_bottomTabWidget->setMovable(true);
 
-    bottomdock->setWidget(m_tabWidget);
+
+    // lambda to return index of tab from settings or default value if not set
+    auto getIndex = [&](const QWidget *tab, int def)
+    {
+        auto key = "MainWindow/BottomDock/OutputIndex/" + tab->objectName();
+        return m_settings->contains(key) ? m_settings->value(key).toInt() : def;
+    };
+
+    int index;
 
     // tabs within tab window
     m_consoleTab = new Console(this, true);
-    m_consoleTab->setObjectName("console");
+    m_consoleTab->setObjectName("Console");
     m_consoleTab->setProperty("tabname", tr("Console"));
-    m_tabWidget->insertTab(0, m_consoleTab, tr("Console"));
+    index = getIndex(m_consoleTab, 0);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_consoleTab, m_consoleTab->property("tabname").toString());
 
     m_programOutputTab = new Output(this);
-    m_programOutputTab->setObjectName("programoutput");
+    m_programOutputTab->setObjectName("Output");
     m_programOutputTab->setProperty("tabname", "Output");
-    m_tabWidget->insertTab(1, m_programOutputTab, tr("Output"));
+    index = getIndex(m_programOutputTab, 1);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
 
     m_callStackTab = new CallStack(this);
-    m_callStackTab->setObjectName("callstack");
+    m_callStackTab->setObjectName("CallStack");
     m_callStackTab->setProperty("tabname", tr("Call Stack"));
-    m_tabWidget->insertTab(2, m_callStackTab, tr("Call Stack"));
+    index = getIndex(m_callStackTab, 2);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_callStackTab, m_callStackTab->property("tabname").toString());
 
     m_breakPointsTab = new BreakPoints(this);
-    m_breakPointsTab->setObjectName("breakpoints");
+    m_breakPointsTab->setObjectName("BreakPoints");
     m_breakPointsTab->setProperty("tabname", tr("Break Points"));
-    m_tabWidget->insertTab(3, m_breakPointsTab, tr("Break Points"));
+    index = getIndex(m_breakPointsTab, 3);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
 
     // debugger tab is hidden by default
     m_debuggerOutputTab = new Output(this);
-    m_debuggerOutputTab->setObjectName("debugoutput");
+    m_debuggerOutputTab->setObjectName("Gdb");
     m_debuggerOutputTab->setProperty("tabname", tr("Gdb"));
-    m_debuggerOutputTab->hide();
+    index = getIndex(m_debuggerOutputTab, -1);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_debuggerOutputTab, m_debuggerOutputTab->property("tabname").toString());
 
     // signal connections
-    connect(m_tabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeTab(index); });
-    connect(m_tabWidget, &QTabWidget::currentChanged, [&](int index){ switchTab(index); });
+    connect(m_bottomTabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeBottomTab(index); });
+    connect(m_bottomTabWidget, &QTabWidget::currentChanged, [&](int index){ switchBottomTab(index); });
 
+    bottomdock->setWidget(m_bottomTabWidget);
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
+
+    // restore current index from settings
+    m_bottomTabWidget->setCurrentIndex(m_settings->value("MainWindow/BottomDock/CurrentIndex", 0).toInt());
 }
 
 void
@@ -260,7 +293,6 @@ MainWindow::createDebugMenu()
     // add actions from debug controls bar to debug menu
     for (const auto action : m_debugControls->actions())
     {
-        std::cout << action->text().toStdString() << std::endl;
         debugmenu->addAction(action);
     }
 }
@@ -270,8 +302,8 @@ MainWindow::createViewMenu()
 {
     // build list of currently present tabs
     std::vector<QWidget*> tabs;
-    for (auto n=0; n < m_tabWidget->count(); ++n)
-        tabs.push_back(m_tabWidget->widget(n));
+    for (auto n=0; n < m_bottomTabWidget->count(); ++n)
+        tabs.push_back(m_bottomTabWidget->widget(n));
 
     auto viewmenu = menuBar()->addMenu(tr("&View"));
     viewmenu->setObjectName("view");

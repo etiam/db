@@ -195,7 +195,7 @@ main(int argc, char *argv[])
     // start startup thread
     auto startupthread = std::make_unique<std::thread>(&startupThread, vm);
 
-    std::cout << "startup in " << timer << std::endl;
+    std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
 
     startupthread->join();
