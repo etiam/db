@@ -22,9 +22,10 @@ namespace Core
 
 struct Breakpoint
 {
-    Location    location;
-    int         breakpointnumber;
-    bool        enabled;
+    Location location;
+    int breakpointnumber;
+    unsigned int hitcount;
+    bool enabled;
 };
 
 class Breakpoints
@@ -34,7 +35,7 @@ class Breakpoints
     ~Breakpoints() = default;
 
     // insert a new breakpoint
-    void insertBreakpoint(const Location &location, int breakpointnumber);
+    void insertBreakpoint(const Breakpoint &breakpoint);
 
     // delete the given breakpoint
     void deleteBreakpoint(int breakpointnumber);
@@ -52,7 +53,10 @@ class Breakpoints
     bool enabled(const std::string &filename, int line) const;
 
     // return the breakpoint at the given filename, line
-    const Breakpoint & find(const std::string &filename, int line) const;
+    Breakpoint & find(const std::string &filename, int line);
+
+    // return the breakpoint at the given filename, line
+    Breakpoint & find(int breakpointnumber);
 
     // return a const list of breakpoints
     const std::vector<Breakpoint> & getAll() const;

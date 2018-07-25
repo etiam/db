@@ -58,8 +58,12 @@ breakinsert(const Result &result, int token, boost::any data)
         auto func = boost::any_cast<char *>(bkpt.at("func"));
         auto row = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
+        unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
+        auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
 
-        Core::state()->breakPoints().insertBreakpoint(Core::Location({func, filename, row}), breakpointnumber);
+        auto lc = Core::Location({func, filename, row});
+        auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
+        Core::state()->breakPoints().insertBreakpoint(bp);
 
         // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();

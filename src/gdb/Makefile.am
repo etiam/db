@@ -22,7 +22,8 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/breakinsert.cpp                    \
                             src/gdb/handlers/breakdelete.cpp                    \
                             src/gdb/handlers/breakenable.cpp                    \
-                            src/gdb/handlers/breakdisable.cpp
+                            src/gdb/handlers/breakdisable.cpp                   \
+                            src/gdb/handlers/breakmodified.cpp
 
 db_CPPFLAGS              +=                                                     \
                             @PYTHON_CPPFLAGS@                                   \

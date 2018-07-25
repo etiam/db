@@ -45,11 +45,14 @@ bool execrun(const Result &result, int token, boost::any data);
 bool execnext(const Result &result, int token, boost::any data);
 
 bool fileexec(const Result &result, int token, boost::any data);
+
 bool breakinsert(const Result &result, int token, boost::any data);
 bool breakdelete(const Result &result, int token, boost::any data);
-
 bool breakenable(const Result &result, int token, boost::any data);
 bool breakdisable(const Result &result, int token, boost::any data);
+
+// when a breakpoint changes, hitcount, enabled, etc.
+bool breakmodified(const Result &result, int token, boost::any data);
 
 }
 

@@ -226,8 +226,8 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    const auto filename = m_currentFilename.toStdString();
-    const auto &breakpoints = Core::state()->breakPoints();
+    auto filename = m_currentFilename.toStdString();
+    auto &breakpoints = Core::state()->breakPoints();
     auto &gdb = Core::gdb();
 
     if (!breakpoints.exists(filename, row))
@@ -236,7 +236,7 @@ Editor::onGutterClicked(int row)
     }
     else
     {
-        const auto &breakpoint = breakpoints.find(filename, row);
+        auto &breakpoint = breakpoints.find(filename, row);
         if (breakpoint.enabled)
         {
             gdb->disableBreakpoint(breakpoint.breakpointnumber);

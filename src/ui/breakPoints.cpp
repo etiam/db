@@ -15,6 +15,7 @@
 #include <QStandardItemModel>
 #include <QFontDatabase>
 #include <QMouseEvent>
+#include <QFileInfo>
 
 #include "core/signal.h"
 #include "core/global.h"
@@ -38,7 +39,7 @@ BreakPoints::BreakPoints(QWidget *parent) :
     m_model->setHeaderData(1, Qt::Horizontal, "#");
     m_model->setHeaderData(2, Qt::Horizontal, tr("Function"));
     m_model->setHeaderData(3, Qt::Horizontal, tr("Filename"));
-    m_model->setHeaderData(4, Qt::Horizontal, tr("Line"));
+    m_model->setHeaderData(4, Qt::Horizontal, tr("HitCount"));
 
     setRootIsDecorated(false);
     setIndentation(10);
@@ -47,13 +48,15 @@ BreakPoints::BreakPoints(QWidget *parent) :
 
     // column width defaults
     setColumnWidth(0, 30);
-    setColumnWidth(1, 20);
+    setColumnWidth(1, 30);
     setColumnWidth(2, 150);
     setColumnWidth(3, 300);
+    setColumnWidth(4, 30);
 
     // prevent resize of 1st column width
     header()->setSectionResizeMode(0, QHeaderView::Fixed);
     header()->setSectionResizeMode(1, QHeaderView::Fixed);
+    header()->setSectionResizeMode(4, QHeaderView::Fixed);
 
     // don't allow columns to be re-ordered
     header()->setSectionsMovable(false);
@@ -71,16 +74,24 @@ BreakPoints::onBreakPointsUpdated()
     m_model->removeRows(0, m_model->rowCount());
 
     // populate model from call stack data
-    for (const auto &entry : Core::state()->breakPoints().getAll())
+    for (const auto &breakpoint : Core::state()->breakPoints().getAll())
     {
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);
 
+        QFileInfo fileinfo(QString::fromStdString(breakpoint.location.filename));
+        QString filename = fileinfo.fileName() + ", line " + QString::number(breakpoint.location.row);
+
         m_model->setData(m_model->index(rowcount, 0), "");
-        m_model->setData(m_model->index(rowcount, 1), entry.breakpointnumber);
-        m_model->setData(m_model->index(rowcount, 2), entry.breakpointnumber);
-        m_model->setData(m_model->index(rowcount, 3), QString::fromStdString(entry.location.filename));
-        m_model->setData(m_model->index(rowcount, 4), entry.location.row);
+        m_model->setData(m_model->index(rowcount, 1), breakpoint.breakpointnumber);
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(breakpoint.location.function));
+        m_model->setData(m_model->index(rowcount, 3), filename);
+        m_model->setData(m_model->index(rowcount, 4), breakpoint.hitcount);
+
+        if (breakpoint.enabled)
+            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/brkp"), Qt::DecorationRole);
+        else
+            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/brkp_disabled"), Qt::DecorationRole);
     }
 }
 
@@ -101,6 +112,13 @@ BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
 //        // update global current location
 //        Core::Signal::setCurrentLocation(callback.location);
 //    }
+}
+
+void
+BreakPoints::mousePressEvent(QMouseEvent *event)
+{
+    const auto index = indexAt(event->pos());
+    selectionModel()->select(index.sibling(index.row(), 3), QItemSelectionModel::ClearAndSelect);
 }
 
 } // namespace Ui

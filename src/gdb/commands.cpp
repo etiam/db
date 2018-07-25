@@ -28,11 +28,12 @@ namespace Gdb
 Commands::Commands() :
     m_controller(std::make_unique<Controller>())
 {
-    // add persistent handlers
+    // add persistent handlers, lower number priority tested first
     m_controller->addHandler(Handlers::stopped,             10, true);
     m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
     m_controller->addHandler(Handlers::interpreterexec,     10, true);
     m_controller->addHandler(Handlers::processexited,       10, true);
+    m_controller->addHandler(Handlers::breakmodified,       10, true);
 
     m_controller->addHandler(Handlers::console,             99, true);
     m_controller->addHandler(Handlers::logging,             99, true);

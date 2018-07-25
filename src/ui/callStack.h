@@ -29,10 +29,11 @@ class CallStack : public QTreeView
     CallStack(QWidget *parent = nullptr);
     ~CallStack() = default;
 
-    void                    onCallStackUpdated();
+    void onCallStackUpdated();
 
   protected:
-    void                    mouseDoubleClickEvent(QMouseEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent *) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
   private:
     CallStackItemModel *    m_model;
