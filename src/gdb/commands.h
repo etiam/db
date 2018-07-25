@@ -33,8 +33,10 @@ class Commands
     void    infoAddress(const std::string &function);
 
     void    insertBreakpoint(const std::string &location);
-    void    disableBreakpoint(int number);
     void    deleteBreakpoint(int number);
+
+    void    enableBreakpoint(int number);
+    void    disableBreakpoint(int number);
 
     void    run();
     void    cont();

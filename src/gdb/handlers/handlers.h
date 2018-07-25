@@ -46,8 +46,10 @@ bool execnext(const Result &result, int token, boost::any data);
 
 bool fileexec(const Result &result, int token, boost::any data);
 bool breakinsert(const Result &result, int token, boost::any data);
-bool breakdisable(const Result &result, int token, boost::any data);
 bool breakdelete(const Result &result, int token, boost::any data);
+
+bool breakenable(const Result &result, int token, boost::any data);
+bool breakdisable(const Result &result, int token, boost::any data);
 
 }
 

@@ -33,24 +33,29 @@ class Breakpoints
     Breakpoints() = default;
     ~Breakpoints() = default;
 
-    // this function only sends a request to gdb to insert, disable or delete a breakpoint.
-    void    toggleBreakpoint(const std::string &filename, int line);
+    // insert a new breakpoint
+    void insertBreakpoint(const Location &location, int breakpointnumber);
 
-    // these functions directly modify m_breakpoints
-    void    insertBreakpoint(const Location &location, int breakpointnumber);
-    void    disableBreakpoint(int breakpointnumber);
-    void    deleteBreakpoint(int breakpointnumber);
+    // delete the given breakpoint
+    void deleteBreakpoint(int breakpointnumber);
 
-    // TODO replace present() and enabled() with a state function returning and enum
+    // enable the given breakpoint
+    void enableBreakpoint(int breakpointnumber);
 
-    // is a breakpoint present at the given location
-    bool    present(int line) const;
+    // disable the given breakpoint
+    void disableBreakpoint(int breakpointnumber);
 
-    // is the breakpoint at the given location enabled
-    bool    enabled(int line) const;
+    // is a breakpoint present at the given filename. line
+    bool exists(const std::string &filename, int line) const;
+
+    // is the breakpoint at the given filename, line enabled?
+    bool enabled(const std::string &filename, int line) const;
+
+    // return the breakpoint at the given filename, line
+    const Breakpoint & find(const std::string &filename, int line) const;
 
     // return a const list of breakpoints
-    const std::vector<Breakpoint> & get() const;
+    const std::vector<Breakpoint> & getAll() const;
 
   private:
     std::vector<Breakpoint>     m_breakpoints;

@@ -32,7 +32,7 @@ BreakPoints::BreakPoints(QWidget *parent) :
     setObjectName("breakpoint");
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
-    m_model = new BreakPointsItemModel(0, 4, this);
+    m_model = new BreakPointsItemModel(0, 5, this);
 
     m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
     m_model->setHeaderData(1, Qt::Horizontal, "#");
@@ -47,7 +47,7 @@ BreakPoints::BreakPoints(QWidget *parent) :
 
     // column width defaults
     setColumnWidth(0, 30);
-    setColumnWidth(1, 10);
+    setColumnWidth(1, 20);
     setColumnWidth(2, 150);
     setColumnWidth(3, 300);
 
@@ -71,7 +71,7 @@ BreakPoints::onBreakPointsUpdated()
     m_model->removeRows(0, m_model->rowCount());
 
     // populate model from call stack data
-    for (const auto &entry : Core::state()->breakPoints().get())
+    for (const auto &entry : Core::state()->breakPoints().getAll())
     {
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);

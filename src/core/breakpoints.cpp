@@ -20,33 +20,24 @@ namespace Core
 {
 
 void
-Breakpoints::toggleBreakpoint(const std::string &filename, int line)
-{
-    auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
-
-    if (it == std::end(m_breakpoints))
-    {
-        Core::gdb()->insertBreakpoint(filename + ":" + std::to_string(line));
-    }
-    else
-    {
-       if (it->enabled)
-       {
-          Core::gdb()->disableBreakpoint(it->breakpointnumber);
-       }
-       else
-       {
-          Core::gdb()->deleteBreakpoint(it->breakpointnumber);
-       }
-    }
-}
-
-void
 Breakpoints::insertBreakpoint(const Location &location, int breakpointnumber)
 {
     m_breakpoints.push_back({location, breakpointnumber, true});
     Core::Signal::updateGutterMarker(location.row);
+}
+
+void
+Breakpoints::enableBreakpoint(int number)
+{
+    auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
+        [&](const Breakpoint &b) { return b.breakpointnumber == number; });
+
+    if (it != std::end(m_breakpoints))
+    {
+        it->enabled = true;
+    }
+
+    Core::Signal::updateGutterMarker(it->location.row);
 }
 
 void
@@ -77,40 +68,35 @@ Breakpoints::deleteBreakpoint(int number)
     Core::Signal::updateGutterMarker(it->location.row);
 }
 
-
 bool
-Breakpoints::present(int line) const
+Breakpoints::exists(const std::string &filename, int line) const
 {
-    bool present = false;
-    for (const auto &breakpoint : m_breakpoints)
-    {
-        if (breakpoint.location.row == line)
-        {
-            present = true;
-            break;
-        }
-    }
-    return present;
+    auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
+        [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
+
+    return it != std::end(m_breakpoints);
 }
 
 bool
-Breakpoints::enabled(int line) const
+Breakpoints::enabled(const std::string &filename, int line) const
 {
-    bool enabled = false;
-    for (const auto &breakpoint : m_breakpoints)
-    {
-        if (breakpoint.location.row == line && breakpoint.enabled)
-        {
-            enabled = true;
-            break;
-        }
-    }
+    auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
+           [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
 
-    return enabled;
+    return it != std::end(m_breakpoints) && it->enabled;
+}
+
+const Breakpoint &
+Breakpoints::find(const std::string &filename, int line) const
+{
+    auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
+           [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
+
+    return *it;
 }
 
 const std::vector<Breakpoint> &
-Breakpoints::get() const
+Breakpoints::getAll() const
 {
     return m_breakpoints;
 }

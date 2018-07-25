@@ -72,17 +72,24 @@ Commands::insertBreakpoint(const std::string &location)
 }
 
 void
-Commands::disableBreakpoint(int number)
-{
-    std::string cmd = "break-disable " + std::to_string(number);
-    m_controller->executeCommand(cmd, Handlers::breakdisable, number);
-}
-
-void
 Commands::deleteBreakpoint(int number)
 {
     std::string cmd = "break-delete " + std::to_string(number);
     m_controller->executeCommand(cmd, Handlers::breakdelete, number);
+}
+
+void
+Commands::enableBreakpoint(int number)
+{
+    std::string cmd = "break-enable " + std::to_string(number);
+    m_controller->executeCommand(cmd, Handlers::breakenable, number);
+}
+
+void
+Commands::disableBreakpoint(int number)
+{
+    std::string cmd = "break-disable " + std::to_string(number);
+    m_controller->executeCommand(cmd, Handlers::breakdisable, number);
 }
 
 void

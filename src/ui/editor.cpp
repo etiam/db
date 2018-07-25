@@ -226,7 +226,28 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    Core::state()->breakPoints().toggleBreakpoint(m_currentFilename.toStdString(), row);
+    const auto filename = m_currentFilename.toStdString();
+    const auto &breakpoints = Core::state()->breakPoints();
+    auto &gdb = Core::gdb();
+
+    if (!breakpoints.exists(filename, row))
+    {
+        gdb->insertBreakpoint(filename + ":" + std::to_string(row));
+    }
+    else
+    {
+        const auto &breakpoint = breakpoints.find(filename, row);
+        if (breakpoint.enabled)
+        {
+            gdb->disableBreakpoint(breakpoint.breakpointnumber);
+        }
+        else
+        {
+            gdb->enableBreakpoint(breakpoint.breakpointnumber);
+        }
+    }
+
+
 }
 
 void
@@ -275,7 +296,7 @@ void
 Editor::updateGutterMarkers(const QString &filename)
 {
     // call updateGutterMarker on all breakpoints with filename
-    for (const auto &breakpoint : Core::state()->breakPoints().get())
+    for (const auto &breakpoint : Core::state()->breakPoints().getAll())
     {
         if (breakpoint.location.filename == filename.toStdString())
             updateGutterMarker(breakpoint.location.row);
@@ -379,10 +400,10 @@ Editor::updateGutterMarker(int row)
     const auto &currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.present(row))
+    if (breakpoints.exists(m_currentFilename.toStdString(), row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(row))
+        if (!breakpoints.enabled(m_currentFilename.toStdString(), row))
         {
             klass += "_disabled";
         }
@@ -403,10 +424,10 @@ Editor::clearCurrentLocation()
     const auto row = Core::state()->currentLocation().row;
 
     std::string klass = "ace";
-    if (breakpoints.present(row))
+    if (breakpoints.exists(m_currentFilename.toStdString(), row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(row))
+        if (!breakpoints.enabled(m_currentFilename.toStdString(), row))
         {
             klass += "_disabled";
         }
