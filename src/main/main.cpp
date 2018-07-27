@@ -26,7 +26,7 @@
 #include "gdb/commands.h"
 #include "ui/main.h"
 
-using namespace boost::program_options;
+namespace po = boost::program_options;
 
 // https://stackoverflow.com/questions/11295019/environment-path-directories-iteration
 const std::vector<std::string> &
@@ -60,7 +60,7 @@ get_environment_path()
 }
 
 void
-startupThread(const variables_map &vm)
+startupThread(const po::variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "startup");
 
@@ -69,8 +69,32 @@ startupThread(const variables_map &vm)
     auto &ast = Core::astBuilder();
     auto &vars = state->vars();
 
+    // try to find prog in current dir
+    bool found = false;
+    auto prog = vm["prog"].as<std::string>();
+    if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
+    {
+
+        // otherwise search $PATH
+        auto path = get_environment_path();
+        for (const auto &p : path)
+        {
+            if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
+            {
+                prog = (boost::filesystem::path(p) / prog).string();
+                found = true;
+                break;
+            }
+        }
+
+    }
+    else
+    {
+        found = true;
+    }
+
     // load prog
-    if (vm.count("prog"))
+    if (found)
     {
         auto prog = vm["prog"].as<std::string>();
         auto buildpath = boost::filesystem::absolute(boost::filesystem::path(prog).parent_path()).string();
@@ -80,6 +104,16 @@ startupThread(const variables_map &vm)
 
         Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
         gdb->loadProgram(prog);
+
+        // set program arguments
+        if (vm.count("args"))
+        {
+            const auto &args = vm["args"].as<std::vector<std::string>>();
+            std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
+                [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
+            std::cout << argstr << std::endl;
+            gdb->setArgs(argstr);
+        }
 
         if (Core::optionsManager()->get<bool>("breakonmain"))
             gdb->insertBreakpoint("main");
@@ -93,6 +127,10 @@ startupThread(const variables_map &vm)
 
     else
     {
+        std::stringstream msg;
+        msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
+        Core::Signal::appendConsoleText(msg.str());
+
         vars.set("filename", std::string());
         vars.set("buildpath", std::string());
     }
@@ -105,7 +143,7 @@ main(int argc, char *argv[])
     pthread_setname_np(pthread_self(), "main");
 
     // Declare a group of options that will be on command line
-    options_description generic("Command line options");
+    po::options_description generic("Command line options");
     generic.add_options()
         ("version", "print version string.")
         ("help,h", "produce help message.");
@@ -117,20 +155,22 @@ main(int argc, char *argv[])
 
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
-    options_description hidden("Hidden options");
+    po::options_description hidden("Hidden options");
     hidden.add_options()
-        ("prog", value<std::string>(), "prog");
+        ("prog", po::value<std::string>(), "prog")
+        ("args", po::value<std::vector<std::string>>()->multitoken(), "args");
 
-    options_description cmdline_options;
+    po::options_description cmdline_options;
     cmdline_options.add(generic);
     cmdline_options.add(hidden);
 
-    positional_options_description p;
-    p.add("prog", -1);
+    po::positional_options_description p;
+    p.add("prog", 1);
+    p.add("args", -1);
 
-    variables_map vm;
-    store(command_line_parser(argc, argv).options(cmdline_options).positional(p).run(), vm);
-    notify(vm);
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).options(cmdline_options).positional(p).run(), vm);
+    po::notify(vm);
 
     // --help
     if (vm.count("help"))
@@ -155,42 +195,6 @@ main(int argc, char *argv[])
 
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
-
-    // make sure prog exists in search path and if so expand the filename out to
-    // full pathname
-    if (vm.count("prog"))
-    {
-        auto prog = vm["prog"].as<std::string>();
-        if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
-        {
-            bool found = false;
-            auto path = get_environment_path();
-            for (const auto &p : path)
-            {
-                if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
-                {
-                    auto fullpath = (boost::filesystem::path(p) / prog).string();
-
-                    // replace "prog" with full path
-                    // https://groups.google.com/forum/#!topic/boost-list/rmuB9iwtQ34
-                    auto it(vm.find("prog"));
-                    boost::program_options::variable_value & vx(it->second);
-                    vx.value() = fullpath;
-
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                std::stringstream msg;
-                msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
-                Core::Signal::appendConsoleText(msg.str());
-                vm.erase(vm.find("prog"));
-            }
-        }
-    }
 
     // start startup thread
     auto startupthread = std::make_unique<std::thread>(&startupThread, vm);

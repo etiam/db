@@ -29,6 +29,7 @@ class Commands
     int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
     void    loadProgram(const std::string &filename);
+    void    setArgs(const std::string &args);
 
     void    infoAddress(const std::string &function);
 

@@ -77,7 +77,6 @@ State::onSetCurrentLocationSignal(const Core::Location &location)
     Signal::updateGutterMarker(oldloc);
 
     Signal::setCursorPosition(m_currentLocation.row, 0);
-
 }
 
 void

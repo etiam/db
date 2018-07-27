@@ -59,6 +59,13 @@ Commands::loadProgram(const std::string &filename)
 }
 
 void
+Commands::setArgs(const std::string &args)
+{
+    std::string cmd = "exec-arguments " + args;
+    m_controller->executeCommand(cmd);
+}
+
+void
 Commands::infoAddress(const std::string &function)
 {
     std::string cmd = "interpreter-exec console \"info address " + function + "\"";

@@ -226,7 +226,7 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    auto filename = m_currentFilename.toStdString();
+    auto &filename = Core::state()->currentLocation().filename;
     auto &breakpoints = Core::state()->breakPoints();
     auto &gdb = Core::gdb();
 
@@ -345,7 +345,7 @@ void
 Editor::loadFile(const QString &filename)
 {
     // read file into editor
-    if (!filename.isEmpty() && filename != m_currentFilename)
+//    if (!filename.isEmpty() && filename != QString::fromStdString(Core::state()->currentLocation().filename))
     {
         QFileInfo checkfile(filename);
         if (checkfile.exists() && checkfile.isFile())
@@ -361,8 +361,6 @@ Editor::loadFile(const QString &filename)
             auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
             setGutterWidth(numdigits);
 
-            m_currentFilename = filename;
-
             setHighlightMode("c_cpp");
             showGutter();
             clearGutterMarkers();
@@ -376,7 +374,6 @@ Editor::loadFile(const QString &filename)
             setHighlightMode("xml");
             hideGutter();
             clearGutterMarkers();
-            m_currentFilename = "";
         }
     }
 }
@@ -398,10 +395,10 @@ Editor::updateGutterMarker(int row)
     const auto &currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.exists(m_currentFilename.toStdString(), row))
+    if (breakpoints.exists(currloc.filename, row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(m_currentFilename.toStdString(), row))
+        if (!breakpoints.enabled(currloc.filename, row))
         {
             klass += "_disabled";
         }
@@ -419,19 +416,19 @@ void
 Editor::clearCurrentLocation()
 {
     const auto &breakpoints = Core::state()->breakPoints();
-    const auto row = Core::state()->currentLocation().row;
+    const auto currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.exists(m_currentFilename.toStdString(), row))
+    if (breakpoints.exists(currloc.filename, currloc.row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(m_currentFilename.toStdString(), row))
+        if (!breakpoints.enabled(currloc.filename, currloc.row))
         {
             klass += "_disabled";
         }
     }
 
-    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(row-1).arg(QString::fromStdString(klass)));
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(currloc.row-1).arg(QString::fromStdString(klass)));
 }
 
 }
