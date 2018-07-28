@@ -28,9 +28,16 @@ class Commands
 
     int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
+    // requests gdb load program
     void    loadProgram(const std::string &filename);
+
+    // sets program arguments
     void    setArgs(const std::string &args);
 
+    // requests list of source files from gdb
+    void    listSourceFiles();
+
+    // requests function address from gdb
     void    infoAddress(const std::string &function);
 
     void    insertBreakpoint(const std::string &location);

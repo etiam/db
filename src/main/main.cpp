@@ -120,7 +120,7 @@ startupThread(const po::variables_map &vm)
         else
             gdb->infoAddress("main");
 
-//        gdb->executeCommand("file-list-exec-source-files");
+        gdb->listSourceFiles();
 
         ast->setBuildPath(buildpath);
     }

@@ -45,6 +45,7 @@ bool execrun(const Result &result, int token, boost::any data);
 bool execnext(const Result &result, int token, boost::any data);
 
 bool fileexec(const Result &result, int token, boost::any data);
+bool listsourcefiles(const Result &result, int token, boost::any data);
 
 bool breakinsert(const Result &result, int token, boost::any data);
 bool breakdelete(const Result &result, int token, boost::any data);

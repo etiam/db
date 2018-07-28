@@ -59,9 +59,9 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
         if (dict.find("stack") != std::end(dict))
         {
             auto stack = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("stack"));
-            for (const auto &anyentry : stack)
+            for (const auto &stackentry : stack)
             {
-                const auto &entry = boost::any_cast<Gdb::Payload::Dict>(anyentry);
+                const auto &entry = boost::any_cast<Gdb::Payload::Dict>(stackentry);
                 auto func = boost::any_cast<char *>(entry.at("func"));
                 auto fullname = boost::any_cast<char *>(entry.at("fullname"));
                 auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));

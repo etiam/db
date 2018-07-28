@@ -73,3 +73,21 @@ editor.session.gutterRenderer =
     }
 };
 
+/*
+editor.container.addEventListener("contextmenu", function(e) 
+{
+    e.preventDefault();
+    return false;
+}, false);
+*/
+
+function gutterContextMenu(e)
+{
+    e.preventDefault();
+    alert('cuss!');
+    return false;
+}
+
+var gutter = editor.renderer.$gutterLayer;
+
+gutter.addListener("contextmenu", gutterContextMenu, false);

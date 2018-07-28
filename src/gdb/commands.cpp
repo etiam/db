@@ -66,6 +66,12 @@ Commands::setArgs(const std::string &args)
 }
 
 void
+Commands::listSourceFiles()
+{
+    m_controller->executeCommand("file-list-exec-source-files", Handlers::listsourcefiles);
+}
+
+void
 Commands::infoAddress(const std::string &function)
 {
     std::string cmd = "interpreter-exec console \"info address " + function + "\"";
