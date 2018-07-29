@@ -85,10 +85,16 @@ Console::keyPressEvent(QKeyEvent *e)
             break;
         }
 
+        case Qt::Key_Backspace:
+            if (textCursor().columnNumber() < 7)
+                break;
+
         default:
             if (m_editable)
                 QPlainTextEdit::keyPressEvent(e);
     }
+
+    m_textCursorPos = textCursor().position();
 }
 
 void
