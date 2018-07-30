@@ -54,6 +54,13 @@ Commands::executeCommand(const std::string &command, Controller::HandlerFunc han
 }
 
 void
+Commands::execConsoleCommand(const std::string &command)
+{
+    std::string cmd = "interpreter-exec console \"" + command + "\"";
+    m_controller->executeCommand(cmd, Handlers::interpreterexec);
+}
+
+void
 Commands::loadProgram(const std::string &filename)
 {
     std::string cmd = "file-exec-and-symbols " + filename;
@@ -76,8 +83,7 @@ Commands::listSourceFiles()
 void
 Commands::infoAddress(const std::string &function)
 {
-    std::string cmd = "interpreter-exec console \"info address " + function + "\"";
-    m_controller->executeCommand(cmd);
+    execConsoleCommand("info address " + function);
 }
 
 void

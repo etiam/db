@@ -28,6 +28,10 @@ class Commands
 
     int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
+    // execute a command in the console interpreter.
+    // useful for running commands not available in the mi interface
+    void    execConsoleCommand(const std::string &command);
+
     // requests gdb load program
     void    loadProgram(const std::string &filename);
 
