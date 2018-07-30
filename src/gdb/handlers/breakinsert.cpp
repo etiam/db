@@ -29,7 +29,15 @@ namespace Handlers
 bool
 breakinsert(const Result &result, int token, boost::any data)
 {
-    auto match = result.token.value == token;
+    auto matchtoken = (result.token.value == token);
+
+    auto matchpayload = result.message.type == Message::Type::STRING &&
+                        result.message.string.data == "breakpoint-created" &&
+                        result.payload.type == Payload::Type::DICT &&
+                        result.stream == Stream::STDOUT &&
+                        result.type == Type::NOTIFY;
+
+    auto match = matchtoken || matchpayload;
 
     /*
     {'message': u'done',
@@ -56,12 +64,12 @@ breakinsert(const Result &result, int token, boost::any data)
 
         auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
         auto func = boost::any_cast<char *>(bkpt.at("func"));
-        auto row = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
+        auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
         unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
         auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
 
-        auto lc = Core::Location({func, filename, row});
+        auto lc = Core::Location({func, filename, line});
         auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
         Core::state()->breakPoints().insertBreakpoint(bp);
 
@@ -70,7 +78,7 @@ breakinsert(const Result &result, int token, boost::any data)
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::Signal::loadFile(filename);
-            Core::Signal::setCursorPosition(row, 0);
+            Core::Signal::setCursorPosition(line, 0);
             vars.set("initialdisplay", true);
         }
     }

@@ -59,12 +59,16 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
+        auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
         unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
+        auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
 
         auto &bp = Core::state()->breakPoints().find(breakpointnumber);
         bp.hitcount = times;
+        bp.enabled = enabled;
 
         Core::Signal::breakPointsUpdated();
+        Core::Signal::updateGutterMarker(line);
     }
 
     return match;

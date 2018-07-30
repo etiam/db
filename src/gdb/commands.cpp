@@ -35,6 +35,8 @@ Commands::Commands() :
     m_controller->addHandler(Handlers::infoaddress,         10, true);
     m_controller->addHandler(Handlers::interpreterexec,     10, true);
     m_controller->addHandler(Handlers::processexited,       10, true);
+
+    m_controller->addHandler(Handlers::breakinsert,         10, true);
     m_controller->addHandler(Handlers::breakmodified,       10, true);
 
     m_controller->addHandler(Handlers::console,             99, true);
