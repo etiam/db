@@ -31,6 +31,8 @@ Commands::Commands() :
     // add persistent handlers, lower number priority tested first
     m_controller->addHandler(Handlers::stopped,             10, true);
     m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
+    m_controller->addHandler(Handlers::infoline,            10, true);
+    m_controller->addHandler(Handlers::infoaddress,         10, true);
     m_controller->addHandler(Handlers::interpreterexec,     10, true);
     m_controller->addHandler(Handlers::processexited,       10, true);
     m_controller->addHandler(Handlers::breakmodified,       10, true);

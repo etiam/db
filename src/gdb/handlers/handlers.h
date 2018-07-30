@@ -31,6 +31,14 @@ bool stopped(const Result &result, int token, boost::any data);
 bool stacklistframes(const Result &result, int token, boost::any data);
 
 bool threadgroupstarted(const Result &result, int token, boost::any data);
+
+// handle result of info line console command
+bool infoline(const Result &result, int token, boost::any data);
+
+// handle result of info address console command
+bool infoaddress(const Result &result, int token, boost::any data);
+
+// handle interpreter-exec console commands
 bool interpreterexec(const Result &result, int token, boost::any data);
 
 bool processexited(const Result &result, int token, boost::any data);
