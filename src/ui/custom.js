@@ -79,7 +79,6 @@ editor.container.addEventListener("contextmenu", function(e)
     e.preventDefault();
     return false;
 }, false);
-*/
 
 function gutterContextMenu(e)
 {
@@ -91,3 +90,4 @@ function gutterContextMenu(e)
 var gutter = editor.renderer.$gutterLayer;
 
 gutter.addListener("contextmenu", gutterContextMenu, false);
+*/
