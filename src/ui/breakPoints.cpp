@@ -98,20 +98,6 @@ BreakPoints::onBreakPointsUpdated()
 void
 BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
 {
-//    const auto row = indexAt(event->pos()).row();
-//    const auto &stack = Core::state()->breakPoints();
-//    if (row <= stack.size())
-//    {
-//        const auto callback = stack[row];
-//
-//        std::cout << callback.location.filename << std::endl;
-//
-//        // load editor with contents of filename
-//        Core::Signal::loadFile(callback.location.filename);
-//
-//        // update global current location
-//        Core::Signal::setCurrentLocation(callback.location);
-//    }
 }
 
 void

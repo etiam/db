@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // wink signals
     Core::Signal::loadFile.connect(this, &MainWindow::onLoadFileSignal);
+    Core::Signal::quitRequested.connect(this, &MainWindow::onQuitRequested);
 
     Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
     Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
@@ -124,8 +125,6 @@ MainWindow::switchBottomTab(int index)
     {
         console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
     }
-
-    std::cout << index << std::endl;
 }
 
 void
@@ -362,6 +361,12 @@ MainWindow::onLoadFileSignal(const std::string &filename)
     {
         setWindowTitle("db " + QString::fromStdString(filename));
     }
+}
+
+void
+MainWindow::onQuitRequested()
+{
+    quit();
 }
 
 void

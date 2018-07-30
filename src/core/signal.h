@@ -30,6 +30,9 @@ namespace Signal
 {
 
 extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFile;
+
+extern wink::signal<wink::slot<void ()>>                                        quitRequested;
+
 extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
 extern wink::signal<wink::slot<void (int row)>>                                 updateGutterMarker;
 

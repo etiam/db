@@ -36,7 +36,6 @@ interpreterexec(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
-        std::cout << "foobar" << std::endl;
     }
 
     return match;

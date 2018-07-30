@@ -345,36 +345,33 @@ void
 Editor::loadFile(const QString &filename)
 {
     // read file into editor
-//    if (!filename.isEmpty() && filename != QString::fromStdString(Core::state()->currentLocation().filename))
+    QFileInfo checkfile(filename);
+    if (checkfile.exists() && checkfile.isFile())
     {
-        QFileInfo checkfile(filename);
-        if (checkfile.exists() && checkfile.isFile())
-        {
-            QFile file(filename);
-            QTextStream stream(&file);
+        QFile file(filename);
+        QTextStream stream(&file);
 
-            file.open(QFile::ReadOnly | QFile::Text);
-            auto text = stream.readAll();
-            setText(text);
+        file.open(QFile::ReadOnly | QFile::Text);
+        auto text = stream.readAll();
+        setText(text);
 
-            auto numlines = text.count("\n");
-            auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
-            setGutterWidth(numdigits);
+        auto numlines = text.count("\n");
+        auto numdigits = numlines > 0 ? (int) log10((double) numlines) + 1 : 1;
+        setGutterWidth(numdigits);
 
-            setHighlightMode("c_cpp");
-            showGutter();
-            clearGutterMarkers();
-            updateGutterMarkers(filename);
-        }
-        else
-        {
-            std::stringstream message;
-            message << filename.toStdString() << ": No such file or directory.";
-            setText(QString::fromStdString(message.str()));
-            setHighlightMode("xml");
-            hideGutter();
-            clearGutterMarkers();
-        }
+        setHighlightMode("c_cpp");
+        showGutter();
+        clearGutterMarkers();
+        updateGutterMarkers(filename);
+    }
+    else
+    {
+        std::stringstream message;
+        message << filename.toStdString() << ": No such file or directory.";
+        setText(QString::fromStdString(message.str()));
+        setHighlightMode("xml");
+        hideGutter();
+        clearGutterMarkers();
     }
 }
 

@@ -69,6 +69,7 @@ class MainWindow : public QMainWindow
 
     // wink signal handlers
     void            onLoadFileSignal(const std::string &filename);
+    void            onQuitRequested();
     void            onAppendConsoleText(const std::string &text);
     void            onAppendLogText(const std::string &text);
     void            onAppendOutputText(const std::string &text);

@@ -17,6 +17,7 @@
 #include <boost/any.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/python.hpp>
 
 #include <QFile>
 #include <Python.h>
@@ -237,7 +238,7 @@ ControllerImpl::resultHandler(const Result &result)
 {
     bool match = false;
 
-    // since m_handlers can get modified inside the loop store the uuid
+    // since m_handlers can get modified inside the loop, store the uuid
     // of the matched handler to possibly delete it later
     boost::uuids::uuid uuid;
     for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
@@ -278,7 +279,32 @@ ControllerImpl::resultReaderThread()
         auto args = Py_BuildValue("(d,i,i)", 0.1, false, m_verbose);
         auto value = PyObject_Call(m_getHandlerMethod, args, nullptr);
 
-        if (value && PyList_Check(value))
+        /////
+
+        if (PyErr_Occurred())
+        {
+            namespace bp = boost::python;
+
+            PyObject *exc, *val, *tb;
+            bp::object formatted_list, formatted;
+            PyErr_Fetch(&exc, &val, &tb);
+            bp::handle<> hexc(exc), hval(bp::allow_null(val));
+            bp::object traceback(bp::import("traceback"));
+            bp::object excstrobject(traceback.attr("format_exception_only"));
+            formatted_list = excstrobject(hexc, hval);
+
+            auto excstr = bp::extract<std::string>(formatted_list[0])();
+            if (excstr.find("NoGdbProcessError:") != std::string::npos)
+            {
+                Core::Signal::quitRequested();
+            }
+
+            PyErr_Clear();
+        }
+
+        /////
+
+        else if (value && PyList_Check(value))
         {
             auto n = PyList_Size(value);
             for (auto i=0; i < n; i++)

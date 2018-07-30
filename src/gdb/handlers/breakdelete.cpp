@@ -29,11 +29,33 @@ namespace Handlers
 bool
 breakdelete(const Gdb::Result &result, int token, boost::any data)
 {
-    auto match = result.token.value == token;
+    auto matchtoken = (result.token.value == token);
 
-    if (match)
+    auto matchpayload = result.message.type == Message::Type::STRING &&
+                        result.message.string.data == "breakpoint-deleted" &&
+                        result.payload.type == Payload::Type::DICT &&
+                        result.stream == Stream::STDOUT &&
+                        result.type == Type::NOTIFY;
+
+    auto match = matchtoken || matchpayload;
+
+    /*
+    {'message': u'breakpoint-deleted',
+     'payload': {u'id': u'1'},
+     'stream': 'stdout',
+     'token': None,
+     'type': 'notify'}
+    */
+
+    if (matchtoken)
     {
         auto number = boost::any_cast<int>(data);
+        Core::state()->breakPoints().deleteBreakpoint(number);
+    }
+
+    else if (matchpayload)
+    {
+        auto number = std::stoi(boost::any_cast<char *>(result.payload.dict.at("id")));
         Core::state()->breakPoints().deleteBreakpoint(number);
     }
 

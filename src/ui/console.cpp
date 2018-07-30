@@ -89,7 +89,6 @@ Console::keyPressEvent(QKeyEvent *e)
             auto doc = document();
             auto tb = doc->findBlockByLineNumber(textCursor().blockNumber()-1);
             auto command = tb.text().split("(gdb) ").at(1).toStdString();
-            std::cout << command << std::endl;
             Core::gdb()->execConsoleCommand(command);
 
             break;
