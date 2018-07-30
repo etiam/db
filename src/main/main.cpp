@@ -64,75 +64,78 @@ startupThread(const po::variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "startup");
 
-    auto &state = Core::state();
-    auto &gdb = Core::gdb();
-    auto &ast = Core::astBuilder();
-    auto &vars = state->vars();
-
     // try to find prog in current dir
-    bool found = false;
-    auto prog = vm["prog"].as<std::string>();
-    if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
+    if (vm.count("prog"))
     {
+        auto &state = Core::state();
+        auto &gdb = Core::gdb();
+        auto &ast = Core::astBuilder();
+        auto &vars = state->vars();
 
-        // otherwise search $PATH
-        auto path = get_environment_path();
-        for (const auto &p : path)
-        {
-            if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
-            {
-                prog = (boost::filesystem::path(p) / prog).string();
-                found = true;
-                break;
-            }
-        }
-
-    }
-    else
-    {
-        found = true;
-    }
-
-    // load prog
-    if (found)
-    {
+        bool found = false;
         auto prog = vm["prog"].as<std::string>();
-        auto buildpath = boost::filesystem::absolute(boost::filesystem::path(prog).parent_path()).string();
-
-        vars.set("filename", prog);
-        vars.set("buildpath", buildpath);
-
-        Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
-        gdb->loadProgram(prog);
-
-        // set program arguments
-        if (vm.count("args"))
+        if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
         {
-            const auto &args = vm["args"].as<std::vector<std::string>>();
-            std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
-                [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
-            std::cout << argstr << std::endl;
-            gdb->setArgs(argstr);
+
+            // otherwise search $PATH
+            auto path = get_environment_path();
+            for (const auto &p : path)
+            {
+                if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
+                {
+                    prog = (boost::filesystem::path(p) / prog).string();
+                    found = true;
+                    break;
+                }
+            }
+
+        }
+        else
+        {
+            found = true;
         }
 
-        if (Core::optionsManager()->get<bool>("breakonmain"))
-            gdb->insertBreakpoint("main");
+        // load prog
+        if (found)
+        {
+            auto prog = vm["prog"].as<std::string>();
+            auto buildpath = boost::filesystem::absolute(boost::filesystem::path(prog).parent_path()).string();
+
+            vars.set("filename", prog);
+            vars.set("buildpath", buildpath);
+
+            Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
+            gdb->loadProgram(prog);
+
+            // set program arguments
+            if (vm.count("args"))
+            {
+                const auto &args = vm["args"].as<std::vector<std::string>>();
+                std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
+                    [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
+                std::cout << argstr << std::endl;
+                gdb->setArgs(argstr);
+            }
+
+            if (Core::optionsManager()->get<bool>("breakonmain"))
+                gdb->insertBreakpoint("main");
+            else
+                gdb->infoAddress("main");
+
+            gdb->listSourceFiles();
+
+            ast->setBuildPath(buildpath);
+        }
+
         else
-            gdb->infoAddress("main");
+        {
+            std::stringstream msg;
+            msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
+            Core::Signal::appendConsoleText(msg.str());
 
-        gdb->listSourceFiles();
-
-        ast->setBuildPath(buildpath);
-    }
-
-    else
-    {
-        std::stringstream msg;
-        msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
-        Core::Signal::appendConsoleText(msg.str());
-
-        vars.set("filename", std::string());
-        vars.set("buildpath", std::string());
+            vars.set("filename", std::string());
+            vars.set("buildpath", std::string());
+        }
     }
 }
 
