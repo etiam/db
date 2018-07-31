@@ -42,7 +42,3 @@ killprog(const Gdb::Result &result, int token, boost::any data)
 }
 
 }
-
-
-
-

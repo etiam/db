@@ -57,24 +57,21 @@ Commands::executeCommand(const std::string &command, Controller::HandlerFunc han
 }
 
 void
-Commands::execConsoleCommand(const std::string &command)
+Commands::executeConsoleCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data)
 {
-    std::string cmd = "interpreter-exec console \"" + command + "\"";
-    m_controller->executeCommand(cmd, Handlers::interpreterexec);
+    m_controller->executeCommand("interpreter-exec console \"" + command + "\"", handler, data);
 }
 
 void
 Commands::loadProgram(const std::string &filename)
 {
-    std::string cmd = "file-exec-and-symbols " + filename;
-    m_controller->executeCommand(cmd, Handlers::fileexec);
+    m_controller->executeCommand("file-exec-and-symbols " + filename, Handlers::fileexec);
 }
 
 void
 Commands::setArgs(const std::string &args)
 {
-    std::string cmd = "exec-arguments " + args;
-    m_controller->executeCommand(cmd);
+    m_controller->executeCommand("exec-arguments " + args);
 }
 
 void
@@ -84,9 +81,15 @@ Commands::listSourceFiles()
 }
 
 void
+Commands::updateCallStack()
+{
+    Core::gdb()->executeCommand("stack-list-frames", Handlers::stacklistframes);
+}
+
+void
 Commands::infoAddress(const std::string &function)
 {
-    execConsoleCommand("info address " + function);
+    executeConsoleCommand("info address " + function);
 }
 
 void
@@ -136,6 +139,7 @@ Commands::cont()
 void
 Commands::pause()
 {
+    // send SIGINT to prog
     if(Core::state()->vars().has("pid"))
     {
         auto pid = Core::state()->vars().get<int>("pid");
@@ -151,32 +155,29 @@ Commands::stop()
     if (Core::state()->debuggerState() == Core::State::Debugger::RUNNING ||
         Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
     {
-        std::string cmd = "interpreter-exec console \"kill\"";
-        m_controller->executeCommand(cmd, Handlers::killprog);
+        executeConsoleCommand("kill", Handlers::killprog);
     }
 }
 
 void
 Commands::stepover()
 {
-    std::string cmd = "exec-next";
     Core::Signal::appendConsoleText("next\n");
-    m_controller->executeCommand(cmd, Handlers::execnext);
+    m_controller->executeCommand("exec-next", Handlers::execnext);
 }
 
 void
 Commands::stepinto()
 {
-    std::string cmd = "exec-step";
     Core::Signal::appendConsoleText("step\n");
-    m_controller->executeCommand(cmd);
+    m_controller->executeCommand("exec-step");
 }
 
 void
 Commands::stepout()
 {
-    std::string cmd = "exec-finish";
-    m_controller->executeCommand(cmd);
+    Core::Signal::appendConsoleText("finish\n");
+    m_controller->executeCommand("exec-finish");
 }
 
 } // namespace Gdb

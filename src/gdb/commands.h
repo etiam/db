@@ -26,11 +26,12 @@ class Commands
     Commands();
     ~Commands();
 
+    // execute a command in the mi interpreter.
     int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
     // execute a command in the console interpreter.
     // useful for running commands not available in the mi interface
-    void    execConsoleCommand(const std::string &command);
+    void    executeConsoleCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
 
     // requests gdb load program
     void    loadProgram(const std::string &filename);
@@ -40,6 +41,9 @@ class Commands
 
     // requests list of source files from gdb
     void    listSourceFiles();
+
+    // requests current call stack from gdb
+    void    updateCallStack();
 
     // requests function address from gdb
     void    infoAddress(const std::string &function);

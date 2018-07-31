@@ -40,7 +40,7 @@ infoaddress(const Gdb::Result &result, int token, boost::any data)
     if (std::regex_match(result.payload.string.data, smatch, regex))
     {
         match = true;
-        Core::gdb()->execConsoleCommand("info line *" + smatch[2].str());
+        Core::gdb()->executeConsoleCommand("info line *" + smatch[2].str());
     }
 
     return match;

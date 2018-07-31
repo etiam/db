@@ -60,9 +60,8 @@ stopped(const Result &result, int token, boost::any data)
             // update current gutter marker
             Core::Signal::updateGutterMarker(line);
 
-            // get current call stack from gdb
-            std::string cmd = "stack-list-frames";
-            Core::gdb()->executeCommand(cmd, Gdb::Handlers::stacklistframes);
+            // update call stack
+            Core::gdb()->updateCallStack();
         }
     }
 
