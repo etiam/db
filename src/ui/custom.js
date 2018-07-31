@@ -16,7 +16,7 @@ function property(param, value)
 property("lines", 1);
 property("charheight", editor.renderer.characterHeight);
 
-// calc number of lines when document changes
+// calc number of lines in document when document changes
 editor.on('change', function() 
 {
     var newLines = editor.session.getLength();
@@ -40,6 +40,7 @@ editor.on("keyboardActivity", function(e)
     codeview.onCursorMoved(cp.row + 1, cp.column + 1);
 });
 
+// call into Editor c++ class on mouse click in gutter
 editor.on("guttermousedown", function(e) 
 {
     var target = e.domEvent.target; 

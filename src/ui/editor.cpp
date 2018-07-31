@@ -126,17 +126,26 @@ Editor::Editor(QMainWindow *parent) :
     m_impl->startAceWidget();
     m_impl->executeJavaScript("editor.focus()");
 
+    // set some editor ui options
     m_impl->executeJavaScript("editor.setShowPrintMargin(false)");
     m_impl->executeJavaScript("editor.setDisplayIndentGuides(false)");
     m_impl->executeJavaScript("editor.setReadOnly(true)");
     m_impl->executeJavaScript("editor.setShowFoldWidgets(false)");
 
+    // set editor font to system default fixed font
     auto fontname = QFontDatabase::systemFont(QFontDatabase::FixedFont).family();
     m_impl->executeJavaScript(QString("editor.setOptions({ fontFamily: \"%1\" })").arg(fontname));
 
+    // don't display the cursor
+    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
+
+    // syntax highlighting
     setHighlightMode("c_cpp");
+
+    // color theme
     setTheme("clouds_midnight");
 
+    // wink handlers
     Core::Signal::loadFile.connect(this, &Editor::onLoadFileSignal);
     Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signal::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
