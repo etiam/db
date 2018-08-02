@@ -13,9 +13,6 @@
 
 #include <QScrollBar>
 #include <QPainter>
-#include <QTimer>
-
-#include "core/signal.h"
 
 #include "output.h"
 
@@ -41,10 +38,25 @@ Output::appendText(const QString &text)
 
     // skip text with only a newline
     if (sanitized != "\n")
-        insertPlainText(text);
+        insertText(sanitized);
 
     // scroll to bottom of text
     verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+}
+
+void
+Output::insertText(const QString &text)
+{
+    // jump to last known valid position
+    auto cursor = textCursor();
+    cursor.setPosition(m_cursorPos);
+    setTextCursor(cursor);
+
+    // insert the text
+    insertPlainText(text);
+
+    // update last known valid position
+    m_cursorPos = textCursor().position();
 }
 
 }

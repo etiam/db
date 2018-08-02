@@ -15,8 +15,6 @@
 
 #include <QPlainTextEdit>
 
-#include "core/timer.h"
-
 namespace Ui
 {
 
@@ -29,7 +27,12 @@ class Output: public QPlainTextEdit
     ~Output() = default;
 
   public Q_SLOTS:
-    void        appendText(const QString &text);
+    void appendText(const QString &text);
+
+  private:
+    void insertText(const QString &text);
+
+    int m_cursorPos = 0;
 };
 
 }

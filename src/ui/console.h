@@ -13,14 +13,16 @@
 # include "config.h"
 #endif
 
-#include <QPlainTextEdit>
+#include <QFrame>
 
 #include "core/timer.h"
 
 namespace Ui
 {
 
-class Console: public QPlainTextEdit
+class Output;
+
+class Console: public QFrame
 {
   Q_OBJECT
 
@@ -29,24 +31,10 @@ class Console: public QPlainTextEdit
     ~Console() = default;
 
   public Q_SLOTS:
-    void        appendText(const QString &text);
-
-  protected:
-    void        keyPressEvent(QKeyEvent *e) override;
-    void        mousePressEvent(QMouseEvent *e) override;
-
-  private Q_SLOTS:
-
-    // called regularly from a timer to print a console prompt
-    void        showPrompt();
+    void appendText(const QString &text);
 
   private:
-    void        insertText(const QString &text);
-
-    int         m_textCursorPos = 0;
-    bool        m_editable;
-    bool        m_showPrompt = false;
-    Core::Timer m_consoleUpdateTimer;
+    Output * m_output;
 };
 
 }

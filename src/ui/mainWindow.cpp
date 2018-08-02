@@ -123,7 +123,7 @@ MainWindow::switchBottomTab(int index)
     auto console = qobject_cast<Console*>(m_bottomTabWidget->widget(index));
     if (console)
     {
-        console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
+//        console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
     }
 }
 

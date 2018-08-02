@@ -125,7 +125,8 @@ AM_CONDITIONAL([DO_PROFILER], [test x$profile = xtrue])
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 
-# since we're using boost signals we need to make qt not use it's keywords which would conflict 
+# since we're using boost signals we need to make qt not use it's 
+# keywords which would conflict 
 AC_DEFINE(QT_NO_KEYWORDS,,[do not use qt keywords])
 
 # processor type
