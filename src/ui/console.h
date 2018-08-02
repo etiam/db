@@ -17,6 +17,8 @@
 
 #include "core/timer.h"
 
+class HistoryLineEdit;
+
 namespace Ui
 {
 
@@ -35,6 +37,7 @@ class Console: public QFrame
 
   private:
     Output * m_output;
+    HistoryLineEdit * m_lineedit;
 };
 
 }

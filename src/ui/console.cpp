@@ -9,7 +9,7 @@
 # include "config.h"
 #endif
 
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 #include "core/global.h"
 #include "core/signal.h"
@@ -31,9 +31,14 @@ Console::Console(QWidget *parent, bool editable) :
     m_output = new Output(this);
     m_output->setObjectName("consoleoutput");
 
-    auto layout = new QHBoxLayout(this);
+    m_lineedit = new HistoryLineEdit(this);
+    m_lineedit->setObjectName("consolelineedit");
+
+    auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_output);
+    layout->addWidget(m_lineedit);
+
     setLayout(layout);
 }
 
