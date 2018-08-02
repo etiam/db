@@ -760,6 +760,38 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="src/external/lineedit/src/db-history_line_edit.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/external/lineedit/src/db-history_line_edit.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/external/lineedit/src/db-history_line_edit.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/external/lineedit/src/db-history_line_edit.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/external/lineedit/src/db-moc_history_line_edit.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/external/lineedit/src/db-moc_history_line_edit.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/external/lineedit/src/db-moc_history_line_edit.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/external/lineedit/src/db-moc_history_line_edit.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="src/gdb/db-commands.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>soundmake</buildCommand>
 				<buildArguments>-j${NUMCORES}</buildArguments>
@@ -968,6 +1000,38 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="src/gdb/handlers/db-infoaddress.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infoaddress.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-infoaddress.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infoaddress.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-infoline.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infoline.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-infoline.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infoline.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="src/gdb/handlers/db-interpreterexec.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>soundmake</buildCommand>
 				<buildArguments>-j${NUMCORES}</buildArguments>
@@ -996,6 +1060,22 @@
 				<buildCommand>soundmake</buildCommand>
 				<buildArguments>-j${NUMCORES}</buildArguments>
 				<buildTarget>src/gdb/handlers/db-killprog.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-listsourcefiles.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-listsourcefiles.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-listsourcefiles.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-listsourcefiles.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>

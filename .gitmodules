@@ -10,3 +10,6 @@
 [submodule "src/external/libut"]
 	path = src/external/libut
 	url = https://github.com/etiam/libut.git
+[submodule "src/external/lineedit"]
+	path = src/external/lineedit
+	url = https://gitlab.com/mattia.basaglia/Qt-History-LineEdit.git

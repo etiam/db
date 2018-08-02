@@ -5,6 +5,9 @@
 moc_%.cpp : %.h
 	$(AM_V_GEN) moc $< -o $@
 
+moc_%.cpp : %.hpp
+	$(AM_V_GEN) moc $< -o $@
+
 qrc_%.cpp : %.qrc
 	$(AM_V_GEN) rcc $< -o $@ --name $(basename $(notdir $<)) 
 
