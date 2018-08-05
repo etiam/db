@@ -58,7 +58,7 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent * ev)
             case Qt::Key_Return:
             case Qt::Key_F4:
             case Qt::Key_Select:
-                completer->popup()->hide();
+//                completer->popup()->hide();
                 return;
         }
     }
@@ -73,7 +73,7 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent * ev)
             completer->completionCount() == 0 ||
             (completion_max > 0 && completer->completionCount() > completion_max) )
         {
-            completer->popup()->hide();
+//            completer->popup()->hide();
         }
         else
         {
@@ -100,10 +100,10 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent * ev)
                     setSelection(sel, sellength);
             }
             // Set the rectangle to the appropriate width
-            rect.setWidth(
-                completer->popup()->sizeHintForColumn(0)
-                + completer->popup()->verticalScrollBar()->sizeHint().width()
-            );
+//            rect.setWidth(
+//                completer->popup()->sizeHintForColumn(0)
+//                + completer->popup()->verticalScrollBar()->sizeHint().width()
+//            );
             // Display the completer under the rectangle
             completer->complete(rect);
         }

@@ -54,6 +54,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
             const auto &entry = boost::any_cast<Gdb::Payload::Dict>(file);
             const auto &fullname = boost::any_cast<char *>(entry.at("fullname"));
             (void)fullname;
+//            std::cout << fullname << std::endl;
         }
     }
 

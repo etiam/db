@@ -35,6 +35,9 @@ class Console: public QFrame
   public Q_SLOTS:
     void appendText(const QString &text);
 
+  protected:
+    bool focusNextPrevChild(bool next) override;
+
   private:
     Output * m_output;
     HistoryLineEdit * m_lineedit;

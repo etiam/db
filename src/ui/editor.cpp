@@ -124,7 +124,7 @@ Editor::Editor(QMainWindow *parent) :
     setObjectName("editor");
 
     m_impl->startAceWidget();
-    m_impl->executeJavaScript("editor.focus()");
+//    m_impl->executeJavaScript("editor.focus()");
 
     // set some editor ui options
     m_impl->executeJavaScript("editor.setShowPrintMargin(false)");
