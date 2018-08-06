@@ -71,7 +71,6 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
     // insert gdb commands in column 0
     QStringList gdbcommands;
     gdbcommands << "break" << "next" << "step" << "return" << "enable" << "disable" << "quit";
-    gdbcommands << "add-auto-load-safe-path" << "add-inferior" << "add-symbol-file-from-memory" << "add-auto-load-scripts-directory  add-symbol-file";
     for (const auto &word : gdbcommands)
     {
         auto rowcount = model->rowCount();
@@ -121,7 +120,7 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
 
         case Qt::Key_Enter:
         case Qt::Key_Return:
-            if (current_word().length() > 0)
+            if (text().mid(6) > 0)
                 HistoryLineEdit::keyPressEvent(event);
             setText("(gdb) ");
             break;
@@ -141,11 +140,8 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
             break;
 
         case Qt::Key_Tab:
-        {
-            auto notify =  (lastkey == Qt::Key_Tab);
-            autoComplete(notify);
+            autoComplete(lastkey == Qt::Key_Tab);
             break;
-        }
 
         default:
             HistoryLineEdit::keyPressEvent(event);
@@ -166,10 +162,13 @@ ConsoleInput::focusInEvent(QFocusEvent *event)
 void
 ConsoleInput::autoComplete(bool notify)
 {
-    std::cout << std::boolalpha << notify << std::endl;
+    // get input text, stripping out prompt
+    auto thetext = text().mid(6);
 
-    // set completion text, stripping out prompt
-    m_completer->setCompletionPrefix(text().mid(6));
+    // set completion prefix to last word
+    int afterspace = thetext.leftRef(cursorPosition()).lastIndexOf(' ') + 1;
+    thetext = thetext.mid(afterspace);
+    m_completer->setCompletionPrefix(thetext);
 
     // make string list of potential matches
     QStringList matches;
