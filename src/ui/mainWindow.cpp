@@ -158,20 +158,15 @@ MainWindow::writeSettings() const
     m_settings->setValue("MainWindow/State", saveState());
     m_settings->setValue("MainWindow/Geometry", saveGeometry());
 
-    m_settings->setValue("MainWindow/BottomDock/CurrentIndex", m_bottomTabWidget->currentIndex());
-
-//    for (auto n=0; n < m_bottomTabWidget->count(); ++n)
-//    {
-//        const auto widget = m_bottomTabWidget->widget(n);
-//        m_settings->setValue("MainWindow/BottomDock/OutputIndex/" + widget->objectName(), n);
-//    }
+    // bottom dock's current tab
+    m_settings->setValue("MainWindow/BottomDock/CurrentTab", m_bottomTabWidget->currentIndex());
 
     for (const auto child : findChildren<QWidget *>())
     {
         auto tabname = child->property("tabname");
         if (tabname.isValid())
         {
-            m_settings->setValue("MainWindow/BottomDock/OutputIndex/" + child->objectName(), m_bottomTabWidget->indexOf(child));
+            m_settings->setValue("MainWindow/BottomDock/TabOrder/" + child->objectName(), m_bottomTabWidget->indexOf(child));
         }
     }
 }
@@ -209,11 +204,10 @@ MainWindow::createDocks()
     m_bottomTabWidget->setTabsClosable(true);
     m_bottomTabWidget->setMovable(true);
 
-
     // lambda to return index of tab from settings or default value if not set
     auto getIndex = [&](const QWidget *tab, int def)
     {
-        auto key = "MainWindow/BottomDock/OutputIndex/" + tab->objectName();
+        auto key = "MainWindow/BottomDock/TabOrder/" + tab->objectName();
         return m_settings->contains(key) ? m_settings->value(key).toInt() : def;
     };
 
@@ -264,7 +258,7 @@ MainWindow::createDocks()
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 
     // restore current index from settings
-    m_bottomTabWidget->setCurrentIndex(m_settings->value("MainWindow/BottomDock/CurrentIndex", 0).toInt());
+    m_bottomTabWidget->setCurrentIndex(m_settings->value("MainWindow/BottomDock/TabIndex", 0).toInt());
 }
 
 void
@@ -277,7 +271,7 @@ MainWindow::createFileMenu()
 
     auto fileexitact = new QAction(tr("Quit"), this);
     fileexitact->setStatusTip(tr("Quit the application"));
-    fileexitact->setShortcut(Qt::Key_Q);
+    fileexitact->setShortcut(Qt::CTRL + Qt::Key_Q);
     connect(fileexitact, &QAction::triggered, [&](){ quit(); });
 
     filemenu->addAction(fileexitact);

@@ -88,7 +88,6 @@ startupThread(const po::variables_map &vm)
                     break;
                 }
             }
-
         }
         else
         {
@@ -117,6 +116,7 @@ startupThread(const po::variables_map &vm)
                 gdb->setArgs(argstr);
             }
 
+            // if breakonmain true, set breakpoint, otherwise find source file for main
             if (Core::optionsManager()->get<bool>("breakonmain"))
                 gdb->insertBreakpoint("main");
             else

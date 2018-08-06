@@ -82,16 +82,16 @@ BreakPoints::onBreakPointsUpdated()
         QFileInfo fileinfo(QString::fromStdString(breakpoint.location.filename));
         QString filename = fileinfo.fileName() + ", line " + QString::number(breakpoint.location.row);
 
-        m_model->setData(m_model->index(rowcount, 0), "");
-        m_model->setData(m_model->index(rowcount, 1), breakpoint.breakpointnumber);
-        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(breakpoint.location.function));
-        m_model->setData(m_model->index(rowcount, 3), filename);
-        m_model->setData(m_model->index(rowcount, 4), breakpoint.hitcount);
-
+        // draw icon indicating breakpoint status in first column
         if (breakpoint.enabled)
             m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/brkp"), Qt::DecorationRole);
         else
             m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/brkp_disabled"), Qt::DecorationRole);
+
+        m_model->setData(m_model->index(rowcount, 1), breakpoint.breakpointnumber);
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(breakpoint.location.function));
+        m_model->setData(m_model->index(rowcount, 3), filename);
+        m_model->setData(m_model->index(rowcount, 4), breakpoint.hitcount);
     }
 }
 

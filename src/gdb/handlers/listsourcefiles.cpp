@@ -47,14 +47,19 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
-        auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));
+        auto &sourcefiles = Core::state()->sourceFiles();
 
+        auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));
         for (const auto &file : files)
         {
             const auto &entry = boost::any_cast<Gdb::Payload::Dict>(file);
             const auto &fullname = boost::any_cast<char *>(entry.at("fullname"));
-            (void)fullname;
-//            std::cout << fullname << std::endl;
+            const auto filename = boost::filesystem::path(fullname).filename().string();
+            if (std::find(std::begin(sourcefiles), std::end(sourcefiles), filename) == std::end(sourcefiles))
+            {
+                sourcefiles.push_back(filename);
+                std::cout << fullname << std::endl;
+            }
         }
     }
 

@@ -107,14 +107,17 @@ BuilderImpl::~BuilderImpl()
 void
 BuilderImpl::setBuildPath(const std::string &progpath)
 {
-    using boost::filesystem::path;
-
-    if (boost::filesystem::exists(path(progpath) / "compile_commands.json"))
+    auto ccfilename = boost::filesystem::path(progpath) / "compile_commands.json";
+    if (boost::filesystem::exists(ccfilename))
     {
-        std::cout << "loading " << boost::filesystem::canonical(path(progpath) / "compile_commands.json").string() << std::endl;
+        std::cout << "loading " << ccfilename.string() << std::endl;
         CXCompilationDatabase_Error errorcode;
         m_compdb = clang_CompilationDatabase_fromDirectory(progpath.c_str(), &errorcode);
         m_index = clang_createIndex(0, 0);
+    }
+    else
+    {
+        std::cerr << "unable to read " << ccfilename.string() << std::endl;
     }
 }
 
@@ -123,7 +126,7 @@ BuilderImpl::parseFile(const std::string &filename)
 {
     if (m_index)
     {
-        auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_None);
+        auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
 
         if (unit == nullptr)
         {
@@ -148,6 +151,7 @@ BuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client
     {
         case CXCursor_VarDecl :
         case CXCursor_FieldDecl :
+        case CXCursor_FunctionDecl :
             parser->addReference(cursor, parent);
             break;
 

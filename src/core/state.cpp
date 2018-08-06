@@ -87,4 +87,10 @@ State::setCallStack(const CallStack& callstack)
     Signal::callStackUpdated();
 }
 
+std::vector<std::string> &
+State::sourceFiles()
+{
+    return m_sourceFiles;
+}
+
 }

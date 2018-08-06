@@ -15,6 +15,8 @@
 #include <QProxyStyle>
 #include <QCompleter>
 #include <QTimer>
+#include <QDebug>
+#include <QStandardItemModel>
 
 #include "core/global.h"
 #include "core/signal.h"
@@ -36,6 +38,11 @@ class ConsoleInput : public HistoryLineEdit
   protected:
     void keyPressEvent(QKeyEvent *) override;
     void focusInEvent(QFocusEvent *event) override;
+
+  private:
+    void autoComplete();
+
+    QCompleter *m_completer;
 };
 
 // custom block style cursor
@@ -57,13 +64,33 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
 
     setText("(gdb) ");
 
-    QStringList wordList;
-    wordList << "alpha" << "omega" << "omicron" << "zeta";
+    // build completion text model
+    auto model = new QStandardItemModel(0, 2, this);
 
-    QCompleter *completer = new QCompleter(wordList, this);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    completer->setCompletionMode(QCompleter::InlineCompletion);
-    setWordCompleter(completer);
+    // insert gdb commands in column 0
+    QStringList gdbcommands;
+    gdbcommands << "break" << "next" << "step" << "return" << "enable" << "disable" << "quit";
+    for (const auto &word : gdbcommands)
+    {
+        auto rowcount = model->rowCount();
+        model->insertRow(rowcount);
+
+        model->setData(model->index(rowcount, 0), word);
+    }
+
+    // insert source files in column 1
+    const auto &sourcefiles = Core::state()->sourceFiles();
+    for (const auto &filename : sourcefiles)
+    {
+        auto rowcount = model->rowCount();
+        model->insertRow(rowcount);
+
+        model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
+    }
+
+    m_completer = new QCompleter(model, this);
+    m_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    m_completer->setCompletionMode(QCompleter::InlineCompletion);
 }
 
 ConsoleInputStyle::ConsoleInputStyle(QStyle *style) : QProxyStyle(style)
@@ -112,8 +139,11 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
                 std::cout << h.toStdString() << std::endl;
             break;
 
-        case Qt::Key_Tab:
         case Qt::Key_Backtab:
+            break;
+
+        case Qt::Key_Tab:
+            autoComplete();
             break;
 
         default:
@@ -128,6 +158,25 @@ ConsoleInput::focusInEvent(QFocusEvent *event)
 
     // prevent selected text on focusin event
     deselect();
+}
+
+void
+ConsoleInput::autoComplete()
+{
+    // set completion text, stripping out prompt
+    m_completer->setCompletionPrefix(text().mid(6));
+
+    for (int i = 0; m_completer->setCurrentRow(i); i++)
+        qDebug() << m_completer->currentCompletion() << " is match number " << i;
+
+//    auto index = m_completer->currentIndex();
+//    auto start = m_completer->currentRow();
+//def next_completion(self):
+//    index = self._compl.currentIndex()
+//    self._compl.popup().setCurrentIndex(index)
+//    start = self._compl.currentRow()
+//    if not self._compl.setCurrentRow(start + 1):
+//        self._compl.setCurrentRow(0)
 }
 
 }

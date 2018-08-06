@@ -17,6 +17,8 @@
 #include "core/state.h"
 #include "core/signal.h"
 
+#include "ast/builder.h"
+
 #include "gdb/commands.h"
 #include "gdb/result.h"
 
@@ -72,6 +74,8 @@ breakinsert(const Result &result, int token, boost::any data)
         auto lc = Core::Location({func, filename, line});
         auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
         Core::state()->breakPoints().insertBreakpoint(bp);
+
+        Core::astBuilder()->parseFile(filename);
 
         // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();

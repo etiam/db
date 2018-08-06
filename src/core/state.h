@@ -46,27 +46,30 @@ class State
     State();
     ~State() = default;
 
-    AnyMap &            vars();
-    Breakpoints &       breakPoints();
-    CallStack &         callStack();
+    AnyMap & vars();
+    Breakpoints & breakPoints();
+    CallStack & callStack();
 
-    const Location &    currentLocation() const;
+    const Location & currentLocation() const;
 
-    void                setDebuggerState(Debugger state);
-    Debugger            debuggerState() const;
+    void setDebuggerState(Debugger state);
+    Debugger debuggerState() const;
 
-    void                setCallStack(const CallStack &callstack);
+    void setCallStack(const CallStack &callstack);
+
+    std::vector<std::string> & sourceFiles();
 
   private:
     // wink signal handlers
-    void                onLoadFileSignal(const std::string &filename);
-    void                onSetCurrentLocationSignal(const Core::Location &location);
+    void onLoadFileSignal(const std::string &filename);
+    void onSetCurrentLocationSignal(const Core::Location &location);
 
-    CallStack           m_callStack;
-    AnyMap              m_vars;
-    Breakpoints         m_breakpoints;
-    Location            m_currentLocation;
-    Debugger            m_debuggerState = Debugger::NONE;
+    CallStack m_callStack;
+    AnyMap m_vars;
+    Breakpoints m_breakpoints;
+    Location m_currentLocation;
+    Debugger m_debuggerState = Debugger::NONE;
+    std::vector<std::string> m_sourceFiles;
 };
 
 }

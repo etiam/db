@@ -52,7 +52,7 @@ infoline(const Gdb::Result &result, int token, boost::any data)
             filename = boost::filesystem::canonical(filename).string();
         }
 
-        // if the editor has not displayed anything yet
+        // if the editor has not displayed anything yet load filename and set the cursor
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::Signal::loadFile(filename);
