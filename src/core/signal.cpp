@@ -35,6 +35,8 @@ wink::signal<wink::slot<void ()>>                                       callStac
 wink::signal<wink::slot<void ()>>                                       debuggerStateUpdated;
 
 wink::signal<wink::slot<void ()>>                                       breakPointsUpdated;
+
+wink::signal<wink::slot<void ()>>                                       completionDataUpdated;
 }
 
 }

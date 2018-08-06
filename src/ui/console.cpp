@@ -40,7 +40,8 @@ class ConsoleInput : public HistoryLineEdit
     void focusInEvent(QFocusEvent *event) override;
 
   private:
-    void autoComplete();
+    void autoComplete(bool notify);
+    void onCompletionDataUpdated();
 
     QCompleter *m_completer;
 };
@@ -70,6 +71,7 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
     // insert gdb commands in column 0
     QStringList gdbcommands;
     gdbcommands << "break" << "next" << "step" << "return" << "enable" << "disable" << "quit";
+    gdbcommands << "add-auto-load-safe-path" << "add-inferior" << "add-symbol-file-from-memory" << "add-auto-load-scripts-directory  add-symbol-file";
     for (const auto &word : gdbcommands)
     {
         auto rowcount = model->rowCount();
@@ -78,19 +80,13 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
         model->setData(model->index(rowcount, 0), word);
     }
 
-    // insert source files in column 1
-    const auto &sourcefiles = Core::state()->sourceFiles();
-    for (const auto &filename : sourcefiles)
-    {
-        auto rowcount = model->rowCount();
-        model->insertRow(rowcount);
-
-        model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
-    }
-
+    // create and assign completer
     m_completer = new QCompleter(model, this);
     m_completer->setCaseSensitivity(Qt::CaseInsensitive);
     m_completer->setCompletionMode(QCompleter::InlineCompletion);
+    m_completer->setCompletionColumn(0);
+
+    Core::Signal::completionDataUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
 }
 
 ConsoleInputStyle::ConsoleInputStyle(QStyle *style) : QProxyStyle(style)
@@ -113,6 +109,8 @@ ConsoleInputStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, c
 void
 ConsoleInput::keyPressEvent(QKeyEvent *event)
 {
+    static int lastkey;
+
     switch (event->key())
     {
         case Qt::Key_Backspace:
@@ -143,12 +141,17 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
             break;
 
         case Qt::Key_Tab:
-            autoComplete();
+        {
+            auto notify =  (lastkey == Qt::Key_Tab);
+            autoComplete(notify);
             break;
+        }
 
         default:
             HistoryLineEdit::keyPressEvent(event);
     }
+
+    lastkey = event->key();
 }
 
 void
@@ -156,27 +159,92 @@ ConsoleInput::focusInEvent(QFocusEvent *event)
 {
     HistoryLineEdit::focusInEvent(event);
 
-    // prevent selected text on focusin event
+    // prevent the auto-selecting of text on focusin event
     deselect();
 }
 
 void
-ConsoleInput::autoComplete()
+ConsoleInput::autoComplete(bool notify)
 {
+    std::cout << std::boolalpha << notify << std::endl;
+
     // set completion text, stripping out prompt
     m_completer->setCompletionPrefix(text().mid(6));
 
+    // make string list of potential matches
+    QStringList matches;
     for (int i = 0; m_completer->setCurrentRow(i); i++)
-        qDebug() << m_completer->currentCompletion() << " is match number " << i;
+    {
+        const auto &string = m_completer->currentCompletion();
+        if (string.size() > 0)
+        {
+            matches << string;
+        }
+    }
 
-//    auto index = m_completer->currentIndex();
-//    auto start = m_completer->currentRow();
-//def next_completion(self):
-//    index = self._compl.currentIndex()
-//    self._compl.popup().setCurrentIndex(index)
-//    start = self._compl.currentRow()
-//    if not self._compl.setCurrentRow(start + 1):
-//        self._compl.setCurrentRow(0)
+    // if notify, just send list of matches to console
+    if (notify)
+    {
+        Core::Signal::appendConsoleText(matches.join(", ").toStdString());
+    }
+
+    // otherwise try to complete
+    else
+    {
+        if (matches.size() > 0)
+        {
+            QString completion;
+
+            // only one match, use that
+            if (matches.size() == 1)
+            {
+                completion = matches[0];
+            }
+
+            // more than one, find common prefix and use that
+            else
+            {
+                auto first = matches[0];
+                auto second = matches[1];
+                for (int n=0; n < first.size(); ++n)
+                {
+                    if (first[n] != second[n])
+                    {
+                        completion = first.mid(0, n);
+                        break;
+                    }
+                }
+            }
+
+            // update text()
+            if (completion.size() > 0)
+            {
+                QString newtext = text() + completion.mid(m_completer->completionPrefix().size());
+
+                // there was only a single match, so insert space after as it's a complete word
+                if (matches.size() == 1)
+                    newtext += " ";
+
+                setText(newtext);
+            }
+        }
+    }
+}
+
+void
+ConsoleInput::onCompletionDataUpdated()
+{
+    auto model = m_completer->model();
+
+    // insert source files into column 1 of m_completer's model
+    const auto &sourcefiles = Core::state()->sourceFiles();
+    for (const auto &filename : sourcefiles)
+    {
+        auto rowcount = model->rowCount();
+        model->insertRow(rowcount);
+
+        model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
+    }
 }
 
 }

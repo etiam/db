@@ -29,13 +29,13 @@ class BreakPoints : public QTreeView
     BreakPoints(QWidget *parent = nullptr);
     ~BreakPoints() = default;
 
-    void onBreakPointsUpdated();
-
   protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
 
   private:
+    void onBreakPointsUpdated();
+
     BreakPointsItemModel * m_model;
 };
 

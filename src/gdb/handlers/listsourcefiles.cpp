@@ -58,9 +58,10 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
             if (std::find(std::begin(sourcefiles), std::end(sourcefiles), filename) == std::end(sourcefiles))
             {
                 sourcefiles.push_back(filename);
-                std::cout << fullname << std::endl;
             }
         }
+
+        Core::Signal::completionDataUpdated();
     }
 
     return match;
