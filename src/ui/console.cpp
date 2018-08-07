@@ -165,10 +165,19 @@ ConsoleInput::autoComplete(bool notify)
     // get input text, stripping out prompt
     auto thetext = text().mid(6);
 
+    int firstspace = thetext.leftRef(cursorPosition()).indexOf(' ') + 1;
+    int lastspace = thetext.leftRef(cursorPosition()).lastIndexOf(' ') + 1;
+    auto firstword = thetext.mid(0, firstspace);
+    auto lastword = thetext.mid(lastspace);
+
+    // determine which column to auto complete from
+    if (firstword != "break ")
+        m_completer->setCompletionColumn(0);
+    else
+        m_completer->setCompletionColumn(1);
+
     // set completion prefix to last word
-    int afterspace = thetext.leftRef(cursorPosition()).lastIndexOf(' ') + 1;
-    thetext = thetext.mid(afterspace);
-    m_completer->setCompletionPrefix(thetext);
+    m_completer->setCompletionPrefix(lastword);
 
     // make string list of potential matches
     QStringList matches;
@@ -184,7 +193,7 @@ ConsoleInput::autoComplete(bool notify)
     // if notify, just send list of matches to console
     if (notify)
     {
-        Core::Signal::appendConsoleText(matches.join(", ").toStdString());
+        Core::Signal::appendConsoleText(matches.join(", ").toStdString() + "\n");
     }
 
     // otherwise try to complete
