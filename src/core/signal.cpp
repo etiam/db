@@ -36,7 +36,7 @@ wink::signal<wink::slot<void ()>>                                       debugger
 
 wink::signal<wink::slot<void ()>>                                       breakPointsUpdated;
 
-wink::signal<wink::slot<void ()>>                                       completionDataUpdated;
+wink::signal<wink::slot<void ()>>                                       sourceListUpdated;
 }
 
 }

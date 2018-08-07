@@ -17,9 +17,35 @@
 #include "core/global.h"
 #include "core/state.h"
 #include "core/signal.h"
+#include "ast/builder.h"
 
 #include "gdb/commands.h"
 #include "gdb/result.h"
+
+namespace
+{
+
+// compare how similar two filenames are based on how many directories
+// are in common between them.  common should be constant among the
+// set of files compared.
+int
+filenameOverlap(const std::string &filename, const std::string &common)
+{
+    auto len = std::min(filename.size(), common.size());
+    auto t = std::count(common.begin(), common.end(), '/');
+    int c=0;
+    for (int n=0; n < len; ++n)
+    {
+        if (filename[n] != common[n])
+            break;
+        if (filename[n] == '/')
+            c++;
+    }
+
+    return (static_cast<float>(c) / t) * 100;
+}
+
+}
 
 namespace Gdb
 {
@@ -47,6 +73,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
+        auto &buildpath = Core::ast()->buildPath();
         auto &sourcefiles = Core::state()->sourceFiles();
 
         auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));
@@ -57,11 +84,13 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
             const auto filename = boost::filesystem::path(fullname).filename().string();
             if (std::find(std::begin(sourcefiles), std::end(sourcefiles), filename) == std::end(sourcefiles))
             {
-                sourcefiles.push_back(filename);
+                if (filenameOverlap(fullname, buildpath) > 80)
+                    sourcefiles.push_back(filename);
             }
+//            std::cout << fullname << "  " <<  filenameOverlap(fullname, buildpath) << std::endl;
         }
 
-        Core::Signal::completionDataUpdated();
+        Core::Signal::sourceListUpdated();
     }
 
     return match;

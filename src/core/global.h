@@ -21,15 +21,15 @@ namespace Core
 {
 
 // global init
-void                        initialize();
-void                        shutdown();
+void initialize();
+void shutdown();
 
 // Access to Managers
-StatePtr &                  state();
-OptionsManagerPtr &         optionsManager();
+StatePtr & state();
+OptionsManagerPtr & optionsManager();
 
-Gdb::CommandsPtr &          gdb();
-Ast::BuilderPtr &           astBuilder();
+Gdb::CommandsPtr & gdb();
+Ast::BuilderPtr & ast();
 
 } // namespace Core
 

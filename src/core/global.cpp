@@ -133,7 +133,7 @@ gdb()
 }
 
 Ast::BuilderPtr &
-astBuilder()
+ast()
 {
     return Master::astBuilder();
 }

@@ -75,9 +75,15 @@ Commands::setArgs(const std::string &args)
 }
 
 void
-Commands::listSourceFiles()
+Commands::getSourceFiles()
 {
     m_controller->executeCommand("file-list-exec-source-files", Handlers::listsourcefiles);
+}
+
+void
+Commands::getFunctionNames()
+{
+    executeConsoleCommand("info functions", Handlers::infofunctions);
 }
 
 void

@@ -56,7 +56,7 @@ extern wink::signal<wink::slot<void ()>>                                        
 extern wink::signal<wink::slot<void ()>>                                        breakPointsUpdated;
 
 // emitted when sourcefiles and function names data is updated
-extern wink::signal<wink::slot<void ()>>                                        completionDataUpdated;
+extern wink::signal<wink::slot<void ()>>                                        sourceListUpdated;
 
 }
 

@@ -39,8 +39,11 @@ class Commands
     // sets program arguments
     void    setArgs(const std::string &args);
 
+    // requests list of function names from gdb
+    void    getFunctionNames();
+
     // requests list of source files from gdb
-    void    listSourceFiles();
+    void    getSourceFiles();
 
     // requests current call stack from gdb
     void    updateCallStack();

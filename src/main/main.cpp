@@ -60,7 +60,7 @@ get_environment_path()
 }
 
 void
-startupThread(const po::variables_map &vm)
+gdbStartupThread(const po::variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "startup");
 
@@ -69,7 +69,7 @@ startupThread(const po::variables_map &vm)
     {
         auto &state = Core::state();
         auto &gdb = Core::gdb();
-        auto &ast = Core::astBuilder();
+        auto &ast = Core::ast();
         auto &vars = state->vars();
 
         bool found = false;
@@ -103,6 +103,12 @@ startupThread(const po::variables_map &vm)
             vars.set("filename", prog);
             vars.set("buildpath", buildpath);
 
+            // will output to console
+            gdb->executeCommand("gdb-version");
+
+            // give gdb-version time to complete
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
             Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
             gdb->loadProgram(prog);
 
@@ -122,7 +128,8 @@ startupThread(const po::variables_map &vm)
             else
                 gdb->infoAddress("main");
 
-            gdb->listSourceFiles();
+            gdb->getSourceFiles();
+//            gdb->getFunctionNames();
 
             ast->setBuildPath(buildpath);
         }
@@ -200,10 +207,10 @@ main(int argc, char *argv[])
     auto gui = std::make_unique<Ui::Main>(argc, argv);
 
     // start startup thread
-    auto startupthread = std::make_unique<std::thread>(&startupThread, vm);
+    auto gdbstartupthread = std::make_unique<std::thread>(&gdbStartupThread, vm);
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
 
-    startupthread->join();
+    gdbstartupthread->join();
 }

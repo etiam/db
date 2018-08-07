@@ -75,7 +75,7 @@ breakinsert(const Result &result, int token, boost::any data)
         auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
         Core::state()->breakPoints().insertBreakpoint(bp);
 
-        Core::astBuilder()->parseFile(filename);
+        Core::ast()->parseFile(filename);
 
         // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();

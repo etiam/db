@@ -26,11 +26,14 @@ class Builder
     Builder();
     ~Builder();
 
+    const std::string & buildPath() const;
     void setBuildPath(const std::string &path);
+
     void parseFile(const std::string &filename);
 
   private:
-    std::unique_ptr<BuilderImpl>    m_impl;
+    std::string m_buildPath;
+    std::unique_ptr<BuilderImpl> m_impl;
 };
 
 }

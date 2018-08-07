@@ -85,7 +85,7 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
     m_completer->setCompletionMode(QCompleter::InlineCompletion);
     m_completer->setCompletionColumn(0);
 
-    Core::Signal::completionDataUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
+    Core::Signal::sourceListUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
 }
 
 ConsoleInputStyle::ConsoleInputStyle(QStyle *style) : QProxyStyle(style)
@@ -228,11 +228,6 @@ ConsoleInput::autoComplete(bool notify)
             if (completion.size() > 0)
             {
                 QString newtext = text() + completion.mid(m_completer->completionPrefix().size());
-
-                // there was only a single match, so insert space after as it's a complete word
-                if (matches.size() == 1)
-                    newtext += " ";
-
                 setText(newtext);
             }
         }

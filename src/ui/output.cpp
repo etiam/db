@@ -35,6 +35,7 @@ Output::appendText(const QString &text)
     auto sanitized = text;
     sanitized.replace("\\n", "\n");
     sanitized.replace("\\t", "    ");
+    sanitized.replace("\\\"", "\"");
 
     // skip text with only a newline
     if (sanitized != "\n")

@@ -38,6 +38,9 @@ bool infoline(const Result &result, int token, boost::any data);
 // handle result of info address console command
 bool infoaddress(const Result &result, int token, boost::any data);
 
+// handle result of info functions console command
+bool infofunctions(const Result &result, int token, boost::any data);
+
 // handle interpreter-exec console commands
 bool interpreterexec(const Result &result, int token, boost::any data);
 

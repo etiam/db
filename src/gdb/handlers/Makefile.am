@@ -13,6 +13,7 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/interpreterexec.cpp                \
                             src/gdb/handlers/infoline.cpp                       \
                             src/gdb/handlers/infoaddress.cpp                    \
+                            src/gdb/handlers/infofunctions.cpp                  \
                                                                                 \
                             src/gdb/handlers/processexited.cpp                  \
                             src/gdb/handlers/killprog.cpp                       \
