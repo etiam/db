@@ -3,6 +3,7 @@ db_SOURCES               +=                                             \
                             src/ui/editor.cpp                           \
                             src/ui/output.cpp                           \
                             src/ui/console.cpp                          \
+                            src/ui/consoleInput.cpp                     \
                                                                         \
                             src/ui/callStack.cpp                        \
                             src/ui/breakPoints.cpp                      \
@@ -18,6 +19,7 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_editor.cpp                       \
                             src/ui/moc_output.cpp                       \
                             src/ui/moc_console.cpp                      \
+                            src/ui/moc_consoleInput.cpp                 \
                                                                         \
                             src/ui/moc_callStack.cpp                    \
                             src/ui/moc_breakPoints.cpp                  \

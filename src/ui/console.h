@@ -23,6 +23,7 @@ namespace Ui
 {
 
 class Output;
+class ConsoleInput;
 
 class Console: public QFrame
 {
@@ -40,7 +41,7 @@ class Console: public QFrame
 
   private:
     Output * m_output;
-    HistoryLineEdit * m_lineedit;
+    ConsoleInput * m_lineedit;
 };
 
 }
