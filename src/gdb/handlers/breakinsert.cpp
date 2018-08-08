@@ -81,8 +81,8 @@ breakinsert(const Result &result, int token, boost::any data)
         auto &vars = Core::state()->vars();
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
-            Core::Signal::loadFile(filename);
-            Core::Signal::setCursorPosition(line, 0);
+            Core::Signals::loadFile(filename);
+            Core::Signals::setCursorPosition(line, 0);
             vars.set("initialdisplay", true);
         }
     }

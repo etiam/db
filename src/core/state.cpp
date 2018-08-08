@@ -17,8 +17,8 @@ namespace Core
 
 State::State()
 {
-    Core::Signal::loadFile.connect(this, &State::onLoadFileSignal);
-    Core::Signal::setCurrentLocation.connect(this, &State::onSetCurrentLocationSignal);
+    Core::Signals::loadFile.connect(this, &State::onLoadFileSignal);
+    Core::Signals::setCurrentLocation.connect(this, &State::onSetCurrentLocationSignal);
 }
 
 AnyMap &
@@ -49,7 +49,7 @@ void
 State::setDebuggerState(State::Debugger state)
 {
     m_debuggerState = state;
-    Core::Signal::debuggerStateUpdated();
+    Core::Signals::debuggerStateUpdated();
 }
 
 State::Debugger
@@ -58,7 +58,7 @@ State::debuggerState() const
     return m_debuggerState;
 }
 
-// wink signal handlers
+// signal handlers
 
 void
 State::onLoadFileSignal(const std::string &filename)
@@ -74,9 +74,9 @@ State::onSetCurrentLocationSignal(const Core::Location &location)
     m_currentLocation = location;
 
     // update previous position's gutter marker
-    Signal::updateGutterMarker(oldloc);
+    Signals::updateGutterMarker(oldloc);
 
-    Signal::setCursorPosition(m_currentLocation.row, 0);
+    Signals::setCursorPosition(m_currentLocation.row, 0);
 }
 
 void
@@ -84,7 +84,7 @@ State::setCallStack(const CallStack& callstack)
 {
     m_callStack = callstack;
 
-    Signal::callStackUpdated();
+    Signals::callStackUpdated();
 }
 
 std::vector<std::string> &

@@ -62,7 +62,7 @@ get_environment_path()
 void
 gdbStartupThread(const po::variables_map &vm)
 {
-    pthread_setname_np(pthread_self(), "startup");
+    pthread_setname_np(pthread_self(), "gdbstartup");
 
     // try to find prog in current dir
     if (vm.count("prog"))
@@ -109,7 +109,7 @@ gdbStartupThread(const po::variables_map &vm)
             // give gdb-version time to complete
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-            Core::Signal::appendConsoleText("Reading symbols from " + prog + "...");
+            Core::Signals::appendConsoleText("Reading symbols from " + prog + "...");
             gdb->loadProgram(prog);
 
             // set program arguments
@@ -138,12 +138,29 @@ gdbStartupThread(const po::variables_map &vm)
         {
             std::stringstream msg;
             msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
-            Core::Signal::appendConsoleText(msg.str());
+            Core::Signals::appendConsoleText(msg.str());
 
             vars.set("filename", std::string());
             vars.set("buildpath", std::string());
         }
     }
+}
+
+void
+astStartupThread(const po::variables_map &vm)
+{
+    pthread_setname_np(pthread_self(), "aststartup");
+
+    bool state = false;
+
+    Core::Signals::sourceListUpdated.connect([&state]() { state = true; });
+
+    while(!state)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    std::cout << "fuck yeah!" << std::endl;
 }
 
 int
@@ -208,9 +225,11 @@ main(int argc, char *argv[])
 
     // start startup thread
     auto gdbstartupthread = std::make_unique<std::thread>(&gdbStartupThread, vm);
+    auto aststartupthread = std::make_unique<std::thread>(&astStartupThread, vm);
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
 
     gdbstartupthread->join();
+    aststartupthread->join();
 }

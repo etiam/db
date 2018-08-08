@@ -13,50 +13,131 @@
 #endif
 
 #include <string>
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreorder"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#include "external/wink/wink/signal.hpp"
-#pragma GCC diagnostic pop
+#include <functional>
+#include <map>
 
 #include "state.h"
 
 namespace Core
 {
 
-namespace Signal
+// from http://simmesimme.github.io/tutorials/2015/09/20/signal-slot
+
+// A signal object may call multiple slots with the
+// same signature. You can connect functions to the signal
+// which will be called when the emit() method on the
+// signal object is invoked. Any argument passed to emit()
+// will be passed to the given functions.
+
+template<typename ... Args>
+class Signal
 {
 
-extern wink::signal<wink::slot<void (const std::string &filename)>>             loadFile;
+public:
 
-extern wink::signal<wink::slot<void ()>>                                        quitRequested;
+    Signal()
+        : current_id_(0)
+    {
+    }
 
-extern wink::signal<wink::slot<void (int row, int col)>>                        setCursorPosition;
-extern wink::signal<wink::slot<void (int row)>>                                 updateGutterMarker;
+    // copy creates new signal
+    Signal(Signal const& other)
+        : current_id_(0)
+    {
+    }
+
+    // connects a member function to this Signal
+    template<typename T>
+    int connect(T *inst, void (T::*func)(Args...))
+    {
+        return connect([=](Args... args)
+        {
+            (inst->*func)(args...);
+        });
+    }
+
+    // connects a const member function to this Signal
+    template<typename T>
+    int connect(T *inst, void (T::*func)(Args...) const)
+    {
+        return connect([=](Args... args)
+        {
+            (inst->*func)(args...);
+        });
+    }
+
+    // connects a std::function to the signal. The returned
+    // value can be used to disconnect the function again
+    int connect(std::function<void(Args...)> const& slot) const
+    {
+        slots_.insert(std::make_pair(++current_id_, slot));
+        return current_id_;
+    }
+
+    // disconnects a previously connected function
+    void disconnect(int id) const
+    {
+        slots_.erase(id);
+    }
+
+    // disconnects all previously connected functions
+    void disconnect_all() const
+    {
+        slots_.clear();
+    }
+
+    void operator()(Args... p)
+    {
+        for (auto it : slots_)
+        {
+            it.second(p...);
+        }
+    }
+
+    // assignment creates new Signal
+    Signal& operator=(Signal const& other)
+    {
+        disconnect_all();
+    }
+
+private:
+    mutable std::map<int, std::function<void(Args...)>> slots_;
+    mutable int current_id_;
+};
+
+namespace Signals
+{
+
+extern Signal<const std::string &> loadFile;
+
+extern Signal<> quitRequested;
+
+extern Signal<int, int> setCursorPosition;
+extern Signal<int> updateGutterMarker;
 
 // set the debugger's current location
-extern wink::signal<wink::slot<void (const Location &location)>>                setCurrentLocation;
+extern Signal<const Location &> setCurrentLocation;
 
 // clear current location gutter marker
-extern wink::signal<wink::slot<void ()>>                                        clearCurrentLocation;
+extern Signal<> clearCurrentLocation;
 
-extern wink::signal<wink::slot<void (const std::string &text)>>                 appendConsoleText;
-extern wink::signal<wink::slot<void (const std::string &text)>>                 appendLogText;
-extern wink::signal<wink::slot<void (const std::string &text)>>                 appendOutputText;
+extern Signal<const std::string &> appendConsoleText;
+extern Signal<const std::string &> appendLogText;
+extern Signal<const std::string &> appendOutputText;
 
 // emitted when gdb's running state is updated
-extern wink::signal<wink::slot<void ()>>                                        debuggerStateUpdated;
+extern Signal<> debuggerStateUpdated;
 
 // emitted when the global callstack is updated
-extern wink::signal<wink::slot<void ()>>                                        callStackUpdated;
+extern Signal<> callStackUpdated;
 
 // emitted when the global breakpoint list is updated
-extern wink::signal<wink::slot<void ()>>                                        breakPointsUpdated;
+extern Signal<> breakPointsUpdated;
 
 // emitted when sourcefiles and function names data is updated
-extern wink::signal<wink::slot<void ()>>                                        sourceListUpdated;
+extern Signal<> sourceListUpdated;
+
+extern Signal<> sourceListUpdated;
 
 }
 

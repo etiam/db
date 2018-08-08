@@ -14,29 +14,30 @@
 namespace Core
 {
 
-namespace Signal
+namespace Signals
 {
 
-wink::signal<wink::slot<void (const std::string &filename)>>            loadFile;
-wink::signal<wink::slot<void ()>>                                       quitRequested;
+Signal<const std::string &> loadFile;
+Signal<> quitRequested;
 
-wink::signal<wink::slot<void (int row, int col)>>                       setCursorPosition;
-wink::signal<wink::slot<void (int row)>>                                updateGutterMarker;
+Signal<int, int> setCursorPosition;
+Signal<int> updateGutterMarker;
 
-wink::signal<wink::slot<void (const Location &location)>>               setCurrentLocation;
-wink::signal<wink::slot<void ()>>                                       clearCurrentLocation;
+Signal<const Location &> setCurrentLocation;
+Signal<> clearCurrentLocation;
 
-wink::signal<wink::slot<void (const std::string &text)>>                appendConsoleText;
-wink::signal<wink::slot<void (const std::string &text)>>                appendLogText;
-wink::signal<wink::slot<void (const std::string &text)>>                appendOutputText;
+Signal<const std::string &> appendConsoleText;
 
-wink::signal<wink::slot<void ()>>                                       callStackUpdated;
+Signal<const std::string &> appendLogText;
+Signal<const std::string &> appendOutputText;
 
-wink::signal<wink::slot<void ()>>                                       debuggerStateUpdated;
+Signal<> callStackUpdated;
 
-wink::signal<wink::slot<void ()>>                                       breakPointsUpdated;
+Signal<> debuggerStateUpdated;
 
-wink::signal<wink::slot<void ()>>                                       sourceListUpdated;
+Signal<> breakPointsUpdated;
+
+Signal<> sourceListUpdated;
 }
 
 }

@@ -52,13 +52,13 @@ stopped(const Result &result, int token, boost::any data)
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
 
             // load editor with contents of filename
-            Core::Signal::loadFile(fullname);
+            Core::Signals::loadFile(fullname);
 
             // update global current location
-            Core::Signal::setCurrentLocation(Core::Location({func, fullname, line}));
+            Core::Signals::setCurrentLocation(Core::Location({func, fullname, line}));
 
             // update current gutter marker
-            Core::Signal::updateGutterMarker(line);
+            Core::Signals::updateGutterMarker(line);
 
             // update call stack
             Core::gdb()->updateCallStack();

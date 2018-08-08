@@ -145,11 +145,11 @@ Editor::Editor(QMainWindow *parent) :
     // color theme
     setTheme("clouds_midnight");
 
-    // wink handlers
-    Core::Signal::loadFile.connect(this, &Editor::onLoadFileSignal);
-    Core::Signal::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
-    Core::Signal::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
-    Core::Signal::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
+    // signal handlers
+    Core::Signals::loadFile.connect(this, &Editor::onLoadFileSignal);
+    Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
+    Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
+    Core::Signals::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
 }
 
 Editor::~Editor()
@@ -322,7 +322,7 @@ Editor::hideGutter()
     m_impl->executeJavaScript(QString("editor.renderer.setShowGutter(false)"));
 }
 
-// wink signal handlers
+// signal handlers
 
 void
 Editor::onLoadFileSignal(const std::string &filename)

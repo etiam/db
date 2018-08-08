@@ -90,7 +90,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
 //            std::cout << fullname << "  " <<  filenameOverlap(fullname, buildpath) << std::endl;
         }
 
-        Core::Signal::sourceListUpdated();
+        Core::Signals::sourceListUpdated();
     }
 
     return match;

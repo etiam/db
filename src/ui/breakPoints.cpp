@@ -64,7 +64,7 @@ BreakPoints::BreakPoints(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
-    Core::Signal::breakPointsUpdated.connect(this, &BreakPoints::onBreakPointsUpdated);
+    Core::Signals::breakPointsUpdated.connect(this, &BreakPoints::onBreakPointsUpdated);
 }
 
 void

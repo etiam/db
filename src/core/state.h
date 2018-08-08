@@ -60,7 +60,7 @@ class State
     std::vector<std::string> & sourceFiles();
 
   private:
-    // wink signal handlers
+    // signal handlers
     void onLoadFileSignal(const std::string &filename);
     void onSetCurrentLocationSignal(const Core::Location &location);
 

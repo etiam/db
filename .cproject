@@ -1016,6 +1016,22 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="src/gdb/handlers/db-infofunctions.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infofunctions.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="src/gdb/handlers/db-infofunctions.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>soundmake</buildCommand>
+				<buildArguments>-j${NUMCORES}</buildArguments>
+				<buildTarget>src/gdb/handlers/db-infofunctions.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="src/gdb/handlers/db-infoline.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>soundmake</buildCommand>
 				<buildArguments>-j${NUMCORES}</buildArguments>

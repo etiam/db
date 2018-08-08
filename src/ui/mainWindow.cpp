@@ -66,31 +66,21 @@ MainWindow::MainWindow(QWidget *parent) :
     createHotkeys();
     createStatusbar();
 
-/*
-    auto dockwidget1 = new QDockWidget(tr("Tab1"), this);
-    dockwidget1->setObjectName("dw1");
-    dockwidget1->setMinimumSize({0, 0});
-    dockwidget1->setTitleBarWidget(new QWidget(this));
+    // signal handlers
+    Core::Signals::loadFile.connect(this, &MainWindow::onLoadFileSignal);
+    Core::Signals::quitRequested.connect(this, &MainWindow::onQuitRequested);
 
-    auto dockwidget2 = new QDockWidget(tr("Tab2"), this);
-    dockwidget2->setObjectName("dw2");
-    dockwidget2->setMinimumSize({0, 0});
-    dockwidget2->setTitleBarWidget(new QWidget(this));
+    Core::Signals::appendConsoleText.connect([this] (const std::string &t)
+    {
+        QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
 
-    addDockWidget(Qt::LeftDockWidgetArea , dockwidget1);
-    addDockWidget(Qt::LeftDockWidgetArea , dockwidget2);
-//    tabifyDockWidget(dockwidget1,dockwidget2);
-*/
+    Core::Signals::appendLogText.connect(this, &MainWindow::onAppendLogText);
+    Core::Signals::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
 
-    // wink signals
-    Core::Signal::loadFile.connect(this, &MainWindow::onLoadFileSignal);
-    Core::Signal::quitRequested.connect(this, &MainWindow::onQuitRequested);
+    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 
-    Core::Signal::appendConsoleText.connect(this, &MainWindow::onAppendConsoleText);
-    Core::Signal::appendLogText.connect(this, &MainWindow::onAppendLogText);
-    Core::Signal::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
-
-    Core::Signal::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
+    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 }
 
 MainWindow::~MainWindow()
@@ -345,7 +335,7 @@ MainWindow::createHotkeys()
     connect(zoomreset, &QShortcut::activated, [&](){ m_editor->zoomResetText(); });
 }
 
-// wink signal handlers
+// signal handlers
 
 void
 MainWindow::onLoadFileSignal(const std::string &filename)

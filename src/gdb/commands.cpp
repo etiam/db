@@ -130,7 +130,7 @@ void
 Commands::run()
 {
     std::string cmd = "exec-run";
-    Core::Signal::appendConsoleText("run\n");
+    Core::Signals::appendConsoleText("run\n");
     m_controller->executeCommand(cmd, Handlers::execrun);
 }
 
@@ -138,7 +138,7 @@ void
 Commands::cont()
 {
     std::string cmd = "exec-continue";
-    Core::Signal::appendConsoleText("continue\n");
+    Core::Signals::appendConsoleText("continue\n");
     m_controller->executeCommand(cmd, Handlers::execrun);
 }
 
@@ -168,21 +168,21 @@ Commands::stop()
 void
 Commands::stepover()
 {
-    Core::Signal::appendConsoleText("next\n");
+    Core::Signals::appendConsoleText("next\n");
     m_controller->executeCommand("exec-next", Handlers::execnext);
 }
 
 void
 Commands::stepinto()
 {
-    Core::Signal::appendConsoleText("step\n");
+    Core::Signals::appendConsoleText("step\n");
     m_controller->executeCommand("exec-step");
 }
 
 void
 Commands::stepout()
 {
-    Core::Signal::appendConsoleText("finish\n");
+    Core::Signals::appendConsoleText("finish\n");
     m_controller->executeCommand("exec-finish");
 }
 

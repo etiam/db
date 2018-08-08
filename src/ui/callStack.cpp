@@ -58,7 +58,7 @@ CallStack::CallStack(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
-    Core::Signal::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
+    Core::Signals::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
 }
 
 void
@@ -100,10 +100,10 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
         const auto location = stack[row].location;
 
         // load editor with contents of filename
-        Core::Signal::loadFile(location.filename);
+        Core::Signals::loadFile(location.filename);
 
         // update current location
-        Core::Signal::setCurrentLocation(location);
+        Core::Signals::setCurrentLocation(location);
     }
 }
 

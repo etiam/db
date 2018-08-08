@@ -85,7 +85,7 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
     m_completer->setCompletionMode(QCompleter::InlineCompletion);
     m_completer->setCompletionColumn(0);
 
-    Core::Signal::sourceListUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
+    Core::Signals::sourceListUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
 }
 
 ConsoleInputStyle::ConsoleInputStyle(QStyle *style) : QProxyStyle(style)
@@ -193,7 +193,7 @@ ConsoleInput::autoComplete(bool notify)
     // if notify, just send list of matches to console
     if (notify)
     {
-        Core::Signal::appendConsoleText(matches.join(", ").toStdString() + "\n");
+        Core::Signals::appendConsoleText(matches.join(", ").toStdString() + "\n");
     }
 
     // otherwise try to complete

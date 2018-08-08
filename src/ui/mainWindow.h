@@ -67,7 +67,7 @@ class MainWindow : public QMainWindow
 
     void            createHotkeys();
 
-    // wink signal handlers
+    // signal handlers
     void            onLoadFileSignal(const std::string &filename);
     void            onQuitRequested();
     void            onAppendConsoleText(const std::string &text);

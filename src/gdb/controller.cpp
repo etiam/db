@@ -296,7 +296,7 @@ ControllerImpl::resultReaderThread()
             auto excstr = bp::extract<std::string>(formatted_list[0])();
             if (excstr.find("NoGdbProcessError:") != std::string::npos)
             {
-                Core::Signal::quitRequested();
+                Core::Signals::quitRequested();
             }
 
             PyErr_Clear();

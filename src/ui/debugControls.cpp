@@ -133,7 +133,7 @@ void
 DebugControls::run()
 {
     // this will make the current location marker disappear
-    Core::Signal::clearCurrentLocation();
+    Core::Signals::clearCurrentLocation();
 
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
         Core::gdb()->cont();
