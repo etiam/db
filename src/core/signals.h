@@ -138,10 +138,11 @@ extern Signal<> callStackUpdated;
 // emitted when the global breakpoint list is updated
 extern Signal<> breakPointsUpdated;
 
-// emitted when sourcefiles and function names data is updated
+// emitted when the list of source files is updated
 extern Signal<> sourceListUpdated;
 
-extern Signal<> sourceListUpdated;
+// emitted when the list of function names is updated
+extern Signal<> functionListUpdated;
 
 }
 

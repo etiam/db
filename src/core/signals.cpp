@@ -39,6 +39,8 @@ Signal<> debuggerStateUpdated;
 Signal<> breakPointsUpdated;
 
 Signal<> sourceListUpdated;
+
+Signal<> functionListUpdated;
 }
 
 }

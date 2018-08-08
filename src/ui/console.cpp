@@ -23,7 +23,7 @@
 #include "core/global.h"
 #include "core/signals.h"
 #include "gdb/commands.h"
-
+#include "ast/builder.h"
 #include "external/lineedit/src/history_line_edit.hpp"
 
 #include "output.h"
@@ -42,8 +42,10 @@ class ConsoleInput : public HistoryLineEdit
     void focusInEvent(QFocusEvent *event) override;
 
   private:
+    void updateCompletionData();
+
+  private:
     void autoComplete(bool notify);
-    void onCompletionDataUpdated();
 
     QCompleter *m_completer;
 };
@@ -67,27 +69,21 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
 
     setText("(gdb) ");
 
-    // build completion text model
-    auto model = new QStandardItemModel(0, 2, this);
-
-    // insert gdb commands in column 0
-    QStringList gdbcommands;
-    gdbcommands << "break" << "next" << "step" << "return" << "enable" << "disable" << "quit";
-    for (const auto &word : gdbcommands)
-    {
-        auto rowcount = model->rowCount();
-        model->insertRow(rowcount);
-
-        model->setData(model->index(rowcount, 0), word);
-    }
-
     // create and assign completer
-    m_completer = new QCompleter(model, this);
+    m_completer = new QCompleter(this);
     m_completer->setCaseSensitivity(Qt::CaseInsensitive);
     m_completer->setCompletionMode(QCompleter::InlineCompletion);
     m_completer->setCompletionColumn(0);
 
-    Core::Signals::sourceListUpdated.connect(this, &ConsoleInput::onCompletionDataUpdated);
+    updateCompletionData();
+
+    Core::Signals::sourceListUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "updateCompletionData", Qt::QueuedConnection);
+    });
+
+//    Core::Signals::sourceListUpdated.connect(this, &ConsoleInput::updateCompletionData);
+    Core::Signals::functionListUpdated.connect(this, &ConsoleInput::updateCompletionData);
 }
 
 ConsoleInputStyle::ConsoleInputStyle(QStyle *style) : QProxyStyle(style)
@@ -237,30 +233,54 @@ ConsoleInput::autoComplete(bool notify)
 }
 
 void
-ConsoleInput::onCompletionDataUpdated()
+ConsoleInput::updateCompletionData()
 {
-    auto model = m_completer->model();
+    // create and assign new model
+    auto model = new QStandardItemModel(0, 2, this);
+    m_completer->setModel(model);
 
-    // insert source files into column 1 of m_completer's model
+    // insert gdb commands in column 0 of model
+    QStringList gdbcommands;
+    gdbcommands << "break" << "next" << "step" << "return" << "enable" << "disable" << "quit";
+    for (const auto &word : gdbcommands)
+    {
+        auto rowcount = model->rowCount();
+        model->insertRow(rowcount);
+
+        model->setData(model->index(rowcount, 0), word);
+    }
+
+    // insert source file names into column of model
     const auto &sourcefiles = Core::state()->sourceFiles();
-
-    // make unique list of filenames
     std::vector<std::string> filenames;
     for (const auto &fullname : sourcefiles)
     {
         const auto filename = boost::filesystem::path(fullname).filename().string();
         if (std::find(std::begin(filenames), std::end(filenames), filename) == std::end(filenames))
+        {
             filenames.push_back(filename);
+            auto rowcount = model->rowCount();
+            model->insertRow(rowcount);
+            model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
+        }
     }
+    std::cout << "inserted " << filenames.size() << " filename(s) into completion model" << std::endl;
 
-    // populate model with filenames
-    for (const auto &filename : filenames)
+    // insert source function names into column of model
+    std::vector<std::string> funcnames;
+    const auto &functions = Core::ast()->functions();
+    for (const auto ref : functions)
     {
-        auto rowcount = model->rowCount();
-        model->insertRow(rowcount);
-
-        model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
+        const auto &funcname = ref.second.spelling;
+        if (std::find(std::begin(funcnames), std::end(funcnames), funcname) == std::end(funcnames))
+        {
+            funcnames.push_back(funcname);
+            auto rowcount = model->rowCount();
+            model->insertRow(rowcount);
+            model->setData(model->index(rowcount, 1), QString::fromStdString(funcname));
+        }
     }
+    std::cout << "inserted " << funcnames.size() << " funcname(s) into completion model" << std::endl;
 }
 
 }

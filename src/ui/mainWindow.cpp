@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Core::Signals::loadFile.connect(this, &MainWindow::onLoadFileSignal);
     Core::Signals::quitRequested.connect(this, &MainWindow::onQuitRequested);
 
-    Core::Signals::appendConsoleText.connect([this] (const std::string &t)
+    Core::Signals::appendConsoleText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 
-    Core::Signals::setStatusbarText.connect([this] (const std::string &t)
+    Core::Signals::setStatusbarText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });

@@ -16,12 +16,12 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
 
+#include "core/util.h"
 #include "core/global.h"
 #include "core/signals.h"
 #include "core/timer.h"
 #include "core/state.h"
 #include "core/optionsManager.h"
-
 #include "ast/builder.h"
 #include "gdb/commands.h"
 #include "ui/main.h"
@@ -118,7 +118,6 @@ gdbStartupThread(const po::variables_map &vm)
                 const auto &args = vm["args"].as<std::vector<std::string>>();
                 std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
                     [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
-                std::cout << argstr << std::endl;
                 gdb->setArgs(argstr);
             }
 
@@ -129,8 +128,6 @@ gdbStartupThread(const po::variables_map &vm)
                 gdb->infoAddress("main");
 
             gdb->getSourceFiles();
-//            gdb->getFunctionNames();
-
             ast->setBuildPath(buildpath);
         }
 
@@ -161,13 +158,19 @@ astStartupThread(const po::variables_map &vm)
     }
 
     auto &ast = Core::ast();
-    for (const auto &filename : Core::state()->sourceFiles())
+    const auto &sourcefiles = Core::state()->sourceFiles();
+    const auto count = std::to_string(sourcefiles.size());
+    for (auto&& item : Core::enumerate(sourcefiles))
     {
-        Core::Signals::setStatusbarText("parsing " + filename);
+        auto index = std::get<0>(item);
+        auto filename = std::get<1>(item);
+
+        Core::Signals::setStatusbarText("parsing (" + std::to_string(index) + " of " + count + ") " + filename);
         ast->parseFunctions(filename);
     }
 
     Core::Signals::setStatusbarText("");
+    Core::Signals::functionListUpdated();
 }
 
 int
