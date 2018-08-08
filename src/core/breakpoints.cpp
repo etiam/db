@@ -12,7 +12,7 @@
 #include "gdb/commands.h"
 
 #include "global.h"
-#include "signal.h"
+#include "signals.h"
 #include "state.h"
 #include "breakpoints.h"
 

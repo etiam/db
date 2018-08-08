@@ -16,7 +16,7 @@
 
 #include "core/global.h"
 #include "core/state.h"
-#include "core/signal.h"
+#include "core/signals.h"
 
 #include "gdb/commands.h"
 #include "gdb/result.h"

@@ -17,7 +17,7 @@
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
-#include "core/signal.h"
+#include "core/signals.h"
 #include "core/timer.h"
 #include "core/state.h"
 #include "core/optionsManager.h"
@@ -151,16 +151,23 @@ astStartupThread(const po::variables_map &vm)
 {
     pthread_setname_np(pthread_self(), "aststartup");
 
-    bool state = false;
+    bool signaled = false;
+    Core::Signals::sourceListUpdated.connect([&signaled]() { signaled = true; });
 
-    Core::Signals::sourceListUpdated.connect([&state]() { state = true; });
-
-    while(!state)
+    // wait for sourceListUpdated signal to fire
+    while(!signaled)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    std::cout << "fuck yeah!" << std::endl;
+    auto &ast = Core::ast();
+    for (const auto &filename : Core::state()->sourceFiles())
+    {
+        Core::Signals::setStatusbarText("parsing " + filename);
+        ast->parseFunctions(filename);
+    }
+
+    Core::Signals::setStatusbarText("");
 }
 
 int

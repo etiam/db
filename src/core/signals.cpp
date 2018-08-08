@@ -9,7 +9,7 @@
 # include "config.h"
 #endif
 
-#include "signal.h"
+#include "signals.h"
 
 namespace Core
 {
@@ -27,9 +27,10 @@ Signal<const Location &> setCurrentLocation;
 Signal<> clearCurrentLocation;
 
 Signal<const std::string &> appendConsoleText;
-
 Signal<const std::string &> appendLogText;
 Signal<const std::string &> appendOutputText;
+
+Signal<const std::string &> setStatusbarText;
 
 Signal<> callStackUpdated;
 

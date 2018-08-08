@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+#include <boost/filesystem/operations.hpp>
+
 #include <QVBoxLayout>
 #include <QProxyStyle>
 #include <QCompleter>
@@ -19,7 +21,7 @@
 #include <QStandardItemModel>
 
 #include "core/global.h"
-#include "core/signal.h"
+#include "core/signals.h"
 #include "gdb/commands.h"
 
 #include "external/lineedit/src/history_line_edit.hpp"
@@ -241,7 +243,18 @@ ConsoleInput::onCompletionDataUpdated()
 
     // insert source files into column 1 of m_completer's model
     const auto &sourcefiles = Core::state()->sourceFiles();
-    for (const auto &filename : sourcefiles)
+
+    // make unique list of filenames
+    std::vector<std::string> filenames;
+    for (const auto &fullname : sourcefiles)
+    {
+        const auto filename = boost::filesystem::path(fullname).filename().string();
+        if (std::find(std::begin(filenames), std::end(filenames), filename) == std::end(filenames))
+            filenames.push_back(filename);
+    }
+
+    // populate model with filenames
+    for (const auto &filename : filenames)
     {
         auto rowcount = model->rowCount();
         model->insertRow(rowcount);

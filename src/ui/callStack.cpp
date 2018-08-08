@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 #include <QFileInfo>
 
-#include "core/signal.h"
+#include "core/signals.h"
 #include "core/global.h"
 #include "core/state.h"
 

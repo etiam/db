@@ -16,7 +16,7 @@
 
 #include "core/global.h"
 #include "core/state.h"
-#include "core/signal.h"
+#include "core/signals.h"
 #include "ast/builder.h"
 
 #include "gdb/commands.h"
@@ -82,12 +82,11 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
             const auto &entry = boost::any_cast<Gdb::Payload::Dict>(file);
             const auto &fullname = boost::any_cast<char *>(entry.at("fullname"));
             const auto filename = boost::filesystem::path(fullname).filename().string();
-            if (std::find(std::begin(sourcefiles), std::end(sourcefiles), filename) == std::end(sourcefiles))
+            if (std::find(std::begin(sourcefiles), std::end(sourcefiles), fullname) == std::end(sourcefiles))
             {
-                if (filenameOverlap(fullname, buildpath) > 80)
-                    sourcefiles.push_back(filename);
+                if (filenameOverlap(fullname, buildpath) > 50)
+                    sourcefiles.push_back(fullname);
             }
-//            std::cout << fullname << "  " <<  filenameOverlap(fullname, buildpath) << std::endl;
         }
 
         Core::Signals::sourceListUpdated();

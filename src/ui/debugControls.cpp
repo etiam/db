@@ -13,7 +13,7 @@
 #include <QAction>
 
 #include "core/global.h"
-#include "core/signal.h"
+#include "core/signals.h"
 
 #include "gdb/commands.h"
 

@@ -3,6 +3,3 @@ db_SOURCES               +=                                                     
 
 nodist_db_SOURCES        +=                                                     \
                             src/external/lineedit/src/moc_history_line_edit.cpp
-
-db_CPPFLAGS              +=                                                     \
-                            -I$(abs_top_srcdir)/src/external/wink

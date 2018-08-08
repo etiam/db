@@ -15,7 +15,7 @@
 
 #include "core/global.h"
 #include "core/state.h"
-#include "core/signal.h"
+#include "core/signals.h"
 
 #include "ast/builder.h"
 
@@ -75,7 +75,7 @@ breakinsert(const Result &result, int token, boost::any data)
         auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
         Core::state()->breakPoints().insertBreakpoint(bp);
 
-        Core::ast()->parseFile(filename);
+        Core::ast()->parseFunctions(filename);
 
         // if the editor has not displayed anything yet load filename and set the cursor
         auto &vars = Core::state()->vars();

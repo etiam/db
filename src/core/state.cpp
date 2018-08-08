@@ -9,7 +9,7 @@
 # include "config.h"
 #endif
 
-#include "signal.h"
+#include "signals.h"
 #include "state.h"
 
 namespace Core

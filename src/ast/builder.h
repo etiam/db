@@ -29,7 +29,7 @@ class Builder
     const std::string & buildPath() const;
     void setBuildPath(const std::string &path);
 
-    void parseFile(const std::string &filename);
+    void parseFunctions(const std::string &filename);
 
   private:
     std::string m_buildPath;

@@ -73,10 +73,10 @@ class BuilderImpl
     ~BuilderImpl();
 
     void                        setBuildPath(const std::string &buildpath);
-    void                        parseFile(const std::string &filename);
+    void                        parseFunctions(const std::string &filename);
     void                        addReference(CXCursor cursor, CXCursor parent);
 
-    static CXChildVisitResult   visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data);
+    static CXChildVisitResult   parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientData client_data);
 
     struct ReferenceData
     {
@@ -87,7 +87,7 @@ class BuilderImpl
     using References = std::unordered_map<::ReferenceLocation, ReferenceData>;
 
     std::string             m_buildPath;
-    References              m_references;
+    References              m_functions;
     CXIndex                 m_index = nullptr;
     CXCompilationDatabase   m_compdb = nullptr;
 };
@@ -122,7 +122,7 @@ BuilderImpl::setBuildPath(const std::string &buildpath)
 }
 
 void
-BuilderImpl::parseFile(const std::string &filename)
+BuilderImpl::parseFunctions(const std::string &filename)
 {
     if (m_index)
     {
@@ -135,7 +135,7 @@ BuilderImpl::parseFile(const std::string &filename)
         else
         {
             CXCursor cursor = clang_getTranslationUnitCursor(unit);
-            clang_visitChildren(cursor, visitFunction, this);
+            clang_visitChildren(cursor, parseFunctionsVisitor, this);
         }
 
         clang_disposeTranslationUnit(unit);
@@ -143,14 +143,14 @@ BuilderImpl::parseFile(const std::string &filename)
 }
 
 CXChildVisitResult
-BuilderImpl::visitFunction(CXCursor cursor, CXCursor parent, CXClientData client_data)
+BuilderImpl::parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientData client_data)
 {
     auto *parser = static_cast<BuilderImpl *>(client_data);
 
     switch(clang_getCursorKind(cursor))
     {
-        case CXCursor_VarDecl :
-        case CXCursor_FieldDecl :
+//        case CXCursor_VarDecl :
+//        case CXCursor_FieldDecl :
         case CXCursor_FunctionDecl :
             parser->addReference(cursor, parent);
             break;
@@ -175,13 +175,8 @@ BuilderImpl::addReference(CXCursor cursor, CXCursor parent)
         if (file)
         {
             auto filename = clang_getFileName(file);
-            m_references[::ReferenceLocation({line, column, column + varlen - 1})] = ReferenceData({offset, clang_getCString(filename)});
+            m_functions[::ReferenceLocation({line, column, column + varlen - 1})] = ReferenceData({offset, clang_getCString(filename)});
             clang_disposeString(filename);
-
-//            std::cout << "'" << cursorspelling << "' "
-//                      << "of kind '" << clang_getCursorKindSpelling(clang_getCursorKind(cursor)) << "' "
-//                      << "(" << clang_getCursorKind(cursor) << ") " << clang_getFileName(file) << ":" << line << ":" << column << "-"
-//                      << column + varlen - 1 << std::endl;
         }
     }
 }
@@ -209,11 +204,11 @@ Builder::setBuildPath(const std::string &path)
 }
 
 void
-Builder::parseFile(const std::string &filename)
+Builder::parseFunctions(const std::string &filename)
 {
-    m_impl->parseFile(filename);
+    m_impl->parseFunctions(filename);
 
-    for (const auto ref : m_impl->m_references)
+    for (const auto ref : m_impl->m_functions)
     {
         auto key = ref.first;
         auto val = ref.second;

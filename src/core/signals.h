@@ -1,5 +1,5 @@
 /*
- * signal.h
+ * signals.h
  *
  *  Created on: Jul 19, 2017
  *      Author: jasonr
@@ -121,9 +121,13 @@ extern Signal<const Location &> setCurrentLocation;
 // clear current location gutter marker
 extern Signal<> clearCurrentLocation;
 
+// append text to various output widgets
 extern Signal<const std::string &> appendConsoleText;
 extern Signal<const std::string &> appendLogText;
 extern Signal<const std::string &> appendOutputText;
+
+// set statusbar text
+extern Signal<const std::string &> setStatusbarText;
 
 // emitted when gdb's running state is updated
 extern Signal<> debuggerStateUpdated;

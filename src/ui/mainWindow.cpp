@@ -25,7 +25,7 @@
 #include <QStatusBar>
 #include <QLabel>
 
-#include "core/signal.h"
+#include "core/signals.h"
 #include "core/global.h"
 
 #include "gdb/commands.h"
@@ -81,6 +81,11 @@ MainWindow::MainWindow(QWidget *parent) :
     Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 
     Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
+
+    Core::Signals::setStatusbarText.connect([this] (const std::string &t)
+    {
+        QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
 }
 
 MainWindow::~MainWindow()
@@ -296,7 +301,7 @@ MainWindow::createViewMenu()
     {
         auto name = tabwidget->property("tabname").toString();
         auto action = new QAction(name, this);
-        action->setStatusTip(tr("Show") + name + tr(" tab"));
+        action->setStatusTip(tr("Show ") + name + tr(" tab"));
         action->setCheckable(true);
         action->setChecked(std::find(std::begin(tabs), std::end(tabs), tabwidget) != std::end(tabs));
         connect(action, &QAction::triggered, [=] { toggleTab(tabwidget); });
@@ -316,9 +321,12 @@ MainWindow::createStatusbar()
 {
     m_statusIcon = new QLabel(this);
     m_statusIcon->setScaledContents(true);
+//    m_statusIcon->setPixmap(QPixmap(24, 24));
 
     statusBar()->insertPermanentWidget(0, m_statusIcon);
     statusBar()->setSizeGripEnabled(false);
+    statusBar()->setStyleSheet("QStatusBar {min-height: 28; }");
+
     statusBar()->show();
 }
 
@@ -351,12 +359,6 @@ void
 MainWindow::onQuitRequested()
 {
     quit();
-}
-
-void
-MainWindow::onAppendConsoleText(const std::string &text)
-{
-    QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
 }
 
 void
