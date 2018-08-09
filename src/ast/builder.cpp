@@ -74,7 +74,7 @@ BuilderImpl::setBuildPath(const std::string &buildpath)
 void
 BuilderImpl::parseFunctions(const std::string &filename)
 {
-    if (m_index)
+    if (m_index && boost::filesystem::exists(filename))
     {
         auto unit = clang_parseTranslationUnit(m_index, filename.c_str(), nullptr, 0, nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
 

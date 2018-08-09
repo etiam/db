@@ -75,7 +75,7 @@ commonPrefix(const QStringList &strings, QString &prefix)
         else
             pos = std::distance(a, std::mismatch(a, a + std::strlen(a), b).first);
 
-        std::cout << n << " " << a << " " << b << " " << pos << " " << minpos << std::endl;
+//        std::cout << n << " " << a << " " << b << " " << pos << " " << minpos << std::endl;
 
         minpos = std::min(minpos, pos);
         if (n > 1 && pos == 0)
@@ -203,10 +203,10 @@ ConsoleInput::autoComplete(bool notify)
         }
     }
 
-    // if notify, just send list of matches to console
-    if (notify)
+    // if notify, and multiple matches just send list of matches to console
+    if (notify && matches.size() > 1)
     {
-        Core::Signals::appendConsoleText(matches.join(", ").toStdString() + "\n");
+        Core::Signals::appendConsoleText("> " + matches.join(" ").toStdString() + "\n");
     }
 
     // otherwise try to complete
@@ -229,17 +229,6 @@ ConsoleInput::autoComplete(bool notify)
                 if (commonPrefix(matches, prefix))
                 {
                     completion = prefix;
-//                    std::cout << prefix.toStdString() << std::endl;
-//                    auto first = matches[0];
-//                    auto second = matches[1];
-//                    for (int n=0; n < first.size(); ++n)
-//                    {
-//                        if (first[n] != second[n])
-//                        {
-//                            completion = first.mid(0, n);
-//                            break;
-//                        }
-//                    }
                 }
             }
 
@@ -285,7 +274,6 @@ ConsoleInput::updateCompletionData()
             model->setData(model->index(rowcount, 1), QString::fromStdString(filename));
         }
     }
-    std::cout << "inserted " << filenames.size() << " filename(s) into completion model" << std::endl;
 
     // insert source function names into column of model
     std::vector<std::string> funcnames;
@@ -306,9 +294,6 @@ ConsoleInput::updateCompletionData()
             model->setData(model->index(rowcount, 1), QString::fromStdString(funcname));
         }
     }
-    std::cout << "inserted " << funcnames.size() << " funcname(s) into completion model" << std::endl;
-
-    std::cout << model->rowCount() << std::endl;
 }
 
 }

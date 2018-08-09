@@ -13,6 +13,7 @@
 #include <memory>
 #include <thread>
 #include <regex>
+#include <future>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -157,6 +158,55 @@ astStartupThread(const po::variables_map &vm)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
+    auto threads = 8;
+
+    auto &ast = Core::ast();
+    const auto &sourcefiles = Core::state()->sourceFiles();
+    auto count = sourcefiles.size();
+
+    // number of jobs per thread
+    auto binsize = count / threads == 0 ? count : count / threads;
+
+    std::vector<std::shared_future<Ast::Builder>> jobs;
+
+    auto loadem = [&](int start, int end) -> Ast::Builder
+    {
+        Ast::Builder localast;
+        localast.setBuildPath(ast->buildPath());
+
+        for (auto n=start; n < end; ++ n)
+        {
+            auto filename = sourcefiles[n];
+
+            Core::Signals::setStatusbarText("parsing " + filename);
+            localast.parseFunctions(filename);
+        }
+
+        return localast;
+    };
+
+    int start = 0;
+    for (auto n=0; n < threads; ++n)
+    {
+        if (start >= count)
+            break;
+
+        // make sure last job in last thread is last source file
+        auto end = start+binsize+1 > count ? count-1 : start+binsize;
+
+        jobs.push_back(std::async(std::launch::async, loadem, start, end));
+
+        start += binsize+1;
+    }
+
+    std::for_each(std::begin(jobs), std::end(jobs), [](std::shared_future<Ast::Builder> j)
+        {
+            std::cout << j.get().functions().size() << std::endl;
+        });
+
+    Core::Signals::setStatusbarText("");
+
+    /*
     auto &ast = Core::ast();
     const auto &sourcefiles = Core::state()->sourceFiles();
     const auto count = std::to_string(sourcefiles.size());
@@ -165,12 +215,13 @@ astStartupThread(const po::variables_map &vm)
         auto index = std::get<0>(item);
         auto filename = std::get<1>(item);
 
-        Core::Signals::setStatusbarText("parsing (" + std::to_string(index) + " of " + count + ") " + filename);
+        Core::Signals::setStatusbarText("parsing (" + std::to_string(index+1) + " of " + count + ") " + filename);
         ast->parseFunctions(filename);
     }
 
     Core::Signals::setStatusbarText("");
     Core::Signals::functionListUpdated();
+    */
 }
 
 int
