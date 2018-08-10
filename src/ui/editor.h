@@ -51,7 +51,7 @@ class Editor : public QWidget
   public Q_SLOTS:
     void    onGutterClicked(int row);
     void    onCursorMoved(int x, int y);
-    void    onMouseMoved(int x, int y);
+    void    onMouseMoved(int index);
 
   private:
     QString getLineText(int row) const;

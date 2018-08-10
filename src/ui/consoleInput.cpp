@@ -288,7 +288,7 @@ ConsoleInput::updateCompletionData()
     const auto &functions = Core::state()->functions();
     for (const auto ref : functions)
     {
-        const auto &funcname = ref.second.spelling;
+        const auto &funcname = ref.second.name;
 
         // ignore reserved functions
         if (funcname[0] == '_')

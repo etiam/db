@@ -86,6 +86,11 @@ ScannerImpl::parseFunctions(const std::string &filename)
 
         clang_disposeTranslationUnit(unit);
     }
+
+//    for (const auto &f : m_functions)
+//    {
+//        std::cout << f.first.filename << " " << f.first.offset << " " << f.first.length << " " << f.second.name << std::endl;
+//    }
 }
 
 CXChildVisitResult
@@ -122,8 +127,8 @@ ScannerImpl::addReference(CXCursor cursor, CXCursor parent)
         {
             auto filename = clang_getFileName(file);
             auto spelling = clang_getCursorSpelling(cursor);
-            m_functions[ReferenceLocation({line, column, column + varlen - 1})] =
-                ReferenceData({offset, clang_getCString(spelling), clang_getCString(filename)});
+            m_functions[ReferenceLocation({clang_getCString(filename), offset, varlen-1})] =
+                ReferenceData({clang_getCString(spelling)});
             clang_disposeString(spelling);
             clang_disposeString(filename);
         }
@@ -150,7 +155,6 @@ void
 Scanner::parseFunctions(const std::string &filename)
 {
     m_impl->parseFunctions(filename);
-
 }
 
 const References &

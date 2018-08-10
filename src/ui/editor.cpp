@@ -263,8 +263,9 @@ Editor::onCursorMoved(int x, int y)
 }
 
 void
-Editor::onMouseMoved(int x, int y)
+Editor::onMouseMoved(int index)
 {
+    std::cout << index << std::endl;
 }
 
 // private functions

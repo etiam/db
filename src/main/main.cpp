@@ -169,7 +169,7 @@ astStartupThread(const po::variables_map &vm)
     std::vector<std::shared_future<Ast::Scanner>> jobs;
 
     // scanner lambda, scans sourcefiles between indices start and end
-    auto loadem = [&](int start, int end)
+    auto scanfiles = [&](int start, int end)
     {
         Ast::Scanner localast;
         localast.setBuildPath(buildpath);
@@ -197,7 +197,7 @@ astStartupThread(const po::variables_map &vm)
         // make sure last job in last thread is last source file
         auto end = start+binsize+1 > count ? count-1 : start+binsize;
 
-        jobs.push_back(std::async(std::launch::async, loadem, start, end));
+        jobs.push_back(std::async(std::launch::async, scanfiles, start, end));
 
         start += binsize+1;
     }

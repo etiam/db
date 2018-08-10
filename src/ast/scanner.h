@@ -22,31 +22,30 @@ namespace Ast
 
 struct ReferenceLocation
 {
-    unsigned int line, colstart, colend;
+    std::string filename;
+    unsigned int offset, length;
 
     std::size_t
     hash() const
     {
         // Compute individual hash values for first, second and third (http://stackoverflow.com/a/1646913/126995)
         std::size_t hash = 17;
-        hash = hash * 31 + std::hash<int>()(line);
-        hash = hash * 31 + std::hash<int>()(colstart);
-        hash = hash * 31 + std::hash<int>()(colend);
+        hash = hash * 31 + std::hash<int>()(offset);
+        hash = hash * 31 + std::hash<int>()(length);
+        hash = hash * 31 + std::hash<std::string>()(filename);
         return hash;
     }
 
     bool
     operator==(const ReferenceLocation &other) const
     {
-        return (line == other.line && colstart == other.colstart && colend == other.colend);
+        return (offset == other.offset && length == other.length && filename == other.filename);
     }
 };
 
 struct ReferenceData
 {
-    unsigned int offset;
-    std::string spelling;
-    std::string filename;
+    std::string name;
 };
 
 using References = std::unordered_map<ReferenceLocation, ReferenceData>;
