@@ -13,7 +13,6 @@
 #endif
 
 #include "gdb/classPointers.h"
-#include "ast/classPointers.h"
 
 #include "classPointers.h"
 
@@ -29,7 +28,6 @@ StatePtr & state();
 OptionsManagerPtr & optionsManager();
 
 Gdb::CommandsPtr & gdb();
-Ast::BuilderPtr & ast();
 
 } // namespace Core
 

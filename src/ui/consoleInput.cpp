@@ -277,7 +277,7 @@ ConsoleInput::updateCompletionData()
 
     // insert source function names into column of model
     std::vector<std::string> funcnames;
-    const auto &functions = Core::ast()->functions();
+    const auto &functions = Core::state()->functions();
     for (const auto ref : functions)
     {
         const auto &funcname = ref.second.spelling;

@@ -44,11 +44,13 @@ class BuilderImpl
 
 BuilderImpl::BuilderImpl()
 {
+    m_index = clang_createIndex(0, 0);
 }
 
 BuilderImpl::~BuilderImpl()
 {
-    clang_disposeIndex(m_index);
+    if (m_index)
+        clang_disposeIndex(m_index);
 
     if (m_compdb)
         clang_CompilationDatabase_dispose(m_compdb);
@@ -60,14 +62,8 @@ BuilderImpl::setBuildPath(const std::string &buildpath)
     auto ccfilename = boost::filesystem::path(buildpath) / "compile_commands.json";
     if (boost::filesystem::exists(ccfilename))
     {
-        std::cout << "loading " << ccfilename.string() << std::endl;
         CXCompilationDatabase_Error errorcode;
         m_compdb = clang_CompilationDatabase_fromDirectory(buildpath.c_str(), &errorcode);
-        m_index = clang_createIndex(0, 0);
-    }
-    else
-    {
-        std::cerr << "unable to read " << ccfilename.string() << std::endl;
     }
 }
 
@@ -135,18 +131,12 @@ BuilderImpl::addReference(CXCursor cursor, CXCursor parent)
 }
 
 Builder::Builder() :
-    m_impl(std::make_unique<BuilderImpl>())
+    m_impl(std::make_shared<BuilderImpl>())
 {
 }
 
 Builder::~Builder()
 {
-}
-
-const std::string &
-Builder::buildPath() const
-{
-    return m_buildPath;
 }
 
 void

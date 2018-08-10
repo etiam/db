@@ -14,6 +14,8 @@
 # include "config.h"
 #endif
 
+#include "ast/builder.h"
+
 #include "anymap.h"
 #include "types.h"
 #include "breakpoints.h"
@@ -47,6 +49,7 @@ class State
     ~State() = default;
 
     AnyMap & vars();
+
     Breakpoints & breakPoints();
     CallStack & callStack();
 
@@ -59,6 +62,8 @@ class State
 
     std::vector<std::string> & sourceFiles();
 
+    Ast::References & functions();
+
   private:
     // signal handlers
     void onLoadFileSignal(const std::string &filename);
@@ -69,7 +74,9 @@ class State
     Breakpoints m_breakpoints;
     Location m_currentLocation;
     Debugger m_debuggerState = Debugger::NONE;
+
     std::vector<std::string> m_sourceFiles;
+    Ast::References m_functions;
 };
 
 }

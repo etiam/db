@@ -73,7 +73,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
 
     if (match)
     {
-        auto &buildpath = Core::ast()->buildPath();
+        auto buildpath = Core::state()->vars().get<std::string>("buildpath");
         auto &sourcefiles = Core::state()->sourceFiles();
 
         auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));

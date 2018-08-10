@@ -45,12 +45,7 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         auto &vars = state->vars();
         auto filename = smatch[2].str();
 
-        // if filename is relative, convert to absolute based on buildpath
-        if (!boost::filesystem::path(smatch[2].str()).is_absolute())
-        {
-            auto buildpath = vars.get<std::string>("buildpath");
-            filename = boost::filesystem::canonical(filename).string();
-        }
+        filename = boost::filesystem::canonical(filename).string();
 
         // if the editor has not displayed anything yet load filename and set the cursor
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))

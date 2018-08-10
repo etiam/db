@@ -59,7 +59,6 @@ class Builder
     Builder();
     ~Builder();
 
-    const std::string & buildPath() const;
     void setBuildPath(const std::string &path);
 
     void parseFunctions(const std::string &filename);
@@ -68,7 +67,7 @@ class Builder
 
   private:
     std::string m_buildPath;
-    std::unique_ptr<BuilderImpl> m_impl;
+    std::shared_ptr<BuilderImpl> m_impl;
 };
 
 }

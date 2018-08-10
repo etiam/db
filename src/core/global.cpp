@@ -35,7 +35,6 @@ class Master : boost::noncopyable
     static OptionsManagerPtr &      optionsManager();
 
     static Gdb::CommandsPtr &       gdbCommands();
-    static Ast::BuilderPtr &        astBuilder();
 
   private:
     Master();
@@ -45,7 +44,6 @@ class Master : boost::noncopyable
     StatePtr                        m_state;
     OptionsManagerPtr               m_optionsManager;
     Gdb::CommandsPtr                m_gdbCommands;
-    Ast::BuilderPtr                 m_AstBuilder;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -80,17 +78,10 @@ Master::gdbCommands()
     return instance().m_gdbCommands;
 }
 
-Ast::BuilderPtr &
-Master::astBuilder()
-{
-    return instance().m_AstBuilder;
-}
-
 Master::Master() :
     m_state(std::make_unique<State>()),
     m_optionsManager(std::make_unique<OptionsManager>()),
-    m_gdbCommands(std::make_unique<Gdb::Commands>()),
-    m_AstBuilder(std::make_unique<Ast::Builder>())
+    m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
 }
 
@@ -130,12 +121,6 @@ Gdb::CommandsPtr &
 gdb()
 {
     return Master::gdbCommands();
-}
-
-Ast::BuilderPtr &
-ast()
-{
-    return Master::astBuilder();
 }
 
 } // namespace Core

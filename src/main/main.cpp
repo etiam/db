@@ -70,7 +70,6 @@ gdbStartupThread(const po::variables_map &vm)
     {
         auto &state = Core::state();
         auto &gdb = Core::gdb();
-        auto &ast = Core::ast();
         auto &vars = state->vars();
 
         bool found = false;
@@ -99,7 +98,7 @@ gdbStartupThread(const po::variables_map &vm)
         if (found)
         {
             auto prog = vm["prog"].as<std::string>();
-            auto buildpath = boost::filesystem::absolute(boost::filesystem::path(prog).parent_path()).string();
+            auto buildpath = boost::filesystem::canonical(boost::filesystem::path(prog).parent_path()).string();
 
             vars.set("filename", prog);
             vars.set("buildpath", buildpath);
@@ -129,7 +128,6 @@ gdbStartupThread(const po::variables_map &vm)
                 gdb->infoAddress("main");
 
             gdb->getSourceFiles();
-            ast->setBuildPath(buildpath);
         }
 
         else
@@ -158,21 +156,23 @@ astStartupThread(const po::variables_map &vm)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    auto threads = 8;
+    // TODO : get this from gsettings
+    auto scannerthreads = 8;
 
-    auto &ast = Core::ast();
+    auto buildpath = Core::state()->vars().get<std::string>("buildpath");
     const auto &sourcefiles = Core::state()->sourceFiles();
-    auto count = sourcefiles.size();
+    const auto count = sourcefiles.size();
 
     // number of jobs per thread
-    auto binsize = count / threads == 0 ? count : count / threads;
+    auto binsize = count / scannerthreads == 0 ? count : count / scannerthreads;
 
     std::vector<std::shared_future<Ast::Builder>> jobs;
 
-    auto loadem = [&](int start, int end) -> Ast::Builder
+    // scanner lambda, scans sourcefiles between indices start and end
+    auto loadem = [&](int start, int end)
     {
         Ast::Builder localast;
-        localast.setBuildPath(ast->buildPath());
+        localast.setBuildPath(buildpath);
 
         for (auto n=start; n < end; ++ n)
         {
@@ -185,8 +185,9 @@ astStartupThread(const po::variables_map &vm)
         return localast;
     };
 
+    // launch scanner async jobs
     int start = 0;
-    for (auto n=0; n < threads; ++n)
+    for (auto n=0; n < scannerthreads; ++n)
     {
         if (start >= count)
             break;
@@ -199,29 +200,16 @@ astStartupThread(const po::variables_map &vm)
         start += binsize+1;
     }
 
-    std::for_each(std::begin(jobs), std::end(jobs), [](std::shared_future<Ast::Builder> j)
-        {
-            std::cout << j.get().functions().size() << std::endl;
-        });
-
-    Core::Signals::setStatusbarText("");
-
-    /*
-    auto &ast = Core::ast();
-    const auto &sourcefiles = Core::state()->sourceFiles();
-    const auto count = std::to_string(sourcefiles.size());
-    for (auto&& item : Core::enumerate(sourcefiles))
+    // combine results of async jobs
+    auto &functions = Core::state()->functions();
+    std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Builder> j)
     {
-        auto index = std::get<0>(item);
-        auto filename = std::get<1>(item);
-
-        Core::Signals::setStatusbarText("parsing (" + std::to_string(index+1) + " of " + count + ") " + filename);
-        ast->parseFunctions(filename);
-    }
+        const auto &f = j.get().functions();
+        functions.insert(std::begin(f), std::end(f));
+    });
 
     Core::Signals::setStatusbarText("");
     Core::Signals::functionListUpdated();
-    */
 }
 
 int
