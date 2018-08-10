@@ -15,10 +15,6 @@
 
 #include <QFrame>
 
-#include "core/timer.h"
-
-class HistoryLineEdit;
-
 namespace Ui
 {
 

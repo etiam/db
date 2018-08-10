@@ -41,8 +41,6 @@ class MainWindow : public QMainWindow
     ~MainWindow();
 
   private:
-    void            quit();
-
     // toggle the visibility of tab
     void            toggleTab(QWidget *tab);
 
@@ -69,12 +67,12 @@ class MainWindow : public QMainWindow
 
     // signal handlers
     void            onLoadFileSignal(const std::string &filename);
-    void            onQuitRequested();
-    void            onAppendLogText(const std::string &text);
-    void            onAppendOutputText(const std::string &text);
-
     void            onDebuggerStateUpdated();
 
+  private Q_SLOTS:
+    void            quit();
+
+  private:
     Editor *        m_editor;
 
     QTabWidget *    m_bottomTabWidget;

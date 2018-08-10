@@ -123,6 +123,7 @@ void
 ConsoleInput::keyPressEvent(QKeyEvent *event)
 {
     static int lastkey;
+    static std::string lastcmd;
 
     switch (event->key())
     {
@@ -135,7 +136,15 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Enter:
         case Qt::Key_Return:
             if (text().mid(6) > 0)
+            {
+                Core::gdb()->executeConsoleCommand(text().mid(6).toStdString());
+                lastcmd = text().mid(6).toStdString();
                 HistoryLineEdit::keyPressEvent(event);
+            }
+            else
+            {
+                Core::gdb()->executeConsoleCommand(lastcmd);
+            }
             setText("(gdb) ");
             break;
 

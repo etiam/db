@@ -68,23 +68,31 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // signal handlers
     Core::Signals::loadFile.connect(this, &MainWindow::onLoadFileSignal);
-    Core::Signals::quitRequested.connect(this, &MainWindow::onQuitRequested);
+    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 
     Core::Signals::appendConsoleText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
-    Core::Signals::appendLogText.connect(this, &MainWindow::onAppendLogText);
-    Core::Signals::appendOutputText.connect(this, &MainWindow::onAppendOutputText);
+    Core::Signals::appendLogText.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(m_debuggerOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
 
-    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
-
-    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
+    Core::Signals::appendOutputText.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(m_programOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
 
     Core::Signals::setStatusbarText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
+
+    Core::Signals::quitRequested.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
     });
 }
 
@@ -92,13 +100,6 @@ MainWindow::~MainWindow()
 {
     // save gui settings
     writeSettings();
-}
-
-void
-MainWindow::quit()
-{
-    Core::gdb()->stop();
-    close();
 }
 
 void
@@ -356,24 +357,6 @@ MainWindow::onLoadFileSignal(const std::string &filename)
 }
 
 void
-MainWindow::onQuitRequested()
-{
-    quit();
-}
-
-void
-MainWindow::onAppendLogText(const std::string &text)
-{
-    QMetaObject::invokeMethod(m_debuggerOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
-}
-
-void
-MainWindow::onAppendOutputText(const std::string &text)
-{
-    QMetaObject::invokeMethod(m_programOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
-}
-
-void
 MainWindow::onDebuggerStateUpdated()
 {
     auto state = Core::state()->debuggerState();
@@ -399,6 +382,13 @@ MainWindow::onDebuggerStateUpdated()
             m_statusIcon->setPixmap(QPixmap(24, 24));
             break;
     }
+}
+
+void
+MainWindow::quit()
+{
+    Core::gdb()->stop();
+    close();
 }
 
 }
