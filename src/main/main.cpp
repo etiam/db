@@ -23,7 +23,7 @@
 #include "core/timer.h"
 #include "core/state.h"
 #include "core/optionsManager.h"
-#include "ast/builder.h"
+#include "ast/scanner.h"
 #include "gdb/commands.h"
 #include "ui/main.h"
 
@@ -166,12 +166,12 @@ astStartupThread(const po::variables_map &vm)
     // number of jobs per thread
     auto binsize = count / scannerthreads == 0 ? count : count / scannerthreads;
 
-    std::vector<std::shared_future<Ast::Builder>> jobs;
+    std::vector<std::shared_future<Ast::Scanner>> jobs;
 
     // scanner lambda, scans sourcefiles between indices start and end
     auto loadem = [&](int start, int end)
     {
-        Ast::Builder localast;
+        Ast::Scanner localast;
         localast.setBuildPath(buildpath);
 
         for (auto n=start; n < end; ++ n)
@@ -184,6 +184,8 @@ astStartupThread(const po::variables_map &vm)
 
         return localast;
     };
+
+    Core::Timer timer;
 
     // launch scanner async jobs
     int start = 0;
@@ -202,11 +204,13 @@ astStartupThread(const po::variables_map &vm)
 
     // combine results of async jobs
     auto &functions = Core::state()->functions();
-    std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Builder> j)
+    std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Scanner> j)
     {
         const auto &f = j.get().functions();
         functions.insert(std::begin(f), std::end(f));
     });
+
+    std::cout << "scanned " << count << " files in " << timer << " ms" << std::endl;
 
     Core::Signals::setStatusbarText("");
     Core::Signals::functionListUpdated();

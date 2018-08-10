@@ -14,7 +14,7 @@
 # include "config.h"
 #endif
 
-#include "ast/builder.h"
+#include "ast/scanner.h"
 
 #include "anymap.h"
 #include "types.h"

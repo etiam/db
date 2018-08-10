@@ -1,5 +1,5 @@
 /*
- * ast.cpp
+ * scanner.cpp
  *
  *  Created on: Mar 23, 2018
  *      Author: jasonr
@@ -18,17 +18,17 @@
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
 
-#include "ast/builder.h"
+#include "ast/scanner.h"
 
 
 namespace Ast
 {
 
-class BuilderImpl
+class ScannerImpl
 {
   public:
-    BuilderImpl();
-    ~BuilderImpl();
+    ScannerImpl();
+    ~ScannerImpl();
 
     void setBuildPath(const std::string &buildpath);
     void parseFunctions(const std::string &filename);
@@ -42,12 +42,12 @@ class BuilderImpl
     CXCompilationDatabase m_compdb = nullptr;
 };
 
-BuilderImpl::BuilderImpl()
+ScannerImpl::ScannerImpl()
 {
     m_index = clang_createIndex(0, 0);
 }
 
-BuilderImpl::~BuilderImpl()
+ScannerImpl::~ScannerImpl()
 {
     if (m_index)
         clang_disposeIndex(m_index);
@@ -57,7 +57,7 @@ BuilderImpl::~BuilderImpl()
 }
 
 void
-BuilderImpl::setBuildPath(const std::string &buildpath)
+ScannerImpl::setBuildPath(const std::string &buildpath)
 {
     auto ccfilename = boost::filesystem::path(buildpath) / "compile_commands.json";
     if (boost::filesystem::exists(ccfilename))
@@ -68,7 +68,7 @@ BuilderImpl::setBuildPath(const std::string &buildpath)
 }
 
 void
-BuilderImpl::parseFunctions(const std::string &filename)
+ScannerImpl::parseFunctions(const std::string &filename)
 {
     if (m_index && boost::filesystem::exists(filename))
     {
@@ -76,7 +76,7 @@ BuilderImpl::parseFunctions(const std::string &filename)
 
         if (unit == nullptr)
         {
-            std::cerr << "Builder::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
+            std::cerr << "Scanner::parseFile(): unable to parse \"" << filename << "\"." << std::endl;
         }
         else
         {
@@ -89,9 +89,9 @@ BuilderImpl::parseFunctions(const std::string &filename)
 }
 
 CXChildVisitResult
-BuilderImpl::parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientData client_data)
+ScannerImpl::parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientData client_data)
 {
-    auto *parser = static_cast<BuilderImpl *>(client_data);
+    auto *parser = static_cast<ScannerImpl *>(client_data);
 
     switch(clang_getCursorKind(cursor))
     {
@@ -107,7 +107,7 @@ BuilderImpl::parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientDat
 }
 
 void
-BuilderImpl::addReference(CXCursor cursor, CXCursor parent)
+ScannerImpl::addReference(CXCursor cursor, CXCursor parent)
 {
     CXString cursorspelling = clang_getCursorSpelling(cursor);
     auto varlen = static_cast<unsigned int>(strlen(clang_getCString(cursorspelling)));
@@ -130,31 +130,31 @@ BuilderImpl::addReference(CXCursor cursor, CXCursor parent)
     }
 }
 
-Builder::Builder() :
-    m_impl(std::make_shared<BuilderImpl>())
+Scanner::Scanner() :
+    m_impl(std::make_shared<ScannerImpl>())
 {
 }
 
-Builder::~Builder()
+Scanner::~Scanner()
 {
 }
 
 void
-Builder::setBuildPath(const std::string &path)
+Scanner::setBuildPath(const std::string &path)
 {
     m_buildPath = path;
     m_impl->setBuildPath(path);
 }
 
 void
-Builder::parseFunctions(const std::string &filename)
+Scanner::parseFunctions(const std::string &filename)
 {
     m_impl->parseFunctions(filename);
 
 }
 
 const References &
-Builder::functions() const
+Scanner::functions() const
 {
     return m_impl->m_functions;
 }

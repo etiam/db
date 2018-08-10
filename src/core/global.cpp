@@ -13,7 +13,7 @@
 
 #include <boost/utility.hpp>
 
-#include "ast/builder.h"
+#include "ast/scanner.h"
 #include "gdb/commands.h"
 
 #include "state.h"

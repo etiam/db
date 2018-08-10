@@ -1,12 +1,12 @@
 /*
- * builder.h
+ * scanner.h
  *
  *  Created on: Mar 23, 2018
  *      Author: jasonr
  */
 
-#ifndef AST_BUILDER_H_
-#define AST_BUILDER_H_
+#ifndef AST_SCANNER_H_
+#define AST_SCANNER_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -51,13 +51,13 @@ struct ReferenceData
 
 using References = std::unordered_map<ReferenceLocation, ReferenceData>;
 
-class BuilderImpl;
+class ScannerImpl;
 
-class Builder
+class Scanner
 {
   public:
-    Builder();
-    ~Builder();
+    Scanner();
+    ~Scanner();
 
     void setBuildPath(const std::string &path);
 
@@ -67,7 +67,7 @@ class Builder
 
   private:
     std::string m_buildPath;
-    std::shared_ptr<BuilderImpl> m_impl;
+    std::shared_ptr<ScannerImpl> m_impl;
 };
 
 }
@@ -88,4 +88,4 @@ struct hash<Ast::ReferenceLocation>
 
 }
 
-#endif // AST_BUILDER_H_
+#endif // AST_SCANNER_H_
