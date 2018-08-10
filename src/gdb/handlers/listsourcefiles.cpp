@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <regex>
+#include <set>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -32,7 +33,7 @@ int
 filenameOverlap(const std::string &filename, const std::string &common)
 {
     auto len = std::min(filename.size(), common.size());
-    auto t = std::count(common.begin(), common.end(), '/');
+//    auto t = std::count(common.begin(), common.end(), '/');
     int c=0;
     for (int n=0; n < len; ++n)
     {
@@ -42,7 +43,8 @@ filenameOverlap(const std::string &filename, const std::string &common)
             c++;
     }
 
-    return (static_cast<float>(c) / t) * 100;
+    return c;
+//    return (static_cast<float>(c) / t) * 100;
 }
 
 }
@@ -76,16 +78,38 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
         auto buildpath = Core::state()->vars().get<std::string>("buildpath");
         auto &sourcefiles = Core::state()->sourceFiles();
 
+        // create list of fullnames
+        std::vector<std::string> fullnames;
         auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));
         for (const auto &file : files)
         {
             const auto &entry = boost::any_cast<Gdb::Payload::Dict>(file);
-            const auto &fullname = boost::any_cast<char *>(entry.at("fullname"));
+
+            fullnames.push_back(boost::any_cast<char *>(entry.at("fullname")));
+        }
+
+        // sort fullnames into buckets based on how much they overlap with the buildpath
+        std::map<int, std::set<std::string>> overlapmap;
+        for (const auto &fullname : fullnames)
+        {
+            auto overlap = filenameOverlap(fullname, buildpath);
+            overlapmap[overlap].insert(fullname);
+        }
+
+        // choose the bucket with the largest overlap
+        std::vector<int> keys;
+        transform(std::begin(overlapmap), std::end(overlapmap), back_inserter(keys),
+                  [](decltype(overlapmap)::value_type p) { return p.first;} );
+        sort(std::begin(keys), std::end(keys));
+        auto closestgroup = keys[keys.size()-1];
+
+        // add the filename of each fullname from the largest overlap bucket
+        for (const auto &fullname : overlapmap[closestgroup])
+        {
             const auto filename = boost::filesystem::path(fullname).filename().string();
             if (std::find(std::begin(sourcefiles), std::end(sourcefiles), fullname) == std::end(sourcefiles))
             {
-                if (filenameOverlap(fullname, buildpath) > 50)
-                    sourcefiles.push_back(fullname);
+                sourcefiles.push_back(fullname);
             }
         }
 
