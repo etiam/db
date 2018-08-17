@@ -13,43 +13,11 @@
 #endif
 
 #include <string>
-#include <memory>
-#include <vector>
-#include <unordered_map>
 
 namespace Ast
 {
 
-struct ReferenceLocation
-{
-    std::string filename;
-    unsigned int offset, length;
-
-    std::size_t
-    hash() const
-    {
-        // Compute individual hash values for first, second and third (http://stackoverflow.com/a/1646913/126995)
-        std::size_t hash = 17;
-        hash = hash * 31 + std::hash<int>()(offset);
-        hash = hash * 31 + std::hash<int>()(length);
-        hash = hash * 31 + std::hash<std::string>()(filename);
-        return hash;
-    }
-
-    bool
-    operator==(const ReferenceLocation &other) const
-    {
-        return (offset == other.offset && length == other.length && filename == other.filename);
-    }
-};
-
-struct ReferenceData
-{
-    std::string name;
-};
-
-using References = std::unordered_map<ReferenceLocation, ReferenceData>;
-
+class Data;
 class ScannerImpl;
 
 class Scanner
@@ -62,27 +30,10 @@ class Scanner
 
     void parseFunctions(const std::string &filename);
 
-    const References & functions() const;
+    const Data & data() const;
 
   private:
-    std::string m_buildPath;
     std::shared_ptr<ScannerImpl> m_impl;
-};
-
-}
-
-namespace std
-{
-
-template <>
-struct hash<Ast::ReferenceLocation>
-{
-  public:
-    std::size_t
-    operator()(const Ast::ReferenceLocation &key) const
-    {
-        return key.hash();
-    }
 };
 
 }

@@ -203,10 +203,11 @@ astStartupThread(const po::variables_map &vm)
     }
 
     // combine results of async jobs
-    auto &functions = Core::state()->functions();
+    auto &astdata = Core::state()->astData();
+    auto &functions = astdata.m_functions;
     std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Scanner> j)
     {
-        const auto &f = j.get().functions();
+        const auto &f = j.get().data().m_functions;
         functions.insert(std::begin(f), std::end(f));
     });
 
@@ -214,6 +215,9 @@ astStartupThread(const po::variables_map &vm)
 
     Core::Signals::setStatusbarText("");
     Core::Signals::functionListUpdated();
+
+    // store ast in cache
+    astdata.save("/home/jasonr/ast.data");
 }
 
 int

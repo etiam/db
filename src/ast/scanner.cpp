@@ -18,8 +18,8 @@
 #include <clang-c/Index.h>
 #include <clang-c/CXCompilationDatabase.h>
 
-#include "ast/scanner.h"
-
+#include "data.h"
+#include "scanner.h"
 
 namespace Ast
 {
@@ -37,7 +37,7 @@ class ScannerImpl
     static CXChildVisitResult parseFunctionsVisitor(CXCursor cursor, CXCursor parent, CXClientData client_data);
 
     std::string m_buildPath;
-    References m_functions;
+    Data m_data;
     CXIndex m_index = nullptr;
     CXCompilationDatabase m_compdb = nullptr;
 };
@@ -115,7 +115,7 @@ void
 ScannerImpl::addReference(CXCursor cursor, CXCursor parent)
 {
     CXString cursorspelling = clang_getCursorSpelling(cursor);
-    auto varlen = static_cast<unsigned int>(strlen(clang_getCString(cursorspelling)));
+    auto varlen = static_cast<unsigned short>(strlen(clang_getCString(cursorspelling)) - 1);
     if (varlen > 0)
     {
         CXFile file;
@@ -127,8 +127,21 @@ ScannerImpl::addReference(CXCursor cursor, CXCursor parent)
         {
             auto filename = clang_getFileName(file);
             auto spelling = clang_getCursorSpelling(cursor);
-            m_functions[ReferenceLocation({clang_getCString(filename), offset, varlen-1})] =
-                ReferenceData({clang_getCString(spelling)});
+
+            // unique id for filename
+            unsigned short id;
+            auto tmp = clang_getCString(filename);
+            if (m_data.m_filenames.find(clang_getCString(filename)) == std::end(m_data.m_filenames))
+            {
+                id = m_data.m_filenames.size() + 1;
+                m_data.m_filenames[tmp] = id;
+            }
+            else
+                id = m_data.m_filenames.at(clang_getCString(filename));
+
+            // store reference
+            m_data.m_functions[ReferenceLocation({id, offset, varlen})] = ReferenceData({clang_getCString(spelling)});
+
             clang_disposeString(spelling);
             clang_disposeString(filename);
         }
@@ -147,7 +160,6 @@ Scanner::~Scanner()
 void
 Scanner::setBuildPath(const std::string &path)
 {
-    m_buildPath = path;
     m_impl->setBuildPath(path);
 }
 
@@ -157,10 +169,9 @@ Scanner::parseFunctions(const std::string &filename)
     m_impl->parseFunctions(filename);
 }
 
-const References &
-Scanner::functions() const
+const Data &
+Scanner::data() const
 {
-    return m_impl->m_functions;
+    return m_impl->m_data;
 }
-
 }

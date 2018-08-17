@@ -101,19 +101,23 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
         transform(std::begin(overlapmap), std::end(overlapmap), back_inserter(keys),
                   [](decltype(overlapmap)::value_type p) { return p.first;} );
         sort(std::begin(keys), std::end(keys));
-        auto closestgroup = keys[keys.size()-1];
 
-        // add the filename of each fullname from the largest overlap bucket
-        for (const auto &fullname : overlapmap[closestgroup])
+        if (keys.size() > 0)
         {
-            const auto filename = boost::filesystem::path(fullname).filename().string();
-            if (std::find(std::begin(sourcefiles), std::end(sourcefiles), fullname) == std::end(sourcefiles))
-            {
-                sourcefiles.push_back(fullname);
-            }
-        }
+            auto closestgroup = keys[keys.size()-1];
 
-        Core::Signals::sourceListUpdated();
+            // add the filename of each fullname from the largest overlap bucket
+            for (const auto &fullname : overlapmap[closestgroup])
+            {
+                const auto filename = boost::filesystem::path(fullname).filename().string();
+                if (std::find(std::begin(sourcefiles), std::end(sourcefiles), fullname) == std::end(sourcefiles))
+                {
+                    sourcefiles.push_back(fullname);
+                }
+            }
+
+            Core::Signals::sourceListUpdated();
+        }
     }
 
     return match;

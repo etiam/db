@@ -58,30 +58,50 @@ breakinsert(const Result &result, int token, boost::any data)
      'stream': 'stdout',
      'token': 2,
      'type': 'result'}
+
+    {'message': u'done',
+     'payload': {u'bkpt': {u'addr': u'0x0000000000401e24',
+                           u'at': u'<main+4>',
+                           u'disp': u'keep',
+                           u'enabled': u'y',
+                           u'number': u'1',
+                           u'original-location': u'main',
+                           u'thread-groups': [u'i1'],
+                           u'times': u'0',
+                           u'type': u'breakpoint'}},
+     'stream': 'stdout',
+     'token': 3,
+     'type': 'result'}
     */
 
     if (match)
     {
         auto bkpt = boost::any_cast<Gdb::Payload::Dict>(result.payload.dict.at("bkpt"));
 
-        auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
-        auto func = boost::any_cast<char *>(bkpt.at("func"));
-        auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
-        auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
-        unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
-        auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
-
-        auto lc = Core::Location({func, filename, line});
-        auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
-        Core::state()->breakPoints().insertBreakpoint(bp);
-
-        // if the editor has not displayed anything yet load filename and set the cursor
-        auto &vars = Core::state()->vars();
-        if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
+        try
         {
-            Core::Signals::loadFile(filename);
-            Core::Signals::setCursorPosition(line, 0);
-            vars.set("initialdisplay", true);
+            auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
+            auto func = boost::any_cast<char *>(bkpt.at("func"));
+            auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
+            auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
+            unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
+            auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
+
+            auto lc = Core::Location({func, filename, line});
+            auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
+            Core::state()->breakPoints().insertBreakpoint(bp);
+
+            // if the editor has not displayed anything yet load filename and set the cursor
+            auto &vars = Core::state()->vars();
+            if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
+            {
+                Core::Signals::loadFile(filename);
+                Core::Signals::setCursorPosition(line, 0);
+                vars.set("initialdisplay", true);
+            }
+        }
+        catch (std::out_of_range &)
+        {
         }
     }
 

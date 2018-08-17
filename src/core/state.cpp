@@ -93,10 +93,10 @@ State::sourceFiles()
     return m_sourceFiles;
 }
 
-Ast::References &
-State::functions()
+Ast::Data &
+State::astData()
 {
-    return m_functions;
+    return m_data;
 }
 
 }

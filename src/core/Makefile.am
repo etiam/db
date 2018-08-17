@@ -3,7 +3,10 @@ db_SOURCES               +=                                             \
                             src/core/breakpoints.cpp                    \
                             src/core/state.cpp                          \
                             src/core/util.cpp                           \
-                            src/core/signals.cpp
+                            src/core/signals.cpp                        \
+                                                                        \
+                            src/core/archive.cpp                        \
+                            src/core/serializers.cpp
 
 db_CPPFLAGS              +=                                             \
                             @LIBUT_CFLAGS@

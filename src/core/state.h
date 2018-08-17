@@ -14,7 +14,7 @@
 # include "config.h"
 #endif
 
-#include "ast/scanner.h"
+#include "ast/data.h"
 
 #include "anymap.h"
 #include "types.h"
@@ -62,7 +62,8 @@ class State
 
     std::vector<std::string> & sourceFiles();
 
-    Ast::References & functions();
+    // get reference to ast objects
+    Ast::Data & astData();
 
   private:
     // signal handlers
@@ -76,7 +77,7 @@ class State
     Debugger m_debuggerState = Debugger::NONE;
 
     std::vector<std::string> m_sourceFiles;
-    Ast::References m_functions;
+    Ast::Data m_data;
 };
 
 }
