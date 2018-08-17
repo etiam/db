@@ -170,7 +170,7 @@ Scanner::parseFunctions(const std::string &filename)
 }
 
 const Data &
-Scanner::data() const
+Scanner::filename() const
 {
     return m_impl->m_data;
 }

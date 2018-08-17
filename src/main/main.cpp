@@ -16,6 +16,7 @@
 #include <future>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <QStandardPaths>
 
 #include "core/util.h"
 #include "core/global.h"
@@ -205,10 +206,14 @@ astStartupThread(const po::variables_map &vm)
     // combine results of async jobs
     auto &astdata = Core::state()->astData();
     auto &functions = astdata.m_functions;
-    std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Scanner> j)
+    auto &filenames = astdata.m_filenames;
+    std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Scanner> job)
     {
-        const auto &f = j.get().data().m_functions;
-        functions.insert(std::begin(f), std::end(f));
+        const auto &func = job.get().filename().m_functions;
+        functions.insert(std::begin(func), std::end(func));
+
+        const auto &filename = job.get().filename().m_filenames;
+        filenames.insert(std::begin(filename), std::end(filename));
     });
 
     std::cout << "scanned " << count << " files in " << timer << " ms" << std::endl;
@@ -218,6 +223,10 @@ astStartupThread(const po::variables_map &vm)
 
     // store ast in cache
     astdata.save("/home/jasonr/ast.data");
+
+    auto res = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
+    for (const auto &path : res)
+        std::cout << path.toStdString() << std::endl;
 }
 
 int

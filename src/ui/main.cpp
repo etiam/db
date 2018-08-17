@@ -30,8 +30,6 @@ Main::Main(int &argc, char *argv[])
     m_app->setStyle("GTK+");
 
     // for qsettings
-    m_app->setOrganizationName("jasonrosson");
-    m_app->setOrganizationDomain("jasonrosson.com");
     m_app->setApplicationName("db");
 
     // apply global stylesheet
