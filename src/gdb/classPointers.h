@@ -19,7 +19,9 @@ namespace Gdb
 {
 
 class Commands;
+class al;
 
+using CommandsPtr         = std::unique_ptr<Commands>;
 using CommandsPtr         = std::unique_ptr<Commands>;
 
 }

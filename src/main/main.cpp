@@ -24,6 +24,9 @@
 #include "core/timer.h"
 #include "core/state.h"
 
+#include "gdb/global.h"
+#include "ast/global.h"
+
 #include "ast/scanner.h"
 #include "gdb/commands.h"
 #include "ui/main.h"
@@ -290,6 +293,9 @@ main(int argc, char *argv[])
     }
 
     // initialization
+    Core::initialize();
+    Gdb::initialize();
+    Ast::initialize();
 
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
