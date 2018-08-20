@@ -89,7 +89,7 @@ Commands::getFunctionNames()
 void
 Commands::updateCallStack()
 {
-    Core::gdb()->executeCommand("stack-list-frames", Handlers::stacklistframes);
+    executeCommand("stack-list-frames", Handlers::stacklistframes);
 }
 
 void

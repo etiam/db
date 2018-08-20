@@ -14,7 +14,6 @@
 #include <boost/utility.hpp>
 
 #include "ast/scanner.h"
-#include "gdb/commands.h"
 
 #include "state.h"
 #include "global.h"
@@ -32,15 +31,12 @@ class Master : boost::noncopyable
 
     static StatePtr &               state();
 
-    static Gdb::CommandsPtr &       gdbCommands();
-
   private:
     Master();
 
     static Master &                 instance();
 
     StatePtr                        m_state;
-    Gdb::CommandsPtr                m_gdbCommands;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -63,15 +59,8 @@ Master::state()
     return instance().m_state;
 }
 
-Gdb::CommandsPtr &
-Master::gdbCommands()
-{
-    return instance().m_gdbCommands;
-}
-
 Master::Master() :
-    m_state(std::make_unique<State>()),
-    m_gdbCommands(std::make_unique<Gdb::Commands>())
+    m_state(std::make_unique<State>())
 {
 }
 
@@ -99,12 +88,6 @@ StatePtr &
 state()
 {
     return Master::state();
-}
-
-Gdb::CommandsPtr &
-gdb()
-{
-    return Master::gdbCommands();
 }
 
 } // namespace Core

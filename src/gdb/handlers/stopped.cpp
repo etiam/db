@@ -18,6 +18,7 @@
 #include "core/state.h"
 #include "core/signals.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
 
@@ -61,7 +62,7 @@ stopped(const Result &result, int token, boost::any data)
             Core::Signals::updateGutterMarker(line);
 
             // update call stack
-            Core::gdb()->updateCallStack();
+            Gdb::commands()->updateCallStack();
         }
     }
 

@@ -18,6 +18,7 @@
 #include "core/state.h"
 #include "core/signals.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 
 #include "editor.h"
@@ -237,7 +238,7 @@ Editor::onGutterClicked(int row)
 {
     auto &filename = Core::state()->currentLocation().filename;
     auto &breakpoints = Core::state()->breakPoints();
-    auto &gdb = Core::gdb();
+    auto &gdb = Gdb::commands();
 
     if (!breakpoints.exists(filename, row))
     {

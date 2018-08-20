@@ -22,6 +22,8 @@
 
 #include "core/global.h"
 #include "core/signals.h"
+
+#include "gdb/global.h"
 #include "gdb/commands.h"
 
 #include "consoleInput.h"
@@ -137,13 +139,13 @@ ConsoleInput::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Return:
             if (text().mid(6) > 0)
             {
-                Core::gdb()->executeConsoleCommand(text().mid(6).toStdString());
+                Gdb::commands()->executeConsoleCommand(text().mid(6).toStdString());
                 lastcmd = text().mid(6).toStdString();
                 HistoryLineEdit::keyPressEvent(event);
             }
             else
             {
-                Core::gdb()->executeConsoleCommand(lastcmd);
+                Gdb::commands()->executeConsoleCommand(lastcmd);
             }
             setText("(gdb) ");
             break;

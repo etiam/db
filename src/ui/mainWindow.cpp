@@ -28,6 +28,7 @@
 #include "core/signals.h"
 #include "core/global.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 
 #include "editor.h"
@@ -390,13 +391,13 @@ MainWindow::showEvent(QShowEvent* event)
     QMainWindow::showEvent(event);
 
     // get gdb version, output will go to console
-    Core::gdb()->executeCommand("gdb-version");
+    Gdb::commands()->executeCommand("gdb-version");
 }
 
 void
 MainWindow::quit()
 {
-    Core::gdb()->stop();
+    Gdb::commands()->stop();
     close();
 }
 

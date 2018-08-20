@@ -19,6 +19,7 @@
 
 #include "ast/scanner.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
 

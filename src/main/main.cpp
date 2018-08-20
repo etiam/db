@@ -73,7 +73,7 @@ gdbStartupThread(const po::variables_map &vm)
     if (vm.count("prog"))
     {
         auto &state = Core::state();
-        auto &gdb = Core::gdb();
+        auto &gdb = Gdb::commands();
         auto &vars = state->vars();
 
         bool found = false;

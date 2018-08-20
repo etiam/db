@@ -17,7 +17,6 @@
 #include "core/state.h"
 #include "core/signals.h"
 
-#include "gdb/commands.h"
 #include "gdb/result.h"
 
 namespace Gdb

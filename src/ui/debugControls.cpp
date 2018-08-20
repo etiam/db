@@ -15,6 +15,7 @@
 #include "core/global.h"
 #include "core/signals.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 
 #include "mainWindow.h"
@@ -44,7 +45,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_pauseAct = new QAction(pauseicon, tr("Pause"), this);
     m_pauseAct->setStatusTip(tr("Pause execution"));
     m_pauseAct->setShortcut(Qt::Key_P);
-    connect(m_pauseAct, &QAction::triggered, [&](){ Core::gdb()->pause(); });
+    connect(m_pauseAct, &QAction::triggered, [&](){ Gdb::commands()->pause(); });
     addAction(m_pauseAct);
 
     QIcon stopicon;
@@ -52,7 +53,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     stopicon.addFile(":/img/stop-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
     m_stopAct = new QAction(stopicon, tr("Stop"), this);
     m_stopAct->setStatusTip(tr("Stop execution"));
-    connect(m_stopAct, &QAction::triggered, [&](){ Core::gdb()->stop(); });
+    connect(m_stopAct, &QAction::triggered, [&](){ Gdb::commands()->stop(); });
     addAction(m_stopAct);
 
     QIcon stepovericon;
@@ -61,7 +62,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_stepoverAct = new QAction(stepovericon, tr("Step over"), this);
     m_stepoverAct->setStatusTip(tr("Step over"));
     m_stepoverAct->setShortcut(Qt::Key_N);
-    connect(m_stepoverAct, &QAction::triggered, [&](){ Core::gdb()->stepover(); });
+    connect(m_stepoverAct, &QAction::triggered, [&](){ Gdb::commands()->stepover(); });
     addAction(m_stepoverAct);
 
     QIcon stepintoicon;
@@ -70,7 +71,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_stepintoAct = new QAction(stepintoicon, tr("Step into"), this);
     m_stepintoAct->setStatusTip(tr("Step into"));
     m_stepintoAct->setShortcut(Qt::Key_S);
-    connect(m_stepintoAct, &QAction::triggered, [&](){ Core::gdb()->stepinto(); });
+    connect(m_stepintoAct, &QAction::triggered, [&](){ Gdb::commands()->stepinto(); });
     addAction(m_stepintoAct);
 
     QIcon stepouticon;
@@ -78,7 +79,7 @@ DebugControls::DebugControls(MainWindow *parent) :
     stepouticon.addFile(":/img/stepout-d", QSize(32, 32), QIcon::Disabled, QIcon::On);
     m_stepoutAct = new QAction(stepouticon, tr("Step out"), this);
     m_stepoutAct->setStatusTip(tr("Step out"));
-    connect(m_stepoutAct, &QAction::triggered, [&](){ Core::gdb()->stepout(); });
+    connect(m_stepoutAct, &QAction::triggered, [&](){ Gdb::commands()->stepout(); });
     addAction(m_stepoutAct);
 }
 
@@ -136,9 +137,9 @@ DebugControls::run()
     Core::Signals::clearCurrentLocation();
 
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
-        Core::gdb()->cont();
+        Gdb::commands()->cont();
     else
-        Core::gdb()->run();
+        Gdb::commands()->run();
 }
 
 } // namespace Ui

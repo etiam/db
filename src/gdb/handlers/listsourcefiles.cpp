@@ -20,7 +20,6 @@
 #include "core/signals.h"
 #include "ast/scanner.h"
 
-#include "gdb/commands.h"
 #include "gdb/result.h"
 
 namespace
@@ -33,7 +32,6 @@ int
 filenameOverlap(const std::string &filename, const std::string &common)
 {
     auto len = std::min(filename.size(), common.size());
-//    auto t = std::count(common.begin(), common.end(), '/');
     int c=0;
     for (int n=0; n < len; ++n)
     {
@@ -44,7 +42,6 @@ filenameOverlap(const std::string &filename, const std::string &common)
     }
 
     return c;
-//    return (static_cast<float>(c) / t) * 100;
 }
 
 }

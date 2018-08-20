@@ -26,8 +26,6 @@ void shutdown();
 // Access to Managers
 StatePtr & state();
 
-Gdb::CommandsPtr & gdb();
-
 } // namespace Core
 
 #endif // CORE_GLOBAL_H_

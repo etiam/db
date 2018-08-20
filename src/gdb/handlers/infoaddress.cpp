@@ -18,6 +18,7 @@
 #include "core/state.h"
 #include "core/signals.h"
 
+#include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
 
@@ -40,7 +41,7 @@ infoaddress(const Gdb::Result &result, int token, boost::any data)
     if (std::regex_match(result.payload.string.data, smatch, regex))
     {
         match = true;
-        Core::gdb()->executeConsoleCommand("info line *" + smatch[2].str());
+        Gdb::commands()->executeConsoleCommand("info line *" + smatch[2].str());
     }
 
     return match;

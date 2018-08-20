@@ -9,8 +9,6 @@
 # include "config.h"
 #endif
 
-#include "gdb/commands.h"
-
 #include "global.h"
 #include "signals.h"
 #include "state.h"

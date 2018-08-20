@@ -14,6 +14,7 @@
 #include <boost/utility.hpp>
 
 #include "global.h"
+#include "commands.h"
 
 namespace Gdb
 {
@@ -26,10 +27,14 @@ class Master : boost::noncopyable
     static void                     initialize();
     static void                     shutdown();
 
+    static Gdb::CommandsPtr &       gdbCommands();
+
   private:
     Master();
 
     static Master &                 instance();
+
+    Gdb::CommandsPtr                m_gdbCommands;
 };
 
 std::unique_ptr<Master> theinstance;
@@ -46,7 +51,14 @@ Master::shutdown()
         theinstance.reset();
 }
 
-Master::Master() 
+CommandsPtr &
+Master::gdbCommands()
+{
+    return instance().m_gdbCommands;
+}
+
+Master::Master() :
+    m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
 }
 
@@ -68,6 +80,12 @@ void
 shutdown()
 {
     Master::shutdown();
+}
+
+CommandsPtr &
+commands()
+{
+    return Master::gdbCommands();
 }
 
 } // namespace Gdb

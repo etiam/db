@@ -21,6 +21,8 @@ namespace Gdb
 void initialize();
 void shutdown();
 
+CommandsPtr & commands();
+
 } // namespace Gdb
 
 #endif // GDB_GLOBAL_H_
