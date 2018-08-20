@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include <thread>
 #include <boost/utility.hpp>
 
 #include "global.h"
@@ -19,25 +20,28 @@
 namespace Gdb
 {
 
-class Master : boost::noncopyable
+class Master: boost::noncopyable
 {
-  public:
+public:
     ~Master() = default;
 
-    static void                     initialize();
-    static void                     shutdown();
+    static void initialize();
+    static void shutdown();
 
-    static Gdb::CommandsPtr &       gdbCommands();
+    static Gdb::CommandsPtr & gdbCommands();
 
-  private:
+private:
     Master();
 
-    static Master &                 instance();
+    static Master & instance();
 
-    Gdb::CommandsPtr                m_gdbCommands;
+    void WorkerThread();
+
+    std::unique_ptr<std::thread> m_workerThread;
+    Gdb::CommandsPtr m_gdbCommands;
 };
 
-std::unique_ptr<Master> theinstance;
+std::unique_ptr<Master> g_instance;
 
 void
 Master::initialize()
@@ -47,8 +51,8 @@ Master::initialize()
 void
 Master::shutdown()
 {
-    if (theinstance)
-        theinstance.reset();
+    if (g_instance)
+        g_instance.reset();
 }
 
 CommandsPtr &
@@ -58,6 +62,7 @@ Master::gdbCommands()
 }
 
 Master::Master() :
+    m_workerThread(std::make_unique<std::thread>(&Master::WorkerThread, std::ref(*this))),
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
 }
@@ -65,10 +70,18 @@ Master::Master() :
 Master &
 Master::instance()
 {
-    if (!theinstance)
-        theinstance = std::unique_ptr<Master>(new Master());
-    return *theinstance;
+    if (!g_instance)
+        g_instance = std::unique_ptr<Master>(new Master());
+    return *g_instance;
 }
+
+void
+Master::WorkerThread()
+{
+    pthread_setname_np(pthread_self(), "gdbworker");
+}
+
+////////////////////
 
 void
 initialize()

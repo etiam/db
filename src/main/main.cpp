@@ -78,10 +78,10 @@ gdbStartupThread(const po::variables_map &vm)
 
         bool found = false;
         auto prog = vm["prog"].as<std::string>();
+
+        // if prog doesn't exist in current dir search $PATH for it
         if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
         {
-
-            // otherwise search $PATH
             auto path = get_environment_path();
             for (const auto &p : path)
             {
@@ -104,7 +104,7 @@ gdbStartupThread(const po::variables_map &vm)
             auto prog = vm["prog"].as<std::string>();
             auto buildpath = boost::filesystem::canonical(boost::filesystem::path(prog).parent_path()).string();
 
-            vars.set("filename", prog);
+            vars.set("progname", prog);
             vars.set("buildpath", buildpath);
 
             // give gdb-version time to complete
@@ -130,14 +130,13 @@ gdbStartupThread(const po::variables_map &vm)
 
             gdb->getSourceFiles();
         }
-
         else
         {
             std::stringstream msg;
             msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
             Core::Signals::appendConsoleText(msg.str());
 
-            vars.set("filename", std::string());
+            vars.set("progname", std::string());
             vars.set("buildpath", std::string());
         }
     }
