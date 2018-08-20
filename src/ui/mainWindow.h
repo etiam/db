@@ -34,60 +34,63 @@ class BreakPoints;
 
 class MainWindow : public QMainWindow
 {
-  Q_OBJECT
+Q_OBJECT
 
-  public:
-    MainWindow(QWidget *parent=0);
+public:
+    MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-  private:
+private:
     // toggle the visibility of tab
-    void            toggleTab(QWidget *tab);
+    void toggleTab(QWidget *tab);
 
     // called when tab close is requested
-    void            closeBottomTab(int index);
+    void closeBottomTab(int index);
 
     // called when tab is switched
-    void            switchBottomTab(int index);
+    void switchBottomTab(int index);
 
     // save/restore window settings
-    void            readSettings();
-    void            writeSettings() const;
+    void readSettings();
+    void writeSettings() const;
 
     // create various gui elements
-    void            createToolbar();
-    void            createDocks();
-    void            createMenus();
-    void            createFileMenu();
-    void            createDebugMenu();
-    void            createViewMenu();
-    void            createStatusbar();
+    void createToolbar();
+    void createDocks();
+    void createMenus();
+    void createFileMenu();
+    void createDebugMenu();
+    void createViewMenu();
+    void createStatusbar();
 
-    void            createHotkeys();
+    void createHotkeys();
 
     // signal handlers
-    void            onLoadFileSignal(const std::string &filename);
-    void            onDebuggerStateUpdated();
+    void onLoadFileSignal(const std::string &filename);
+    void onDebuggerStateUpdated();
 
-  private Q_SLOTS:
-    void            quit();
+protected:
+    void showEvent(QShowEvent* event);
 
-  private:
-    Editor *        m_editor;
+private Q_SLOTS:
+    void quit();
 
-    QTabWidget *    m_bottomTabWidget;
+private:
+    Editor * m_editor;
 
-    Console *       m_consoleTab;
-    Output *        m_debuggerOutputTab;
-    Output *        m_programOutputTab;
-    CallStack *     m_callStackTab;
-    BreakPoints *   m_breakPointsTab;
+    QTabWidget * m_bottomTabWidget;
+
+    Console * m_consoleTab;
+    Output * m_debuggerOutputTab;
+    Output * m_programOutputTab;
+    CallStack * m_callStackTab;
+    BreakPoints * m_breakPointsTab;
 
     DebugControls * m_debugControls;
 
-    QLabel *        m_statusIcon;
+    QLabel * m_statusIcon;
 
-    QSettings *     m_settings;
+    QSettings * m_settings;
 };
 
 }

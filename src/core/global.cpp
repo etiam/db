@@ -17,7 +17,6 @@
 #include "gdb/commands.h"
 
 #include "state.h"
-#include "optionsManager.h"
 #include "global.h"
 
 namespace Core
@@ -32,7 +31,6 @@ class Master : boost::noncopyable
     static void                     shutdown();
 
     static StatePtr &               state();
-    static OptionsManagerPtr &      optionsManager();
 
     static Gdb::CommandsPtr &       gdbCommands();
 
@@ -42,7 +40,6 @@ class Master : boost::noncopyable
     static Master &                 instance();
 
     StatePtr                        m_state;
-    OptionsManagerPtr               m_optionsManager;
     Gdb::CommandsPtr                m_gdbCommands;
 };
 
@@ -66,12 +63,6 @@ Master::state()
     return instance().m_state;
 }
 
-OptionsManagerPtr &
-Master::optionsManager()
-{
-    return instance().m_optionsManager;
-}
-
 Gdb::CommandsPtr &
 Master::gdbCommands()
 {
@@ -80,7 +71,6 @@ Master::gdbCommands()
 
 Master::Master() :
     m_state(std::make_unique<State>()),
-    m_optionsManager(std::make_unique<OptionsManager>()),
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
 }
@@ -109,12 +99,6 @@ StatePtr &
 state()
 {
     return Master::state();
-}
-
-OptionsManagerPtr &
-optionsManager()
-{
-    return Master::optionsManager();
 }
 
 Gdb::CommandsPtr &

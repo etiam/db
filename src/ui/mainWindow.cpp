@@ -385,6 +385,15 @@ MainWindow::onDebuggerStateUpdated()
 }
 
 void
+MainWindow::showEvent(QShowEvent* event)
+{
+    QMainWindow::showEvent(event);
+
+    // get gdb version, output will go to console
+    Core::gdb()->executeCommand("gdb-version");
+}
+
+void
 MainWindow::quit()
 {
     Core::gdb()->stop();

@@ -15,7 +15,6 @@
 #include "libut/utils.h"
 
 #include "global.h"
-#include "optionsManager.h"
 
 namespace Core
 {
@@ -30,10 +29,7 @@ dumpStack()
 
     stack << "\"" << threadname << "\" " << std::hex << std::showbase << std::this_thread::get_id() << std::dec << std::noshowbase;
 
-    auto full = optionsManager()->has("fullstackdump") &&
-                optionsManager()->get<bool>("fullstackdump");
-    full = true;
-    stack << ", stack dump : " << std::endl << Ut::dumpStack(full);
+    stack << ", stack dump : " << std::endl << Ut::dumpStack(true);
 
     return stack.str();
 }

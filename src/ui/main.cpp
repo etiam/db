@@ -14,7 +14,7 @@
 #include <QSettings>
 
 #include "core/global.h"
-#include "core/optionsManager.h"
+#include "core/state.h"
 
 #include "mainWindow.h"
 #include "main.h"
@@ -71,7 +71,7 @@ Main::readSettings()
 {
     QSettings settings;
 
-    Core::optionsManager()->set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
+    Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
 }
 
 void
@@ -79,7 +79,7 @@ Main::writeSettings() const
 {
     QSettings settings;
 
-    settings.setValue("Core/BreakOnMain", Core::optionsManager()->get<bool>("breakonmain"));
+    settings.setValue("Core/BreakOnMain", Core::state()->vars().get<bool>("breakonmain"));
 }
 
 }

@@ -16,10 +16,8 @@ namespace Core
 {
 
 class State;
-class OptionsManager;
 
 using StatePtr                  = std::unique_ptr<State>;
-using OptionsManagerPtr         = std::unique_ptr<OptionsManager>;
 
 }
 

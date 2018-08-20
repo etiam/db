@@ -24,7 +24,6 @@
 #include <marshal.h>
 
 #include "core/global.h"
-#include "core/optionsManager.h"
 #include "core/signals.h"
 #include "core/util.h"
 
@@ -111,7 +110,7 @@ ControllerImpl::~ControllerImpl()
 void
 ControllerImpl::initialize()
 {
-    m_verbose = Core::optionsManager()->has("verbose");
+    m_verbose = Core::state()->vars().has("verbose");
 
     Py_Initialize();
     if (!PyEval_ThreadsInitialized())

@@ -25,7 +25,6 @@ void shutdown();
 
 // Access to Managers
 StatePtr & state();
-OptionsManagerPtr & optionsManager();
 
 Gdb::CommandsPtr & gdb();
 

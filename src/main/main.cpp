@@ -23,7 +23,7 @@
 #include "core/signals.h"
 #include "core/timer.h"
 #include "core/state.h"
-#include "core/optionsManager.h"
+
 #include "ast/scanner.h"
 #include "gdb/commands.h"
 #include "ui/main.h"
@@ -104,9 +104,6 @@ gdbStartupThread(const po::variables_map &vm)
             vars.set("filename", prog);
             vars.set("buildpath", buildpath);
 
-            // will output to console
-            gdb->executeCommand("gdb-version");
-
             // give gdb-version time to complete
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -123,7 +120,7 @@ gdbStartupThread(const po::variables_map &vm)
             }
 
             // if breakonmain true, set breakpoint, otherwise find source file for main
-            if (Core::optionsManager()->get<bool>("breakonmain"))
+            if (Core::state()->vars().get<bool>("breakonmain"))
                 gdb->insertBreakpoint("main");
             else
                 gdb->infoAddress("main");
@@ -283,8 +280,16 @@ main(int argc, char *argv[])
     // --verbose
     if (vm.count("verbose"))
     {
-        Core::optionsManager()->set("verbose", true);
+        Core::state()->vars().set("verbose", true);
     }
+
+    // store args
+    if (vm.count("args"))
+    {
+        Core::state()->vars().set("args", vm["args"].as<std::vector<std::string>>());
+    }
+
+    // initialization
 
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
