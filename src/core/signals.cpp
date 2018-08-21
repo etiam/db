@@ -17,7 +17,7 @@ namespace Core
 namespace Signals
 {
 
-Signal<const std::string &> loadFile;
+Signal<const std::string &> loadEditorSource;
 Signal<> quitRequested;
 
 Signal<int, int> setCursorPosition;

@@ -25,6 +25,7 @@ namespace Ui
 Main::Main(int &argc, char *argv[])
 {
     // has to get called before creating instance of QApplication
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setDesktopSettingsAware(true);
     m_app = std::make_unique<QApplication>(argc, argv);
     m_app->setStyle("GTK+");

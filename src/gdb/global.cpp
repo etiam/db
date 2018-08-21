@@ -23,7 +23,7 @@ namespace Gdb
 class Master: boost::noncopyable
 {
 public:
-    ~Master() = default;
+    ~Master();
 
     static void initialize();
     static void shutdown();
@@ -67,6 +67,11 @@ Master::Master() :
 {
 }
 
+Master::~Master()
+{
+    m_workerThread->join();
+}
+
 Master &
 Master::instance()
 {
@@ -79,6 +84,26 @@ void
 Master::WorkerThread()
 {
     pthread_setname_np(pthread_self(), "gdbworker");
+
+    /*
+    // set program arguments
+    if (vm.count("args"))
+    {
+        const auto &args = vm["args"].as<std::vector<std::string>>();
+        std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
+            [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
+        gdb->setArgs(argstr);
+    }
+
+    // if breakonmain true, set breakpoint, otherwise find source file for main
+    if (Core::state()->vars().get<bool>("breakonmain"))
+        gdb->insertBreakpoint("main");
+    else
+        gdb->infoAddress("main");
+
+    gdb->getSourceFiles();
+    */
+
 }
 
 ////////////////////

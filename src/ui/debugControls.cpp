@@ -133,7 +133,7 @@ DebugControls::updateActionsState(Core::State::Debugger state)
 void
 DebugControls::run()
 {
-    // this will make the current location marker disappear
+    // this will remove the current location marker
     Core::Signals::clearCurrentLocation();
 
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)

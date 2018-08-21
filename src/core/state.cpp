@@ -17,7 +17,7 @@ namespace Core
 
 State::State()
 {
-    Core::Signals::loadFile.connect(this, &State::onLoadFileSignal);
+    Core::Signals::loadEditorSource.connect(this, &State::onLoadFileSignal);
     Core::Signals::setCurrentLocation.connect(this, &State::onSetCurrentLocationSignal);
 }
 

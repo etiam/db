@@ -146,8 +146,8 @@ Editor::Editor(QMainWindow *parent) :
     // color theme
     setTheme("clouds_midnight");
 
-    // signal handlers
-    Core::Signals::loadFile.connect(this, &Editor::onLoadFileSignal);
+    // signal handlers TODO : use lambdas
+    Core::Signals::loadEditorSource.connect(this, &Editor::onLoadFileSignal);
     Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
     Core::Signals::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);

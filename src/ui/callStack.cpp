@@ -100,7 +100,7 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
         const auto location = stack[row].location;
 
         // load editor with contents of filename
-        Core::Signals::loadFile(location.filename);
+        Core::Signals::loadEditorSource(location.filename);
 
         // update current location
         Core::Signals::setCurrentLocation(location);

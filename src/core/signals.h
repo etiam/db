@@ -108,26 +108,31 @@ private:
 namespace Signals
 {
 
-extern Signal<const std::string &> loadFile;
+// request that the source editor load the contents of filename
+extern Signal<const std::string & /*filename*/> loadEditorSource;
 
+// emitted when quit is requested
 extern Signal<> quitRequested;
 
-extern Signal<int, int> setCursorPosition;
-extern Signal<int> updateGutterMarker;
+// set cursor position of the source editor
+extern Signal<int /*x*/, int /*y*/> setCursorPosition;
+
+// update the source editor's gutter marker on row
+extern Signal<int /*row*/> updateGutterMarker;
 
 // set the debugger's current location
-extern Signal<const Location &> setCurrentLocation;
+extern Signal<const Location & /*location*/> setCurrentLocation;
 
-// clear current location gutter marker
+// remove the current location marker from the source editor
 extern Signal<> clearCurrentLocation;
 
 // append text to various output widgets
-extern Signal<const std::string &> appendConsoleText;
-extern Signal<const std::string &> appendLogText;
-extern Signal<const std::string &> appendOutputText;
+extern Signal<const std::string & /*text*/> appendConsoleText;
+extern Signal<const std::string & /*text*/> appendLogText;
+extern Signal<const std::string & /*text*/> appendOutputText;
 
 // set statusbar text
-extern Signal<const std::string &> setStatusbarText;
+extern Signal<const std::string & /*text*/> setStatusbarText;
 
 // emitted when gdb's running state is updated
 extern Signal<> debuggerStateUpdated;

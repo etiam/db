@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createStatusbar();
 
     // signal handlers
-    Core::Signals::loadFile.connect(this, &MainWindow::onLoadFileSignal);
+    Core::Signals::loadEditorSource.connect(this, &MainWindow::onLoadFileSignal);
     Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
 
     Core::Signals::appendConsoleText.connect([this](const std::string &t)
