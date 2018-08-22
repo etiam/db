@@ -23,6 +23,8 @@
 
 #include "editor.h"
 
+Q_DECLARE_METATYPE(Core::Location);
+
 namespace Ui
 {
 
@@ -146,12 +148,20 @@ Editor::Editor(QMainWindow *parent) :
     // color theme
     setTheme("clouds_midnight");
 
+    qRegisterMetaType<Core::Location>("Location");
+
     // signal handlers TODO : use lambdas
     Core::Signals::loadEditorSource.connect(this, &Editor::onLoadFileSignal);
 //    Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
-    Core::Signals::setCurrentLocation.connect(this, &Editor::onSetCursorPositionSignal);
+//    Core::Signals::setCurrentLocation.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
     Core::Signals::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
+
+    Core::Signals::setCurrentLocation.connect([this](const Core::Location &l)
+    {
+        QMetaObject::invokeMethod(this, "setCurrentLocation", Qt::QueuedConnection, Q_ARG(Core::Location, l));
+    });
+
 }
 
 Editor::~Editor()
@@ -175,7 +185,7 @@ Editor::setText(const QString &newText)
     const QString request = "editor.getSession().setValue('%1')";
     m_impl->executeJavaScript(request.arg(m_impl->escape(newText)));
 
-    setCursorPosition(1, 1);
+    setCurrentLocation(Core::Location({"", "", 1}));
 }
 
 QString
@@ -237,7 +247,8 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    auto &filename = Core::state()->currentLocation().filename;
+//    auto &filename = Core::state()->currentLocation().filename;
+    auto &filename = m_currentLocation.filename;
     auto &breakpoints = Core::state()->breakPoints();
     auto &gdb = Gdb::commands();
 
@@ -333,12 +344,12 @@ Editor::onLoadFileSignal(const std::string &filename)
     QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(filename)));
 }
 
-void
+//void
 //Editor::onSetCursorPositionSignal(int row, int column)
-Editor::onSetCursorPositionSignal(const Core::Location &location)
-{
-    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.row), Q_ARG(int, 0));
-}
+//Editor::onSetCursorPositionSignal(const Core::Location &location)
+//{
+//    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.row), Q_ARG(int, 0));
+//}
 
 void
 Editor::onUpdateGutterMarkerSignal(int row)
@@ -389,11 +400,18 @@ Editor::loadFile(const QString &filename)
 }
 
 void
-Editor::setCursorPosition(int row, int column)
+Editor::setCurrentLocation(const Core::Location &location)
 {
-    if (getNumLines() > row && getLineLength(row) >= column)
+    auto oldloc = m_currentLocation.row;
+
+    m_currentLocation = location;
+
+    // update previous position's gutter marker
+    updateGutterMarker(oldloc);
+
+    if (getNumLines() > location.row) //&& getLineLength(row) >= column)
     {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(column-1));
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, 0)").arg(location.row-1));
         m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
     }
 }
@@ -402,19 +420,19 @@ void
 Editor::updateGutterMarker(int row)
 {
     const auto &breakpoints = Core::state()->breakPoints();
-    const auto &currloc = Core::state()->currentLocation();
+//    const auto &currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.exists(currloc.filename, row))
+    if (breakpoints.exists(m_currentLocation.filename, row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(currloc.filename, row))
+        if (!breakpoints.enabled(m_currentLocation.filename, row))
         {
             klass += "_disabled";
         }
     }
 
-    if (currloc.row == row)
+    if (m_currentLocation.row == row)
     {
         klass += "_currentline";
     }
@@ -426,19 +444,19 @@ void
 Editor::clearCurrentLocation()
 {
     const auto &breakpoints = Core::state()->breakPoints();
-    const auto currloc = Core::state()->currentLocation();
+//    const auto currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.exists(currloc.filename, currloc.row))
+    if (breakpoints.exists(m_currentLocation.filename, m_currentLocation.row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(currloc.filename, currloc.row))
+        if (!breakpoints.enabled(m_currentLocation.filename, m_currentLocation.row))
         {
             klass += "_disabled";
         }
     }
 
-    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(currloc.row-1).arg(QString::fromStdString(klass)));
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(m_currentLocation.row-1).arg(QString::fromStdString(klass)));
 }
 
 }

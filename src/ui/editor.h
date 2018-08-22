@@ -25,64 +25,67 @@ namespace Ui
 
 class EditorImpl;
 
-class Editor : public QWidget
+class Editor: public QWidget
 {
-  Q_OBJECT
+Q_OBJECT
 
-  public:
-    explicit Editor(QMainWindow *parent=0);
+public:
+    explicit Editor(QMainWindow *parent = 0);
     ~Editor();
 
-    void    setGutterWidth(int width);
+    void setGutterWidth(int width);
 
-    void    setText(const QString &newText);
+    void setText(const QString &newText);
     QString getText();
 
-    void    setTheme(const QString &name);
+    void setTheme(const QString &name);
 
-    void    setHighlightMode(const QString &name);
+    void setHighlightMode(const QString &name);
 
-    void    setKeyboardHandler(const QString &name);
+    void setKeyboardHandler(const QString &name);
 
-    void    zoomResetText();
-    void    zoomInText();
-    void    zoomOutText();
+    void zoomResetText();
+    void zoomInText();
+    void zoomOutText();
 
-  public Q_SLOTS:
-    void    onGutterClicked(int row);
-    void    onCursorMoved(int x, int y);
-    void    onMouseMoved(int index);
+public Q_SLOTS:
+    void onGutterClicked(int row);
+    void onCursorMoved(int x, int y);
+    void onMouseMoved(int index);
 
-  private:
+private:
     QString getLineText(int row) const;
-    int     getNumLines() const;
-    int     getLineLength(int row) const;
-    int     getCharacterHeight() const;
-    void    clearGutterMarkers();
-    void    updateGutterMarkers(const QString &filename);
+    int getNumLines() const;
+    int getLineLength(int row) const;
+    int getCharacterHeight() const;
+    void clearGutterMarkers();
+    void updateGutterMarkers(const QString &filename);
 
-    void    showGutter();
-    void    hideGutter();
+    void showGutter();
+    void hideGutter();
 
     // signal handlers
-    void    onLoadFileSignal(const std::string &filename);
-//    void    onSetCursorPositionSignal(int row, int column);
-    void    onSetCursorPositionSignal(const Core::Location &location);
+    void onLoadFileSignal(const std::string &filename);
+    //    void    onSetCursorPositionSignal(int row, int column);
+//    void    onSetCursorPositionSignal(const Core::Location &location);
 
-    void    onUpdateGutterMarkerSignal(int row);
-    void    onClearCurrentLocationSignal();
+    void onUpdateGutterMarkerSignal(int row);
+    void onClearCurrentLocationSignal();
 
     std::unique_ptr<EditorImpl> m_impl;
 
-  private Q_SLOTS:
-    void    loadFile(const QString &filename);
-    void    setCursorPosition(int row, int column);
+private Q_SLOTS:
+    void loadFile(const QString &filename);
+    void setCurrentLocation(const Core::Location &location);
 
     // update the gutter marker at the current row
-    void    updateGutterMarker(int row);
+    void updateGutterMarker(int row);
 
     // remove the current location marker from the gutter
-    void    clearCurrentLocation();
+    void clearCurrentLocation();
+
+private:
+    Core::Location m_currentLocation;
 };
 
 }

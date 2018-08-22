@@ -67,13 +67,13 @@ class State
 
   private:
     // signal handlers
-    void onLoadFileSignal(const std::string &filename);
-    void onSetCurrentLocationSignal(const Core::Location &location);
+//    void onLoadFileSignal(const std::string &filename);
+//    void onSetCurrentLocationSignal(const Core::Location &location);
 
     CallStack m_callStack;
     AnyMap m_vars;
     Breakpoints m_breakpoints;
-    Location m_currentLocation;
+//    Location m_currentLocation;
     Debugger m_debuggerState = Debugger::NONE;
 
     std::vector<std::string> m_sourceFiles;
