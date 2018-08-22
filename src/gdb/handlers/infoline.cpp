@@ -35,6 +35,13 @@ infoline(const Gdb::Result &result, int token, boost::any data)
     static std::regex startsataddress(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
     bool match = false;
 
+    /*
+    {'message': None,
+     'payload': u'Line 23 of \\"../tests/multiunitA.cpp\\" starts at address 0x400d30 <main(int, char**)> and ends at 0x400d5a <main(int, char**)+42>.\\n',
+     'stream': 'stdout',
+     'type': 'console'}
+    */
+
     std::smatch smatch;
     if (std::regex_match(result.payload.string.data, smatch, startsataddress))
     {
@@ -42,7 +49,11 @@ infoline(const Gdb::Result &result, int token, boost::any data)
 
         auto &state = Core::state();
         auto &vars = state->vars();
+        auto line = std::stoi(smatch[1]);
         auto filename = smatch[2].str();
+        auto func = smatch[3].str();
+
+        auto lc = Core::Location({func, filename, line});
 
         filename = boost::filesystem::canonical(filename).string();
 
@@ -50,7 +61,8 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::Signals::loadEditorSource(filename);
-            Core::Signals::setCursorPosition(std::stoi(smatch[1]), 0);
+//            Core::Signals::setCursorPosition(std::stoi(smatch[1]), 0);
+            Core::Signals::setCurrentLocation(lc);
             vars.set("initialdisplay", true);
         }
     }

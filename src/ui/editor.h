@@ -66,7 +66,8 @@ class Editor : public QWidget
 
     // signal handlers
     void    onLoadFileSignal(const std::string &filename);
-    void    onSetCursorPositionSignal(int row, int column);
+//    void    onSetCursorPositionSignal(int row, int column);
+    void    onSetCursorPositionSignal(const Core::Location &location);
 
     void    onUpdateGutterMarkerSignal(int row);
     void    onClearCurrentLocationSignal();

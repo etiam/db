@@ -223,7 +223,8 @@ astStartupThread(const po::variables_map &vm)
     // store ast in cache
     astdata.save("/home/jasonr/ast.data");
 
-    auto res = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
+//    auto res = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
+    auto res = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     for (const auto &path : res)
         std::cout << path.toStdString() << std::endl;
 }

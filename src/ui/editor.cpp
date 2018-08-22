@@ -148,7 +148,8 @@ Editor::Editor(QMainWindow *parent) :
 
     // signal handlers TODO : use lambdas
     Core::Signals::loadEditorSource.connect(this, &Editor::onLoadFileSignal);
-    Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
+//    Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
+    Core::Signals::setCurrentLocation.connect(this, &Editor::onSetCursorPositionSignal);
     Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
     Core::Signals::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
 }
@@ -333,9 +334,10 @@ Editor::onLoadFileSignal(const std::string &filename)
 }
 
 void
-Editor::onSetCursorPositionSignal(int row, int column)
+//Editor::onSetCursorPositionSignal(int row, int column)
+Editor::onSetCursorPositionSignal(const Core::Location &location)
 {
-    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column));
+    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.row), Q_ARG(int, 0));
 }
 
 void

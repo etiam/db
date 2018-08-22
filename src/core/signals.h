@@ -117,11 +117,11 @@ extern Signal<> quitRequested;
 // set cursor position of the source editor
 extern Signal<int /*x*/, int /*y*/> setCursorPosition;
 
-// update the source editor's gutter marker on row
-extern Signal<int /*row*/> updateGutterMarker;
-
 // set the debugger's current location
 extern Signal<const Location & /*location*/> setCurrentLocation;
+
+// update the source editor's gutter marker on row
+extern Signal<int /*row*/> updateGutterMarker;
 
 // remove the current location marker from the source editor
 extern Signal<> clearCurrentLocation;
