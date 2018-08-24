@@ -46,15 +46,14 @@ class Breakpoints
     // disable the given breakpoint
     void disableBreakpoint(int breakpointnumber);
 
-    // TODO : convert the following three functions to use Core::Location instead of string, line
     // is a breakpoint present at the given filename. line
-    bool exists(const std::string &filename, int line) const;
+    bool exists(const Core::Location &location) const;
 
     // is the breakpoint at the given filename, line enabled?
-    bool enabled(const std::string &filename, int line) const;
+    bool enabled(const Core::Location &location) const;
 
     // return the breakpoint at the given filename, line
-    Breakpoint & find(const std::string &filename, int line);
+    Breakpoint & find(const Core::Location &location);
 
     // return the breakpoint at the given filename, line
     Breakpoint & find(int breakpointnumber);

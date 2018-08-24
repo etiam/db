@@ -72,28 +72,28 @@ Breakpoints::deleteBreakpoint(int number)
 }
 
 bool
-Breakpoints::exists(const std::string &filename, int line) const
+Breakpoints::exists(const Core::Location &location) const
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-        [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
+        [&](const Breakpoint &b) { return b.location.filename == location.filename && b.location.row == location.row; });
 
     return it != std::end(m_breakpoints);
 }
 
 bool
-Breakpoints::enabled(const std::string &filename, int line) const
+Breakpoints::enabled(const Core::Location &location) const
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-           [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
+           [&](const Breakpoint &b) { return b.location.filename == location.filename && b.location.row == location.row; });
 
     return it != std::end(m_breakpoints) && it->enabled;
 }
 
 Breakpoint &
-Breakpoints::find(const std::string &filename, int line)
+Breakpoints::find(const Core::Location &location)
 {
     auto it = std::find_if(std::begin(m_breakpoints), std::end(m_breakpoints),
-           [&](const Breakpoint &b) { return b.location.filename == filename && b.location.row == line; });
+           [&](const Breakpoint &b) { return b.location.filename == location.filename && b.location.row == location.row; });
 
     return *it;
 }

@@ -252,17 +252,17 @@ Editor::zoomOutText()
 void
 Editor::onGutterClicked(int row)
 {
-    auto &filename = m_currentLocation.filename;
+    const auto &location = Core::Location({"", m_currentLocation.filename, row});
     auto &breakpoints = Core::state()->breakPoints();
     auto &gdb = Gdb::commands();
 
-    if (!breakpoints.exists(filename, row))
+    if (!breakpoints.exists(location))
     {
-        gdb->insertBreakpoint(filename + ":" + std::to_string(row));
+        gdb->insertBreakpoint(m_currentLocation.filename + ":" + std::to_string(row));
     }
     else
     {
-        auto &breakpoint = breakpoints.find(filename, row);
+        auto &breakpoint = breakpoints.find(location);
         if (breakpoint.enabled)
         {
             gdb->disableBreakpoint(breakpoint.breakpointnumber);
@@ -398,10 +398,10 @@ Editor::updateGutterMarker(const Core::Location &location)
     const auto &breakpoints = Core::state()->breakPoints();
 
     std::string klass = "ace";
-    if (breakpoints.exists(location.filename, location.row))
+    if (breakpoints.exists(location))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(location.filename, location.row))
+        if (!breakpoints.enabled(location))
         {
             klass += "_disabled";
         }
