@@ -97,7 +97,6 @@ breakinsert(const Result &result, int token, boost::any data)
             if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
             {
                 Core::Signals::loadEditorSource(filename);
-//                Core::Signals::setCursorPosition(line, 0);
                 Core::Signals::setCurrentLocation(lc);
                 vars.set("initialdisplay", true);
             }

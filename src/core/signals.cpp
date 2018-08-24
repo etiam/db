@@ -20,8 +20,6 @@ namespace Signals
 Signal<const std::string &> loadEditorSource;
 Signal<> quitRequested;
 
-Signal<int, int> setCursorPosition;
-
 Signal<const Location &> updateGutterMarker;
 Signal<const Location &> setCurrentLocation;
 

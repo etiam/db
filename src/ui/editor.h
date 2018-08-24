@@ -64,16 +64,6 @@ private:
     void showGutter();
     void hideGutter();
 
-    // signal handlers
-    void onLoadFileSignal(const std::string &filename);
-    //    void    onSetCursorPositionSignal(int row, int column);
-//    void    onSetCursorPositionSignal(const Core::Location &location);
-
-//    void onUpdateGutterMarkerSignal(int row);
-    void onClearCurrentLocationSignal();
-
-    std::unique_ptr<EditorImpl> m_impl;
-
 private Q_SLOTS:
     void loadFile(const QString &filename);
     void setCurrentLocation(const Core::Location &location);
@@ -81,10 +71,8 @@ private Q_SLOTS:
     // update the gutter marker at the current row
     void updateGutterMarker(const Core::Location &location);
 
-    // remove the current location marker from the gutter
-    void clearCurrentLocation();
-
 private:
+    std::unique_ptr<EditorImpl> m_impl;
     Core::Location m_currentLocation;
 };
 

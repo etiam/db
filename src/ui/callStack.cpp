@@ -76,13 +76,6 @@ CallStack::onCallStackUpdated()
         QFileInfo fileinfo(QString::fromStdString(stackline.location.filename));
         QString filename = fileinfo.fileName() + ", line " + QString::number(stackline.location.row);
 
-        // draw indicator in first column if this entry is the current frame
-//        const auto currentlocation = Core::state()->currentLocation();
-//        if (currentlocation == stackline.location)
-//            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
-//        else
-//            m_model->setData(m_model->index(rowcount, 0), "");
-
         m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(stackline.location.function));
         m_model->setData(m_model->index(rowcount, 2), filename);
     }

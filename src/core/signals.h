@@ -114,9 +114,6 @@ extern Signal<const std::string & /*filename*/> loadEditorSource;
 // emitted when quit is requested
 extern Signal<> quitRequested;
 
-// set cursor position of the source editor
-//extern Signal<int /*x*/, int /*y*/> setCursorPosition;
-
 // set the debugger's current location
 extern Signal<const Location & /*location*/> setCurrentLocation;
 

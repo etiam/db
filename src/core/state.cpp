@@ -15,12 +15,6 @@
 namespace Core
 {
 
-State::State()
-{
-//    Core::Signals::loadEditorSource.connect(this, &State::onLoadFileSignal);
-//    Core::Signals::setCurrentLocation.connect(this, &State::onSetCurrentLocationSignal);
-}
-
 AnyMap &
 State::vars()
 {
@@ -39,12 +33,6 @@ State::callStack()
     return m_callStack;
 }
 
-//const Location &
-//State::currentLocation() const
-//{
-//    return m_currentLocation;
-//}
-
 void
 State::setDebuggerState(State::Debugger state)
 {
@@ -57,29 +45,6 @@ State::debuggerState() const
 {
     return m_debuggerState;
 }
-
-// signal handlers
-
-//void
-//State::onLoadFileSignal(const std::string &filename)
-//{
-//    m_currentLocation.filename = filename;
-//}
-
-/*
-void
-State::onSetCurrentLocationSignal(const Core::Location &location)
-{
-    auto oldloc = m_currentLocation.row;
-
-    m_currentLocation = location;
-
-    // update previous position's gutter marker
-    Signals::updateGutterMarker(oldloc);
-
-//    Signals::setCursorPosition(m_currentLocation.row, 0);
-}
-*/
 
 void
 State::setCallStack(const CallStack& callstack)
