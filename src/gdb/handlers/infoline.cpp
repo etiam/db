@@ -47,21 +47,19 @@ infoline(const Gdb::Result &result, int token, boost::any data)
     {
         match = true;
 
-        auto &state = Core::state();
-        auto &vars = state->vars();
-        auto line = std::stoi(smatch[1]);
-        auto filename = smatch[2].str();
-        auto func = smatch[3].str();
+        auto &vars = Core::state()->vars();
 
-        auto lc = Core::Location({func, filename, line});
+        const auto line = std::stoi(smatch[1]);
+        const auto filename = smatch[2].str();
+        const auto func = smatch[3].str();
 
-        filename = boost::filesystem::canonical(filename).string();
+        const auto location = Core::Location({func, filename, line});
 
         // if the editor has not displayed anything yet load filename and set the cursor
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
-            Core::Signals::loadEditorSource(filename);
-            Core::Signals::setCurrentLocation(lc);
+            Core::Signals::loadEditorSource(boost::filesystem::canonical(filename).string());
+            Core::Signals::setCurrentLocation(location);
             vars.set("initialdisplay", true);
         }
     }

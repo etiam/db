@@ -19,7 +19,8 @@
     <script src="qrc:/ace/ace.js" type="text/javascript"></script>
 
     <style type="text/css" media="screen">
-        #editor {
+        #editor 
+        {
             position: absolute;
             top: 0;
             right: 0;
@@ -27,14 +28,34 @@
             left: 0;
         }
         
-        .ace_marker-layer .ace_active-line {
+        .ace_marker-layer .ace_active-line 
+        {
             background: rgba(125, 145, 195, 0.31) !important;
         }
         
-        .ace_cursor {
+        .current-line-marker-foo
+        {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.0);
+            z-index: 20
+        }
+        .current-line-marker 
+        {
+            position: absolute;
+            background: rgba(125, 145, 195, 0.31);
+            z-index: 20
+        }
+        
+        .ace_cursor 
+        {
             border: 1px solid red;
             background-color: red;
             opacity: 0.5;
+        }
+        
+        .ace_editor .ace_marker-layer .ace_bracket 
+        { 
+            display: none 
         }
         
         .ace_gutter-cell.ace_currentline

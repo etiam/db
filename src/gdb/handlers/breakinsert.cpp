@@ -81,23 +81,24 @@ breakinsert(const Result &result, int token, boost::any data)
 
         try
         {
-            auto filename = boost::any_cast<char *>(bkpt.at("fullname"));
-            auto func = boost::any_cast<char *>(bkpt.at("func"));
-            auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
-            auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
-            unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
-            auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
+            const auto fullname = boost::any_cast<char *>(bkpt.at("fullname"));
+            const auto func = boost::any_cast<char *>(bkpt.at("func"));
+            const auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
+            const auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
+            const unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
+            const auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
 
-            auto lc = Core::Location({func, filename, line});
-            auto bp = Core::Breakpoint({lc, breakpointnumber, times, enabled});
+            const auto location = Core::Location({func, fullname, line});
+
+            const auto bp = Core::Breakpoint({location, breakpointnumber, times, enabled});
             Core::state()->breakPoints().insertBreakpoint(bp);
 
             // if the editor has not displayed anything yet load filename and set the cursor
             auto &vars = Core::state()->vars();
             if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
             {
-                Core::Signals::loadEditorSource(filename);
-                Core::Signals::setCurrentLocation(lc);
+                Core::Signals::loadEditorSource(fullname);
+                Core::Signals::setCurrentLocation(location);
                 vars.set("initialdisplay", true);
             }
         }

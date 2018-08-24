@@ -41,7 +41,6 @@ class MyWebPage : public QWebPage
         std::cerr << "\"" << sourceID.toStdString() << "\":"
                   << lineNumber << ": " << message.toStdString() << std::endl;
     }
-
 };
 
 // TODO : combine EditorImpl into Editor
@@ -140,7 +139,11 @@ Editor::Editor(QMainWindow *parent) :
     m_impl->executeJavaScript(QString("editor.setOptions({ fontFamily: \"%1\" })").arg(fontname));
 
     // don't display the cursor
-    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
+//    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
+
+    // don't highlight active line/gutter
+    m_impl->executeJavaScript("editor.setOptions({ highlightActiveLine: false })");
+    m_impl->executeJavaScript("editor.setOptions({ highlightGutterLine: false })");
 
     // syntax highlighting
     setHighlightMode("c_cpp");
@@ -166,7 +169,6 @@ Editor::Editor(QMainWindow *parent) :
     {
         QMetaObject::invokeMethod(this, "setCurrentLocation", Qt::QueuedConnection, Q_ARG(Core::Location, l));
     });
-
 }
 
 Editor::~Editor()
@@ -380,16 +382,24 @@ void
 Editor::setCurrentLocation(const Core::Location &location)
 {
     // update prev/new gutter markers
-    updateGutterMarker(m_currentLocation);
-    updateGutterMarker(location);
+//    updateGutterMarker(m_currentLocation);
+//    updateGutterMarker(location);
 
-    m_currentLocation = location;
 
     if (getNumLines() > location.row)
     {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, 0)").arg(location.row-1));
+//        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, 0)").arg(location.row-1));
         m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+
+        auto remcmd = QString("editor.session.removeMarker(currmark)");
+        m_impl->executeJavaScript(remcmd);
+
+//        auto addcmd = QString("var Range = ace.require('ace/range').Range; editor.session.addMarker(new Range(%1, 0, %1, 1), \"current-line-marker\", \"fullLine\");");
+        auto addcmd = QString("currmark = new Range(%1, 0, %1, 1); editor.session.addMarker(currmark, \"current-line-marker\", \"fullLine\");");
+        m_impl->executeJavaScript(addcmd.arg(location.row-1));
     }
+
+    m_currentLocation = location;
 }
 
 void

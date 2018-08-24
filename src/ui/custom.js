@@ -15,6 +15,10 @@ function property(param, value)
 // the number of lines in the document
 property("lines", 1);
 property("charheight", editor.renderer.characterHeight);
+property("currentlinemarker", ace.require('ace/range').Range);
+
+var Range = ace.require('ace/range').Range;
+var currmark;
 
 // calc number of lines in document when document changes
 editor.on('change', function() 
@@ -31,7 +35,6 @@ editor.on('mousemove', function(e)
 {
     sc = editor.renderer.pixelToScreenCoordinates(e.clientX, e.clientY);
     index = editor.session.doc.positionToIndex(sc)
-//    codeview.onMouseMoved(sc.row + 1, sc.column + 1);
     codeview.onMouseMoved(index);
 });
 

@@ -44,10 +44,12 @@ stopped(const Result &result, int token, boost::any data)
         const auto &dict = result.payload.dict;
         if (dict.find("frame") != std::end(dict))
         {
-            auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
-            auto func = boost::any_cast<char *>(frame.at("func"));
-            auto fullname = boost::any_cast<char *>(frame.at("fullname"));
-            auto line = std::stoi(boost::any_cast<char *>(frame.at("line")));
+            const auto frame = boost::any_cast<Gdb::Payload::Dict>(dict.at("frame"));
+            const auto func = boost::any_cast<char *>(frame.at("func"));
+            const auto fullname = boost::any_cast<char *>(frame.at("fullname"));
+            const auto line = std::stoi(boost::any_cast<char *>(frame.at("line")));
+
+            const auto location = Core::Location({func, fullname, line});
 
             // update global state
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
@@ -56,7 +58,7 @@ stopped(const Result &result, int token, boost::any data)
             Core::Signals::loadEditorSource(fullname);
 
             // update global current location
-            Core::Signals::setCurrentLocation(Core::Location({func, fullname, line}));
+            Core::Signals::setCurrentLocation(location);
 
             // update call stack
             Gdb::commands()->updateCallStack();

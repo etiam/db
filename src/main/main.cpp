@@ -10,6 +10,7 @@
 #endif
 
 #include <iostream>
+#include <numeric>
 #include <memory>
 #include <thread>
 #include <regex>
