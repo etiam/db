@@ -151,11 +151,17 @@ Editor::Editor(QMainWindow *parent) :
     qRegisterMetaType<Core::Location>("Location");
 
     // signal handlers TODO : use lambdas
-    Core::Signals::loadEditorSource.connect(this, &Editor::onLoadFileSignal);
 //    Core::Signals::setCursorPosition.connect(this, &Editor::onSetCursorPositionSignal);
 //    Core::Signals::setCurrentLocation.connect(this, &Editor::onSetCursorPositionSignal);
-    Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
+//    Core::Signals::updateGutterMarker.connect(this, &Editor::onUpdateGutterMarkerSignal);
+
+    Core::Signals::loadEditorSource.connect(this, &Editor::onLoadFileSignal);
     Core::Signals::clearCurrentLocation.connect(this, &Editor::onClearCurrentLocationSignal);
+
+    Core::Signals::updateGutterMarker.connect([this](const Core::Location &l)
+    {
+        QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(Core::Location, l));
+    });
 
     Core::Signals::setCurrentLocation.connect([this](const Core::Location &l)
     {
@@ -278,7 +284,7 @@ Editor::onCursorMoved(int x, int y)
 void
 Editor::onMouseMoved(int index)
 {
-    std::cout << index << std::endl;
+//    std::cout << index << std::endl;
 }
 
 // private functions
@@ -320,7 +326,7 @@ Editor::updateGutterMarkers(const QString &filename)
     for (const auto &breakpoint : Core::state()->breakPoints().getAll())
     {
         if (breakpoint.location.filename == filename.toStdString())
-            updateGutterMarker(breakpoint.location.row);
+            updateGutterMarker(breakpoint.location);
     }
 }
 
@@ -351,11 +357,11 @@ Editor::onLoadFileSignal(const std::string &filename)
 //    QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, location.row), Q_ARG(int, 0));
 //}
 
-void
-Editor::onUpdateGutterMarkerSignal(int row)
-{
-    QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, row));
-}
+//void
+//Editor::onUpdateGutterMarkerSignal(int row)
+//{
+//    QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(int, row));
+//}
 
 void
 Editor::onClearCurrentLocationSignal()
@@ -402,12 +408,11 @@ Editor::loadFile(const QString &filename)
 void
 Editor::setCurrentLocation(const Core::Location &location)
 {
-    auto oldloc = m_currentLocation.row;
+    // update prev/new gutter markers
+    updateGutterMarker(m_currentLocation);
+    updateGutterMarker(location);
 
     m_currentLocation = location;
-
-    // update previous position's gutter marker
-    updateGutterMarker(oldloc);
 
     if (getNumLines() > location.row) //&& getLineLength(row) >= column)
     {
@@ -417,27 +422,27 @@ Editor::setCurrentLocation(const Core::Location &location)
 }
 
 void
-Editor::updateGutterMarker(int row)
+Editor::updateGutterMarker(const Core::Location &location)
 {
     const auto &breakpoints = Core::state()->breakPoints();
 //    const auto &currloc = Core::state()->currentLocation();
 
     std::string klass = "ace";
-    if (breakpoints.exists(m_currentLocation.filename, row))
+    if (breakpoints.exists(location.filename, location.row))
     {
         klass += "_breakpoint";
-        if (!breakpoints.enabled(m_currentLocation.filename, row))
+        if (!breakpoints.enabled(location.filename, location.row))
         {
             klass += "_disabled";
         }
     }
 
-    if (m_currentLocation.row == row)
-    {
-        klass += "_currentline";
-    }
+//    if (m_currentLocation.row == row)
+//    {
+//        klass += "_currentline";
+//    }
 
-    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(row-1).arg(QString::fromStdString(klass)));
+    m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(location.row-1).arg(QString::fromStdString(klass)));
 }
 
 void

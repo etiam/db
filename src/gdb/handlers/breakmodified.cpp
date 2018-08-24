@@ -61,6 +61,8 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
 
         auto breakpointnumber = std::stoi(boost::any_cast<char *>(bkpt.at("number")));
         auto line = std::stoi(boost::any_cast<char *>(bkpt.at("line")));
+        auto func = boost::any_cast<char *>(bkpt.at("func"));
+        auto fullname = boost::any_cast<char *>(bkpt.at("fullname"));
         unsigned int times = std::stoi(boost::any_cast<char *>(bkpt.at("times")));
         auto enabled = std::string(boost::any_cast<char *>(bkpt.at("enabled"))) == "y" ? true : false;
 
@@ -69,7 +71,7 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
         bp.enabled = enabled;
 
         Core::Signals::breakPointsUpdated();
-        Core::Signals::updateGutterMarker(line);
+        Core::Signals::updateGutterMarker(Core::Location({func, fullname, line}));
     }
 
     return match;

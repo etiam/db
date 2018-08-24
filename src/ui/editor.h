@@ -69,7 +69,7 @@ private:
     //    void    onSetCursorPositionSignal(int row, int column);
 //    void    onSetCursorPositionSignal(const Core::Location &location);
 
-    void onUpdateGutterMarkerSignal(int row);
+//    void onUpdateGutterMarkerSignal(int row);
     void onClearCurrentLocationSignal();
 
     std::unique_ptr<EditorImpl> m_impl;
@@ -79,7 +79,7 @@ private Q_SLOTS:
     void setCurrentLocation(const Core::Location &location);
 
     // update the gutter marker at the current row
-    void updateGutterMarker(int row);
+    void updateGutterMarker(const Core::Location &location);
 
     // remove the current location marker from the gutter
     void clearCurrentLocation();

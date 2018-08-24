@@ -58,9 +58,6 @@ stopped(const Result &result, int token, boost::any data)
             // update global current location
             Core::Signals::setCurrentLocation(Core::Location({func, fullname, line}));
 
-            // update current gutter marker
-//            Core::Signals::updateGutterMarker(line);
-
             // update call stack
             Gdb::commands()->updateCallStack();
         }

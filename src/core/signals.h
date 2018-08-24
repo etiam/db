@@ -121,7 +121,7 @@ extern Signal<> quitRequested;
 extern Signal<const Location & /*location*/> setCurrentLocation;
 
 // update the source editor's gutter marker on row
-extern Signal<int /*row*/> updateGutterMarker;
+extern Signal<const Location & /*location*/> updateGutterMarker;
 
 // remove the current location marker from the source editor
 extern Signal<> clearCurrentLocation;

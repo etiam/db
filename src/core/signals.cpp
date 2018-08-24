@@ -21,9 +21,10 @@ Signal<const std::string &> loadEditorSource;
 Signal<> quitRequested;
 
 Signal<int, int> setCursorPosition;
-Signal<int> updateGutterMarker;
 
+Signal<const Location &> updateGutterMarker;
 Signal<const Location &> setCurrentLocation;
+
 Signal<> clearCurrentLocation;
 
 Signal<const std::string &> appendConsoleText;
