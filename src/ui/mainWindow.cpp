@@ -389,6 +389,7 @@ void
 MainWindow::showEvent(QShowEvent* event)
 {
     static bool first = false;
+
     QMainWindow::showEvent(event);
 
     // get gdb version, output will go to console

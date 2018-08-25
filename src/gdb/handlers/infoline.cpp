@@ -59,7 +59,7 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
             Core::Signals::loadEditorSource(boost::filesystem::canonical(filename).string());
-            Core::Signals::setCurrentLocation(location);
+            Core::Signals::setCursorLocation(location);
             vars.set("initialdisplay", true);
         }
     }

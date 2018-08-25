@@ -165,9 +165,14 @@ Editor::Editor(QMainWindow *parent) :
         QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(Core::Location, l));
     });
 
-    Core::Signals::setCurrentLocation.connect([this](const Core::Location &l)
+    Core::Signals::highlightCurrentLocation.connect([this](const Core::Location &l)
     {
         QMetaObject::invokeMethod(this, "setCurrentLocation", Qt::QueuedConnection, Q_ARG(Core::Location, l));
+    });
+
+    Core::Signals::setCursorLocation.connect([this](const Core::Location &l)
+    {
+        QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, l.row), 0);
     });
 }
 
@@ -192,7 +197,7 @@ Editor::setText(const QString &newText)
     const QString request = "editor.getSession().setValue('%1')";
     m_impl->executeJavaScript(request.arg(m_impl->escape(newText)));
 
-    setCurrentLocation(Core::Location({"", "", 1}));
+    setCursorPosition(1, 1);
 }
 
 QString
@@ -320,6 +325,16 @@ Editor::clearGutterMarkers()
 }
 
 void
+Editor::setCursorPosition(int col, int row)
+{
+    if (getNumLines() > row)
+    {
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
+        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+    }
+}
+
+void
 Editor::updateGutterMarkers(const QString &filename)
 {
     // call updateGutterMarker on all breakpoints with filename
@@ -381,22 +396,13 @@ Editor::loadFile(const QString &filename)
 void
 Editor::setCurrentLocation(const Core::Location &location)
 {
-    // update prev/new gutter markers
-//    updateGutterMarker(m_currentLocation);
-//    updateGutterMarker(location);
-
-
     if (getNumLines() > location.row)
     {
 //        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, 0)").arg(location.row-1));
-        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+//        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
 
-        auto remcmd = QString("editor.session.removeMarker(currmark)");
-        m_impl->executeJavaScript(remcmd);
-
-//        auto addcmd = QString("var Range = ace.require('ace/range').Range; editor.session.addMarker(new Range(%1, 0, %1, 1), \"current-line-marker\", \"fullLine\");");
-        auto addcmd = QString("currmark = new Range(%1, 0, %1, 1); editor.session.addMarker(currmark, \"current-line-marker\", \"fullLine\");");
-        m_impl->executeJavaScript(addcmd.arg(location.row-1));
+        m_impl->executeJavaScript(QString("unhighlightlast()"));
+        m_impl->executeJavaScript(QString("highlightline(%1)").arg(location.row-1));
     }
 
     m_currentLocation = location;

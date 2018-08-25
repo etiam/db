@@ -60,6 +60,7 @@ private:
     int getCharacterHeight() const;
     void clearGutterMarkers();
     void updateGutterMarkers(const QString &filename);
+    void setCursorPosition(int col, int row);
 
     void showGutter();
     void hideGutter();

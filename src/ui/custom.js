@@ -20,6 +20,20 @@ property("currentlinemarker", ace.require('ace/range').Range);
 var Range = ace.require('ace/range').Range;
 var currmark;
 
+function highlightline(row)
+{
+    var r = new Range(row, 0,row, 1); 
+    currmark = editor.session.addMarker(r, "current-line-marker", "fullLine");
+}
+
+function unhighlightlast()
+{
+    if (currmark != null) 
+    {
+        editor.session.removeMarker(currmark);
+    }
+}
+
 // calc number of lines in document when document changes
 editor.on('change', function() 
 {
