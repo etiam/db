@@ -21,36 +21,37 @@
 namespace Core
 {
 
-class Master : boost::noncopyable
+class Master: boost::noncopyable
 {
-  public:
+public:
     ~Master() = default;
 
-    static void                     initialize();
-    static void                     shutdown();
+    static void initialize();
+    static void shutdown();
 
-    static StatePtr &               state();
+    static StatePtr & state();
 
-  private:
+private:
     Master();
 
-    static Master &                 instance();
+    static Master & instance();
 
-    StatePtr                        m_state;
+    StatePtr m_state;
 };
 
-std::unique_ptr<Master> theinstance;
+std::unique_ptr<Master> g_instance;
 
 void
 Master::initialize()
 {
+    instance();
 }
 
 void
 Master::shutdown()
 {
-    if (theinstance)
-        theinstance.reset();
+    if (g_instance)
+        g_instance.reset();
 }
 
 StatePtr &
@@ -67,9 +68,9 @@ Master::Master() :
 Master &
 Master::instance()
 {
-    if (!theinstance)
-        theinstance = std::unique_ptr<Master>(new Master());
-    return *theinstance;
+    if (!g_instance)
+        g_instance = std::unique_ptr<Master>(new Master());
+    return *g_instance;
 }
 
 void
