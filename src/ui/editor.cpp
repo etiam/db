@@ -172,7 +172,7 @@ Editor::Editor(QMainWindow *parent) :
 
     Core::Signals::setCursorLocation.connect([this](const Core::Location &l)
     {
-        QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, l.row), 0);
+        QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, l.row), Q_ARG(int, 0));
     });
 }
 
@@ -323,17 +323,6 @@ Editor::clearGutterMarkers()
 {
     m_impl->executeJavaScript(QString("editor.getSession().clearBreakpoints()"));
 }
-
-void
-Editor::setCursorPosition(int col, int row)
-{
-    if (getNumLines() > row)
-    {
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
-        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
-    }
-}
-
 void
 Editor::updateGutterMarkers(const QString &filename)
 {
@@ -398,14 +387,21 @@ Editor::setCurrentLocation(const Core::Location &location)
 {
     if (getNumLines() > location.row)
     {
-//        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, 0)").arg(location.row-1));
-//        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
-
         m_impl->executeJavaScript(QString("unhighlightlast()"));
         m_impl->executeJavaScript(QString("highlightline(%1)").arg(location.row-1));
     }
 
     m_currentLocation = location;
+}
+
+void
+Editor::setCursorPosition(int col, int row)
+{
+    if (getNumLines() > row)
+    {
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
+        m_impl->executeJavaScript(QString("editor.renderer.scrollCursorIntoView(null, 0.5)"));
+    }
 }
 
 void

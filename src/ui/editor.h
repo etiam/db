@@ -60,7 +60,6 @@ private:
     int getCharacterHeight() const;
     void clearGutterMarkers();
     void updateGutterMarkers(const QString &filename);
-    void setCursorPosition(int col, int row);
 
     void showGutter();
     void hideGutter();
@@ -68,6 +67,7 @@ private:
 private Q_SLOTS:
     void loadFile(const QString &filename);
     void setCurrentLocation(const Core::Location &location);
+    void setCursorPosition(int col, int row);
 
     // update the gutter marker at the current row
     void updateGutterMarker(const Core::Location &location);

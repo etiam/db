@@ -366,8 +366,13 @@ ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFu
 void
 ControllerImpl::addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data)
 {
-    static boost::uuids::random_generator gen;
-    m_handlers.push_back({handler, m_token, priority, persistent, data, gen()});
+    static boost::uuids::random_generator uuid_gen;
+
+    // persistent handlers don't receive valid tokens so set to 0
+    if (persistent)
+        m_handlers.push_back({handler, 0, priority, persistent, data, uuid_gen()});
+    else
+        m_handlers.push_back({handler, m_token, priority, persistent, data, uuid_gen()});
 
     // sort handlers based on priority
     std::sort(std::begin(m_handlers), std::end(m_handlers),

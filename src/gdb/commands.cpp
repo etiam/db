@@ -89,7 +89,7 @@ Commands::getFunctionNames()
 void
 Commands::updateCallStack()
 {
-    executeCommand("stack-list-frames", Handlers::stacklistframes);
+    m_controller->executeCommand("stack-list-frames", Handlers::stacklistframes);
 }
 
 void
