@@ -47,6 +47,21 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
      'stream': 'stdout',
      'token': 10,
      'type': 'result'}
+
+    {'message': u'done',
+     'payload': {u'stack': [{u'addr': u'0x00007ffff70c1b97',
+                             u'file': u'../csu/libc-start.c',
+                             u'fullname': u'/build/glibc-OTsEL5/glibc-2.27/csu/../csu/libc-start.c',
+                             u'func': u'__libc_start_main',
+                             u'level': u'0',
+                             u'line': u'344'},
+                            {u'addr': u'0x0000000000400c6a',
+                             u'func': u'_start',
+                             u'level': u'1'}]},
+     'stream': 'stdout',
+     'token': 16,
+     'type': 'result'}
+
     */
 
     if (match)
@@ -62,9 +77,10 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
             {
                 const auto &entry = boost::any_cast<Gdb::Payload::Dict>(stackentry);
                 auto func = boost::any_cast<char *>(entry.at("func"));
+                auto level = std::stoi(boost::any_cast<char *>(entry.at("level")));
+
                 auto fullname = boost::any_cast<char *>(entry.at("fullname"));
                 auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));
-                auto level = std::stoi(boost::any_cast<char *>(entry.at("level")));
                 callstack.emplace_back(Core::Location({func, fullname, line}), level);
             }
         }

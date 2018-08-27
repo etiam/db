@@ -114,7 +114,7 @@ Master::WorkerThread()
     }
 
     // if breakonmain true, set breakpoint, otherwise find source file for main
-    if (vars.get<bool>("breakonmain"))
+    if (vars.has("breakonmain") && vars.get<bool>("breakonmain"))
         gdb->insertBreakpoint("main");
     else
         gdb->infoAddress("main");

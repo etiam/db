@@ -28,6 +28,8 @@
 #include "ast/global.h"
 #include "ui/main.h"
 
+#include "redirect.h"
+
 namespace po = boost::program_options;
 
 // https://stackoverflow.com/questions/11295019/environment-path-directories-iteration
@@ -126,6 +128,10 @@ main(int argc, char *argv[])
     Core::Timer timer;
     pthread_setname_np(pthread_self(), "main");
 
+    StdCapture::Init();
+
+    StdCapture::BeginCapture();
+
     // Declare a group of options that will be on command line
     po::options_description generic("Command line options");
     generic.add_options()
@@ -196,4 +202,8 @@ main(int argc, char *argv[])
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
+
+    StdCapture::EndCapture();
+
+    std::cout << StdCapture::GetCapture() << std::endl;
 }

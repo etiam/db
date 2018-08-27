@@ -82,7 +82,9 @@ Main::writeSettings() const
 {
     QSettings settings;
 
-    settings.setValue("Core/BreakOnMain", Core::state()->vars().get<bool>("breakonmain"));
+    const auto &vars = Core::state()->vars();
+    auto breakonmain = vars.has("breakonmain") && vars.get<bool>("breakonmain");
+    settings.setValue("Core/BreakOnMain", breakonmain);
 }
 
 }
