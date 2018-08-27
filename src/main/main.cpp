@@ -10,7 +10,6 @@
 #endif
 
 #include <iostream>
-#include <numeric>
 #include <memory>
 #include <thread>
 #include <regex>
@@ -66,10 +65,8 @@ get_environment_path()
 }
 
 void
-gdbStartupThread(const po::variables_map &vm)
+processArgs(const po::variables_map &vm)
 {
-    pthread_setname_np(pthread_self(), "gdbstartup");
-
     // try to find prog in current dir
     if (vm.count("prog"))
     {
@@ -113,23 +110,6 @@ gdbStartupThread(const po::variables_map &vm)
 
             Core::Signals::appendConsoleText("Reading symbols from " + prog + "...");
             gdb->loadProgram(prog);
-
-            // set program arguments
-            if (vm.count("args"))
-            {
-                const auto &args = vm["args"].as<std::vector<std::string>>();
-                std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
-                    [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
-                gdb->setArgs(argstr);
-            }
-
-            // if breakonmain true, set breakpoint, otherwise find source file for main
-            if (Core::state()->vars().get<bool>("breakonmain"))
-                gdb->insertBreakpoint("main");
-            else
-                gdb->infoAddress("main");
-
-            gdb->getSourceFiles();
         }
         else
         {
@@ -298,16 +278,17 @@ main(int argc, char *argv[])
     Gdb::initialize();
     Ast::initialize();
 
+    // process command line args
+    processArgs(vm);
+
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
 
     // start startup thread
-    auto gdbstartupthread = std::make_unique<std::thread>(&gdbStartupThread, vm);
     auto aststartupthread = std::make_unique<std::thread>(&astStartupThread, vm);
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
 
-    gdbstartupthread->join();
     aststartupthread->join();
 }

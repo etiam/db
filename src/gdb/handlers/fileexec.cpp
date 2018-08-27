@@ -35,6 +35,7 @@ fileexec(const Gdb::Result &result, int token, boost::any data)
     {
         Core::state()->setDebuggerState(Core::State::Debugger::LOADED);
         Core::Signals::appendConsoleText(result.message.string.data + '\n');
+        Core::Signals::programLoaded();
     }
 
     return match;

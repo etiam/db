@@ -42,6 +42,8 @@ Signal<> breakPointsUpdated;
 Signal<> sourceListUpdated;
 
 Signal<> functionListUpdated;
+
+Signal<> programLoaded;
 }
 
 }

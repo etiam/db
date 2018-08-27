@@ -9,10 +9,16 @@
 # include "config.h"
 #endif
 
+#include <iostream>
 #include <memory>
+#include <numeric>
 
 #include <thread>
 #include <boost/utility.hpp>
+
+#include "core/global.h"
+#include "core/state.h"
+#include "core/signals.h"
 
 #include "global.h"
 #include "commands.h"
@@ -85,25 +91,34 @@ Master::WorkerThread()
 {
     pthread_setname_np(pthread_self(), "gdbworker");
 
-    /*
-    // set program arguments
-    if (vm.count("args"))
+    bool signaled = false;
+    Core::Signals::programLoaded.connect([&signaled]() { signaled = true; });
+
+    // wait for programLoaded signal to fire
+    while(!signaled)
     {
-        const auto &args = vm["args"].as<std::vector<std::string>>();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    auto &gdb = Gdb::commands();
+    auto &vars = Core::state()->vars();
+
+    // set program arguments
+    if (vars.has("args"))
+    {
+        const auto args = vars.get<std::vector<std::string>>("args");
         std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
             [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
         gdb->setArgs(argstr);
     }
 
     // if breakonmain true, set breakpoint, otherwise find source file for main
-    if (Core::state()->vars().get<bool>("breakonmain"))
+    if (vars.get<bool>("breakonmain"))
         gdb->insertBreakpoint("main");
     else
         gdb->infoAddress("main");
 
     gdb->getSourceFiles();
-    */
-
 }
 
 ////////////////////

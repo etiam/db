@@ -149,6 +149,9 @@ extern Signal<> sourceListUpdated;
 // emitted when the list of function names is updated
 extern Signal<> functionListUpdated;
 
+// emitted when program is loaded
+extern Signal<> programLoaded;
+
 }
 
 }
