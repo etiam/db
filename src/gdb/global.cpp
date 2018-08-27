@@ -9,8 +9,8 @@
 # include "config.h"
 #endif
 
-#include <iostream>
 #include <memory>
+#include <thread>
 #include <numeric>
 
 #include <thread>
@@ -52,6 +52,7 @@ std::unique_ptr<Master> g_instance;
 void
 Master::initialize()
 {
+    instance();
 }
 
 void
