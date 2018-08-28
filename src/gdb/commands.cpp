@@ -101,45 +101,37 @@ Commands::infoAddress(const std::string &function)
 void
 Commands::insertBreakpoint(const std::string &location)
 {
-    std::string cmd = "break-insert " + location;
-    m_controller->executeCommand(cmd, Handlers::breakinsert);
+    m_controller->executeCommand("break-insert " + location, Handlers::breakinsert);
 }
 
 void
 Commands::deleteBreakpoint(int number)
 {
-    std::string cmd = "break-delete " + std::to_string(number);
-    m_controller->executeCommand(cmd, Handlers::breakdelete, number);
+    m_controller->executeCommand("break-delete " + std::to_string(number), Handlers::breakdelete, number);
 }
 
 void
 Commands::enableBreakpoint(int number)
 {
-    std::string cmd = "break-enable " + std::to_string(number);
-    m_controller->executeCommand(cmd, Handlers::breakenable, number);
+    m_controller->executeCommand("break-enable " + std::to_string(number), Handlers::breakenable, number);
 }
 
 void
 Commands::disableBreakpoint(int number)
 {
-    std::string cmd = "break-disable " + std::to_string(number);
-    m_controller->executeCommand(cmd, Handlers::breakdisable, number);
+    m_controller->executeCommand("break-disable " + std::to_string(number), Handlers::breakdisable, number);
 }
 
 void
 Commands::run()
 {
-    std::string cmd = "exec-run";
-    Core::Signals::appendConsoleText("run\n");
-    m_controller->executeCommand(cmd, Handlers::execrun);
+    m_controller->executeCommand("exec-run", Handlers::execrun);
 }
 
 void
 Commands::cont()
 {
-    std::string cmd = "exec-continue";
-    Core::Signals::appendConsoleText("continue\n");
-    m_controller->executeCommand(cmd, Handlers::execrun);
+    m_controller->executeCommand("exec-continue", Handlers::execrun);
 }
 
 void
@@ -168,21 +160,18 @@ Commands::stop()
 void
 Commands::stepover()
 {
-    Core::Signals::appendConsoleText("next\n");
     m_controller->executeCommand("exec-next", Handlers::execnext);
 }
 
 void
 Commands::stepinto()
 {
-    Core::Signals::appendConsoleText("step\n");
     m_controller->executeCommand("exec-step");
 }
 
 void
 Commands::stepout()
 {
-    Core::Signals::appendConsoleText("finish\n");
     m_controller->executeCommand("exec-finish");
 }
 
