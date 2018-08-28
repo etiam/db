@@ -180,7 +180,6 @@ void
 MainWindow::createToolbar()
 {
     m_debugControls = new DebugControls(this);
-    m_debugControls->updateActionsState(Core::State::Debugger::NONE);
     addToolBar(m_debugControls);
 }
 
@@ -361,9 +360,6 @@ void
 MainWindow::onDebuggerStateUpdated()
 {
     auto state = Core::state()->debuggerState();
-
-    // update debug controls
-    m_debugControls->updateActionsState(state);
 
     switch (state)
     {

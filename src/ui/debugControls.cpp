@@ -81,15 +81,18 @@ DebugControls::DebugControls(MainWindow *parent) :
     m_stepoutAct->setStatusTip(tr("Step out"));
     connect(m_stepoutAct, &QAction::triggered, [&](){ Gdb::commands()->stepout(); });
     addAction(m_stepoutAct);
-}
 
-DebugControls::~DebugControls()
-{
+    // set initial state
+    onDebuggerStateUpdated();
+
+    Core::Signals::debuggerStateUpdated.connect(this, &DebugControls::onDebuggerStateUpdated);
 }
 
 void
-DebugControls::updateActionsState(Core::State::Debugger state)
+DebugControls::onDebuggerStateUpdated()
 {
+    const auto state = Core::state()->debuggerState();
+
     m_runAct->setDisabled(true);
     m_pauseAct->setDisabled(true);
     m_stopAct->setDisabled(true);

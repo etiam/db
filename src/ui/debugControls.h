@@ -25,13 +25,13 @@ class DebugControls : public QToolBar
 {
   public:
     DebugControls(MainWindow *parent=0);
-    ~DebugControls();
-
-    // update the enabled/disabled state of the debug controls
-    void updateActionsState(Core::State::Debugger state);
+    ~DebugControls() = default;
 
   private:
     void run();
+
+    // signal handlers
+    void onDebuggerStateUpdated();
 
     QAction * m_runAct;
     QAction * m_pauseAct;
