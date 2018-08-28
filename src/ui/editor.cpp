@@ -126,7 +126,6 @@ Editor::Editor(QMainWindow *parent) :
     setObjectName("editor");
 
     m_impl->startAceWidget();
-//    m_impl->executeJavaScript("editor.focus()");
 
     // set some editor ui options
     m_impl->executeJavaScript("editor.setShowPrintMargin(false)");
@@ -387,8 +386,17 @@ Editor::setCurrentLocation(const Core::Location &location)
 {
     if (getNumLines() > location.row)
     {
+        auto row = m_impl->executeJavaScript(QString("editor.getCursorPosition().row")).toInt() + 1;
+        auto col=  m_impl->executeJavaScript(QString("editor.getCursorPosition().col")).toInt() + 1;
+
         m_impl->executeJavaScript(QString("unhighlightlast()"));
         m_impl->executeJavaScript(QString("highlightline(%1)").arg(location.row-1));
+
+        std::cout << location.row << std::endl;
+
+        setCursorPosition(0, location.row);
+
+        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
     }
 
     m_currentLocation = location;

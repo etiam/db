@@ -101,7 +101,7 @@ Commands::infoAddress(const std::string &function)
 void
 Commands::insertBreakpoint(const std::string &location)
 {
-    std::string cmd = "break-insert  " + location;
+    std::string cmd = "break-insert " + location;
     m_controller->executeCommand(cmd, Handlers::breakinsert);
 }
 
