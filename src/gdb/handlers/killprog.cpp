@@ -18,6 +18,7 @@
 #include "core/signals.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -25,7 +26,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 killprog(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
@@ -35,7 +36,7 @@ killprog(const Gdb::Result &result, int token, boost::any data)
         Core::state()->setDebuggerState(Core::State::Debugger::LOADED);
     }
 
-    return match;
+    return {"killprog", match, Controller::MatchType::TOKEN};
 };
 
 }

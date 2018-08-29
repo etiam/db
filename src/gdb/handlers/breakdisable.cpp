@@ -16,6 +16,7 @@
 #include "core/global.h"
 #include "core/state.h"
 #include "core/signals.h"
+#include "gdb/controller.h"
 
 #include "gdb/result.h"
 
@@ -25,7 +26,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 breakdisable(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
@@ -36,7 +37,7 @@ breakdisable(const Gdb::Result &result, int token, boost::any data)
         Core::state()->breakPoints().disableBreakpoint(number);
     }
 
-    return match;
+    return {"breakdisable", match, Controller::MatchType::TOKEN};
 };
 
 }

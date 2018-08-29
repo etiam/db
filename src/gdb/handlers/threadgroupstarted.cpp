@@ -15,6 +15,7 @@
 #include "core/state.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -22,7 +23,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 threadgroupstarted(const Gdb::Result &result, int token, boost::any data)
 {
     /*
@@ -45,7 +46,7 @@ threadgroupstarted(const Gdb::Result &result, int token, boost::any data)
         Core::state()->vars().set("pid", pid);
     }
 
-    return match;
+    return {"threadgroupstarted", match, Controller::MatchType::REGEX};
 };
 
 }

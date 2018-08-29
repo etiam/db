@@ -16,6 +16,7 @@
 #include "core/global.h"
 #include "core/state.h"
 #include "core/signals.h"
+#include "gdb/controller.h"
 
 #include "gdb/result.h"
 
@@ -25,7 +26,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 breakdelete(const Gdb::Result &result, int token, boost::any data)
 {
     auto matchtoken = (result.token.value == token);
@@ -58,7 +59,7 @@ breakdelete(const Gdb::Result &result, int token, boost::any data)
         Core::state()->breakPoints().deleteBreakpoint(number);
     }
 
-    return match;
+    return {"breakdelete", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::REGEX};
 };
 
 }

@@ -21,6 +21,7 @@
 #include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 #include "handlers.h"
 
@@ -31,7 +32,7 @@ namespace Handlers
 {
 
 // match the response of "info address ..." command
-bool
+Controller::HandlerReturn
 infoaddress(const Gdb::Result &result, int token, boost::any data)
 {
     static std::regex regex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
@@ -44,7 +45,7 @@ infoaddress(const Gdb::Result &result, int token, boost::any data)
         Gdb::commands()->executeConsoleCommand("info line *" + smatch[2].str());
     }
 
-    return match;
+    return {"infoaddress", match, Controller::MatchType::REGEX};
 }
 
 }

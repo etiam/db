@@ -20,6 +20,7 @@
 #include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -27,7 +28,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 breakmodified(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.message.type == Message::Type::STRING &&
@@ -74,7 +75,7 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
         Core::Signals::updateGutterMarker(Core::Location({func, fullname, line}));
     }
 
-    return match;
+    return {"breakmodified", match, Controller::MatchType::REGEX};
 };
 
 }

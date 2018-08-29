@@ -124,7 +124,7 @@ ControllerImpl::initialize()
     auto gdbmimodule = PyModule_New("pygdbmi");
     if (gdbmimodule && PyModule_Check(gdbmimodule))
     {
-        // add module to global module dict
+        // add module to global module dictionary
         PyDict_SetItemString(moduledict, "pygdbmi", gdbmimodule);
 
         // import pygdbmi submodules
@@ -243,8 +243,11 @@ ControllerImpl::resultHandler(const Result &result)
     for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
     {
         uuid = it->uuid;
-        if (it->handler(result, it->token, it->data))
+        auto res = it->handler(result, it->token, it->data);
+        if (res.matched)
         {
+            std::cout << "handler \"" << res.name << "\" matched ("
+                      << (res.type == Controller::MatchType::TOKEN ? "token" : "regex") << ")" << std::endl;
             match = true;
             break;
         }

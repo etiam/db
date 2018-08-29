@@ -20,6 +20,7 @@
 
 #include "gdb/global.h"
 #include "gdb/commands.h"
+#include "gdb/controller.h"
 #include "gdb/result.h"
 
 #include "handlers.h"
@@ -30,7 +31,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 stopped(const Result &result, int token, boost::any data)
 {
     auto match = result.message.type == Message::Type::STRING &&
@@ -61,7 +62,7 @@ stopped(const Result &result, int token, boost::any data)
         }
     }
 
-    return match;
+    return {"stopped", match, Controller::MatchType::REGEX};
 }
 
 }

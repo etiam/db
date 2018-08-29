@@ -19,6 +19,7 @@
 #include "core/signals.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 #include "handlers.h"
 
@@ -28,7 +29,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 processexited(const Gdb::Result &result, int token, boost::any data)
 {
     // process exited response comes to stdout console
@@ -63,7 +64,7 @@ processexited(const Gdb::Result &result, int token, boost::any data)
         }
     }
 
-    return typematch && regexmatch;
+    return {"processexited", typematch && regexmatch, Controller::MatchType::REGEX};
 };
 
 }

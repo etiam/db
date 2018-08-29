@@ -31,7 +31,21 @@ class Controller
     explicit Controller();
     ~Controller();
 
-    using HandlerFunc = std::function<bool(const Result, int, boost::any data)>;
+    enum class MatchType : char
+    {
+        TOKEN,
+        REGEX,
+        NONE
+    };
+
+    struct HandlerReturn
+    {
+        std::string name;
+        bool matched;
+        MatchType type;
+    };
+
+    using HandlerFunc = std::function<HandlerReturn(const Result, int, boost::any data)>;
 
     int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
     void    addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data = nullptr);

@@ -19,6 +19,7 @@
 #include "core/signals.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 #include "handlers.h"
 
@@ -29,7 +30,7 @@ namespace Handlers
 {
 
 // match the response of "info line ..." command
-bool
+Controller::HandlerReturn
 infoline(const Gdb::Result &result, int token, boost::any data)
 {
     static std::regex startsataddress(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
@@ -64,7 +65,7 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         }
     }
 
-    return match;
+    return {"infoline", match, Controller::MatchType::REGEX};
 }
 
 }

@@ -21,6 +21,7 @@
 #include "ast/scanner.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace
 {
@@ -52,7 +53,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 listsourcefiles(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
@@ -117,7 +118,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
         }
     }
 
-    return match;
+    return {"listsourcefiles", match, Controller::MatchType::TOKEN};
 }
 
 }

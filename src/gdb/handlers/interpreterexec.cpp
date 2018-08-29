@@ -19,8 +19,7 @@
 #include "core/signals.h"
 
 #include "gdb/result.h"
-
-#include "handlers.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -28,7 +27,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 interpreterexec(const Gdb::Result &result, int token, boost::any data)
 {
     auto match = result.token.value == token;
@@ -37,7 +36,7 @@ interpreterexec(const Gdb::Result &result, int token, boost::any data)
     {
     }
 
-    return match;
+    return {"interpreterexec", match, Controller::MatchType::TOKEN};
 };
 
 }

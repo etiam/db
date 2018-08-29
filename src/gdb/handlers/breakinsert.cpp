@@ -22,6 +22,7 @@
 #include "gdb/global.h"
 #include "gdb/commands.h"
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -29,7 +30,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 breakinsert(const Result &result, int token, boost::any data)
 {
     auto matchtoken = (result.token.value == token);
@@ -107,7 +108,7 @@ breakinsert(const Result &result, int token, boost::any data)
         }
     }
 
-    return match;
+    return {"breakinsert", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::REGEX};
 };
 
 }

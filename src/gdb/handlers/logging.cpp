@@ -19,6 +19,7 @@
 #include "core/signals.h"
 
 #include "gdb/result.h"
+#include "gdb/controller.h"
 
 namespace Gdb
 {
@@ -26,7 +27,7 @@ namespace Gdb
 namespace Handlers
 {
 
-bool
+Controller::HandlerReturn
 logging(const Result &result, int token, boost::any data)
 {
     auto match = result.payload.type == Payload::Type::STRING &&
@@ -38,7 +39,7 @@ logging(const Result &result, int token, boost::any data)
         Core::Signals::appendLogText(result.payload.string.data + '\n');
     }
 
-    return match;
+    return {"logging", match, Controller::MatchType::REGEX};
 }
 
 }
