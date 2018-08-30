@@ -19,7 +19,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "core/util.h"
+#include "core/utils.h"
 #include "core/global.h"
 #include "core/signals.h"
 #include "core/timer.h"

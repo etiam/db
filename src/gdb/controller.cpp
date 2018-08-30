@@ -25,7 +25,7 @@
 
 #include "core/global.h"
 #include "core/signals.h"
-#include "core/util.h"
+#include "core/utils.h"
 
 #include "controller.h"
 

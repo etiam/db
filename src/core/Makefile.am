@@ -2,7 +2,7 @@ db_SOURCES               +=                                             \
                             src/core/global.cpp                         \
                             src/core/breakpoints.cpp                    \
                             src/core/state.cpp                          \
-                            src/core/util.cpp                           \
+                            src/core/utils.cpp                          \
                             src/core/signals.cpp                        \
                                                                         \
                             src/core/archive.cpp                        \
