@@ -30,7 +30,7 @@ class Scanner
 
     void parseFunctions(const std::string &filename);
 
-    const Data & filename() const;
+    const Data & data() const;
 
   private:
     std::shared_ptr<ScannerImpl> m_impl;

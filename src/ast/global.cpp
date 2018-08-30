@@ -145,10 +145,10 @@ Master::WorkerThread()
     auto &filenames = astdata.m_filenames;
     std::for_each(std::begin(jobs), std::end(jobs), [&](std::shared_future<Ast::Scanner> job)
     {
-        const auto &func = job.get().filename().m_functions;
+        const auto &func = job.get().data().m_functions;
         functions.insert(std::begin(func), std::end(func));
 
-        const auto &filename = job.get().filename().m_filenames;
+        const auto &filename = job.get().data().m_filenames;
         filenames.insert(std::begin(filename), std::end(filename));
     });
 
