@@ -12,7 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-#include <numeric>
+#include <future>
 
 #include <thread>
 #include <boost/utility.hpp>
@@ -20,9 +20,11 @@
 #include "core/global.h"
 #include "core/state.h"
 #include "core/signals.h"
+#include "core/timer.h"
 
 #include "global.h"
 #include "commands.h"
+#include "loaderThread.h"
 
 namespace Gdb
 {
@@ -42,9 +44,7 @@ private:
 
     static Master & instance();
 
-    void WorkerThread();
-
-    std::unique_ptr<std::thread> m_workerThread;
+    LoaderThread m_loaderThread;
     Gdb::CommandsPtr m_gdbCommands;
 };
 
@@ -70,14 +70,13 @@ Master::gdbCommands()
 }
 
 Master::Master() :
-    m_workerThread(std::make_unique<std::thread>(&Master::WorkerThread, std::ref(*this))),
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
+    Core::Signals::programLoaded.connect([this]() { m_loaderThread.trigger(); });
 }
 
 Master::~Master()
 {
-    m_workerThread->join();
 }
 
 Master &
@@ -86,41 +85,6 @@ Master::instance()
     if (!g_instance)
         g_instance = std::unique_ptr<Master>(new Master());
     return *g_instance;
-}
-
-void
-Master::WorkerThread()
-{
-    pthread_setname_np(pthread_self(), "gdbworker");
-
-    bool signaled = false;
-    Core::Signals::programLoaded.connect([&signaled]() { signaled = true; });
-
-    // wait for programLoaded signal to fire
-    while(!signaled)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-
-    auto &gdb = Gdb::commands();
-    auto &vars = Core::state()->vars();
-
-    // set program arguments
-    if (vars.has("args"))
-    {
-        const auto args = vars.get<std::vector<std::string>>("args");
-        std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
-            [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
-        gdb->setArgs(argstr);
-    }
-
-    // if breakonmain true, set breakpoint, otherwise find source file for main
-    if (vars.has("breakonmain") && vars.get<bool>("breakonmain"))
-        gdb->insertBreakpoint("main");
-    else
-        gdb->infoAddress("main");
-
-    gdb->getSourceFiles();
 }
 
 ////////////////////
