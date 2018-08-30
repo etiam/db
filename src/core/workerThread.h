@@ -24,29 +24,30 @@ namespace Core
 
 class WorkerThread
 {
-  public:
+public:
     WorkerThread(const std::string &threadname);
     virtual ~WorkerThread();
 
-    void                            trigger();
-    virtual void                    stop();
+    virtual void trigger();
+    virtual void stop();
 
-  private:
-    virtual void                    process() = 0;
+private:
+    void notify();
+    virtual void process() = 0;
 
-  protected:
-    virtual void                    run();
+protected:
+    virtual void run();
 
-    bool                            m_done;
-    bool                            m_triggered;
-    bool                            m_shouldProcess;
+    bool m_done;
+    bool m_triggered;
+    bool m_shouldProcess;
 
-    std::string                     m_threadName;
-    std::unique_ptr<std::thread>    m_thread;
+    std::string m_threadName;
+    std::unique_ptr<std::thread> m_thread;
 
-    std::mutex                      m_doneLock;
-    std::mutex                      m_conditionLock;
-    std::condition_variable         m_condition;
+    std::mutex m_doneLock;
+    std::mutex m_conditionLock;
+    std::condition_variable m_condition;
 };
 
 }

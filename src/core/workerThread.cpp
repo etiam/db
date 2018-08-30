@@ -35,22 +35,29 @@ WorkerThread::~WorkerThread()
 void
 WorkerThread::trigger()
 {
-    m_triggered = true;
-    std::unique_lock<std::mutex> locker(m_conditionLock);
-    m_condition.notify_all();
+    m_shouldProcess = true;
+    notify();
 }
 
 void
 WorkerThread::stop()
 {
-    // wait for current frame to finish before continuing
+    // wait for current process to finish before continuing
     {
     std::unique_lock<std::mutex> locker(m_doneLock);
     m_done = true;
     }
 
     m_shouldProcess = false;
-    trigger();
+    notify();
+}
+
+void
+WorkerThread::notify()
+{
+    m_triggered = true;
+    std::unique_lock<std::mutex> locker(m_conditionLock);
+    m_condition.notify_all();
 }
 
 void

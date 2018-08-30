@@ -1,6 +1,7 @@
 db_SOURCES               +=                                                     \
                             src/ast/global.cpp                                  \
                             src/ast/scanner.cpp                                 \
+                            src/ast/scannerThread.cpp                           \
                             src/ast/data.cpp
 
 db_LDADD                 +=                                                     \
