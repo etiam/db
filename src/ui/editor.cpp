@@ -164,14 +164,14 @@ Editor::Editor(QMainWindow *parent) :
         QMetaObject::invokeMethod(this, "updateGutterMarker", Qt::QueuedConnection, Q_ARG(Core::Location, l));
     });
 
-    Core::Signals::highlightCurrentLocation.connect([this](const Core::Location &l)
+    Core::Signals::highlightLocation.connect([this](const Core::Location &l)
     {
-        QMetaObject::invokeMethod(this, "setCurrentLocation", Qt::QueuedConnection, Q_ARG(Core::Location, l));
+        QMetaObject::invokeMethod(this, "highlightLocation", Qt::QueuedConnection, Q_ARG(Core::Location, l));
     });
 
     Core::Signals::setCursorLocation.connect([this](const Core::Location &l)
     {
-        QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, l.row), Q_ARG(int, 0));
+        QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, 1), Q_ARG(int, l.row));
     });
 }
 
@@ -382,7 +382,7 @@ Editor::loadFile(const QString &filename)
 }
 
 void
-Editor::setCurrentLocation(const Core::Location &location)
+Editor::highlightLocation(const Core::Location &location)
 {
     if (getNumLines() > location.row)
     {
@@ -392,9 +392,7 @@ Editor::setCurrentLocation(const Core::Location &location)
         m_impl->executeJavaScript(QString("unhighlightlast()"));
         m_impl->executeJavaScript(QString("highlightline(%1)").arg(location.row-1));
 
-        std::cout << location.row << std::endl;
-
-        setCursorPosition(0, location.row);
+        setCursorPosition(1, location.row);
 
         m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
     }

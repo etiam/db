@@ -66,7 +66,7 @@ private:
 
 private Q_SLOTS:
     void loadFile(const QString &filename);
-    void setCurrentLocation(const Core::Location &location);
+    void highlightLocation(const Core::Location &location);
     void setCursorPosition(int col, int row);
 
     // update the gutter marker at the current row

@@ -114,11 +114,11 @@ extern Signal<const std::string & /*filename*/> loadEditorSource;
 // emitted when quit is requested
 extern Signal<> quitRequested;
 
-// move the cursor and scroll to the location in the source editor
+// move the cursor and optionally scroll to the location in the source editor
 extern Signal<const Location & /*location*/> setCursorLocation;
 
 // highlight the debugger's current location in the source editor
-extern Signal<const Location & /*location*/> highlightCurrentLocation;
+extern Signal<const Location & /*location*/> highlightLocation;
 
 // update the source editor's gutter marker on row
 extern Signal<const Location & /*location*/> updateGutterMarker;

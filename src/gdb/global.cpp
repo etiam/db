@@ -9,6 +9,7 @@
 # include "config.h"
 #endif
 
+#include <iostream>
 #include <memory>
 #include <thread>
 #include <numeric>

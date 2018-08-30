@@ -54,8 +54,8 @@ stopped(const Result &result, int token, boost::any data)
 
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
             Core::Signals::loadEditorSource(fullname);
+            Core::Signals::highlightLocation(location);
             Core::Signals::setCursorLocation(location);
-            Core::Signals::highlightCurrentLocation(location);
 
             // update call stack
             Gdb::commands()->updateCallStack();

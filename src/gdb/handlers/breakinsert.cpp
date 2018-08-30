@@ -100,6 +100,7 @@ breakinsert(const Result &result, int token, boost::any data)
             {
                 Core::Signals::loadEditorSource(fullname);
                 Core::Signals::setCursorLocation(location);
+                Core::Signals::setCursorLocation(location);
                 vars.set("initialdisplay", true);
             }
         }

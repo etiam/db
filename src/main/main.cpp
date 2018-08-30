@@ -15,6 +15,8 @@
 #include <regex>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
+
+#include <QSettings>
 #include <QStandardPaths>
 
 #include "core/util.h"
@@ -187,6 +189,10 @@ main(int argc, char *argv[])
     {
         Core::state()->vars().set("args", vm["args"].as<std::vector<std::string>>());
     }
+
+    // TODO : move this to a Gdb::initialize()
+    QSettings settings;
+    Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
 
     // initialization
     Core::initialize();
