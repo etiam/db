@@ -27,7 +27,7 @@ namespace Ui
 
 class Editor;
 class Output;
-class Console;
+class GdbConsole;
 class CallStack;
 class DebugControls;
 class BreakPoints;
@@ -80,7 +80,7 @@ private:
 
     QTabWidget * m_bottomTabWidget;
 
-    Console * m_consoleTab;
+    GdbConsole * m_gdbConsoleTab;
     Output * m_programOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;

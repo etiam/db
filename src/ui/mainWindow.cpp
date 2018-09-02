@@ -33,7 +33,7 @@
 
 #include "editor.h"
 #include "output.h"
-#include "console.h"
+#include <ui/gdbConsole.h>
 #include "callStack.h"
 #include "breakPoints.h"
 #include "debugControls.h"
@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Core::Signals::appendConsoleText.connect([this](const std::string &t)
     {
-        QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+        QMetaObject::invokeMethod(m_gdbConsoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
     Core::Signals::appendOutputText.connect([this](const std::string &t)
@@ -112,7 +112,7 @@ MainWindow::closeBottomTab(int index)
 void
 MainWindow::switchBottomTab(int index)
 {
-    auto console = qobject_cast<Console*>(m_bottomTabWidget->widget(index));
+    auto console = qobject_cast<GdbConsole*>(m_bottomTabWidget->widget(index));
     if (console)
     {
 //        console->verticalScrollBar()->setValue(console->verticalScrollBar()->maximum());
@@ -205,12 +205,12 @@ MainWindow::createDocks()
     int index;
 
     // tabs within tab window
-    m_consoleTab = new Console(this, true);
-    m_consoleTab->setObjectName("Gdb");
-    m_consoleTab->setProperty("tabname", tr("Gdb"));
-    index = getIndex(m_consoleTab, 0);
+    m_gdbConsoleTab = new GdbConsole(this, true);
+    m_gdbConsoleTab->setObjectName("Gdb");
+    m_gdbConsoleTab->setProperty("tabname", tr("Gdb"));
+    index = getIndex(m_gdbConsoleTab, 0);
     if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_consoleTab, m_consoleTab->property("tabname").toString());
+        m_bottomTabWidget->insertTab(index, m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
 
     m_programOutputTab = new Output(this);
     m_programOutputTab->setObjectName("Output");
@@ -297,7 +297,7 @@ MainWindow::createViewMenu()
         viewmenu->addAction(action);
     };
 
-    addAction(m_consoleTab);
+    addAction(m_gdbConsoleTab);
     addAction(m_programOutputTab);
     addAction(m_callStackTab);
     addAction(m_breakPointsTab);

@@ -21,13 +21,13 @@ namespace Ui
 class Output;
 class ConsoleInput;
 
-class Console: public QFrame
+class GdbConsole: public QFrame
 {
   Q_OBJECT
 
   public:
-    explicit Console(QWidget *parent = nullptr, bool editable = false);
-    ~Console() = default;
+    explicit GdbConsole(QWidget *parent = nullptr, bool editable = false);
+    ~GdbConsole() = default;
 
   public Q_SLOTS:
     void appendText(const QString &text);

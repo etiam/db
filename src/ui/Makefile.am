@@ -1,8 +1,9 @@
 db_SOURCES               +=                                             \
                             src/ui/mainWindow.cpp                       \
                             src/ui/editor.cpp                           \
+                                                                        \
                             src/ui/output.cpp                           \
-                            src/ui/console.cpp                          \
+                            src/ui/gdbConsole.cpp                       \
                             src/ui/consoleInput.cpp                     \
                                                                         \
                             src/ui/callStack.cpp                        \
@@ -17,8 +18,9 @@ db_SOURCES               +=                                             \
 nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainWindow.cpp                   \
                             src/ui/moc_editor.cpp                       \
+                                                                        \
                             src/ui/moc_output.cpp                       \
-                            src/ui/moc_console.cpp                      \
+                            src/ui/moc_gdbConsole.cpp                   \
                             src/ui/moc_consoleInput.cpp                 \
                                                                         \
                             src/ui/moc_callStack.cpp                    \

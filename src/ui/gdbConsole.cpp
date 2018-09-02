@@ -14,12 +14,12 @@
 
 #include "output.h"
 #include "consoleInput.h"
-#include "console.h"
+#include <ui/gdbConsole.h>
 
 namespace Ui
 {
 
-Console::Console(QWidget *parent, bool editable) :
+GdbConsole::GdbConsole(QWidget *parent, bool editable) :
     QFrame(parent)
 {
     setObjectName("gdb");
@@ -44,13 +44,13 @@ Console::Console(QWidget *parent, bool editable) :
 }
 
 void
-Console::appendText(const QString &text)
+GdbConsole::appendText(const QString &text)
 {
     m_output->appendText(text);
 }
 
 bool
-Console::focusNextPrevChild(bool next)
+GdbConsole::focusNextPrevChild(bool next)
 {
     // prevent focus from leaving console input widget
     return false;
