@@ -81,7 +81,6 @@ private:
     QTabWidget * m_bottomTabWidget;
 
     Console * m_consoleTab;
-    Output * m_debuggerOutputTab;
     Output * m_programOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;

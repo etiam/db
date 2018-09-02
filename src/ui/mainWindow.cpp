@@ -76,11 +76,6 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(m_consoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
-    Core::Signals::appendLogText.connect([this](const std::string &t)
-    {
-        QMetaObject::invokeMethod(m_debuggerOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
-    });
-
     Core::Signals::appendOutputText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(m_programOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
@@ -211,8 +206,8 @@ MainWindow::createDocks()
 
     // tabs within tab window
     m_consoleTab = new Console(this, true);
-    m_consoleTab->setObjectName("Console");
-    m_consoleTab->setProperty("tabname", tr("Console"));
+    m_consoleTab->setObjectName("Gdb");
+    m_consoleTab->setProperty("tabname", tr("Gdb"));
     index = getIndex(m_consoleTab, 0);
     if (index >= 0)
         m_bottomTabWidget->insertTab(index, m_consoleTab, m_consoleTab->property("tabname").toString());
@@ -237,14 +232,6 @@ MainWindow::createDocks()
     index = getIndex(m_breakPointsTab, 3);
     if (index >= 0)
         m_bottomTabWidget->insertTab(index, m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
-
-    // debugger tab is hidden by default
-    m_debuggerOutputTab = new Output(this);
-    m_debuggerOutputTab->setObjectName("Gdb");
-    m_debuggerOutputTab->setProperty("tabname", tr("Gdb"));
-    index = getIndex(m_debuggerOutputTab, -1);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_debuggerOutputTab, m_debuggerOutputTab->property("tabname").toString());
 
     // signal connections
     connect(m_bottomTabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeBottomTab(index); });
@@ -312,7 +299,6 @@ MainWindow::createViewMenu()
 
     addAction(m_consoleTab);
     addAction(m_programOutputTab);
-    addAction(m_debuggerOutputTab);
     addAction(m_callStackTab);
     addAction(m_breakPointsTab);
 }
@@ -322,7 +308,6 @@ MainWindow::createStatusbar()
 {
     m_statusIcon = new QLabel(this);
     m_statusIcon->setScaledContents(true);
-//    m_statusIcon->setPixmap(QPixmap(24, 24));
 
     statusBar()->insertPermanentWidget(0, m_statusIcon);
     statusBar()->setSizeGripEnabled(false);

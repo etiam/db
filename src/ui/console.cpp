@@ -22,7 +22,7 @@ namespace Ui
 Console::Console(QWidget *parent, bool editable) :
     QFrame(parent)
 {
-    setObjectName("console");
+    setObjectName("gdb");
 
     m_output = new Output(this);
     m_output->setObjectName("consoleoutput");
