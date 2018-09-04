@@ -1,24 +1,24 @@
 /*
  * global.h
  *
- *  Created on: Aug 19, 2018
+ *  Created on: Sep 2, 2018
  *      Author: jasonr
  */
 
-#ifndef AST_GLOBAL_H_
-#define AST_GLOBAL_H_
+#ifndef UI_GLOBAL_H_
+#define UI_GLOBAL_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-namespace Ast
+namespace Ui
 {
 
 // global init
 void initialize();
 void shutdown();
 
-} // namespace Ast
+} // namespace Ui
 
-#endif // AST_GLOBAL_H_
+#endif // UI_GLOBAL_H_

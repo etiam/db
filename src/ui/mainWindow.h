@@ -82,6 +82,7 @@ private:
 
     GdbConsole * m_gdbConsoleTab;
     Output * m_programOutputTab;
+    Output * m_consoleOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;
 

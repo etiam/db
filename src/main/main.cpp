@@ -28,9 +28,8 @@
 #include "gdb/global.h"
 #include "gdb/commands.h"
 #include "ast/global.h"
+#include "ui/global.h"
 #include "ui/main.h"
-
-#include "redirect.h"
 
 namespace po = boost::program_options;
 
@@ -130,9 +129,6 @@ main(int argc, char *argv[])
     Core::Timer timer;
     pthread_setname_np(pthread_self(), "main");
 
-//    StdCapture::Init();
-//    StdCapture::BeginCapture();
-
     // Declare a group of options that will be on command line
     po::options_description generic("Command line options");
     generic.add_options()
@@ -196,6 +192,7 @@ main(int argc, char *argv[])
 
     // initialization
     Core::initialize();
+    Ui::initialize();
     Gdb::initialize();
     Ast::initialize();
 
@@ -207,7 +204,4 @@ main(int argc, char *argv[])
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
-
-//    StdCapture::EndCapture();
-//    std::cout << StdCapture::GetCapture() << std::endl;
 }

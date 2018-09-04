@@ -219,6 +219,13 @@ MainWindow::createDocks()
     if (index >= 0)
         m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
 
+    m_consoleOutputTab = new Output(this);
+    m_consoleOutputTab->setObjectName("Console");
+    m_consoleOutputTab->setProperty("tabname", tr("Console"));
+    index = getIndex(m_consoleOutputTab, 0);
+    if (index >= 0)
+        m_bottomTabWidget->insertTab(index, m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+
     m_callStackTab = new CallStack(this);
     m_callStackTab->setObjectName("CallStack");
     m_callStackTab->setProperty("tabname", tr("Call Stack"));
@@ -298,6 +305,7 @@ MainWindow::createViewMenu()
     };
 
     addAction(m_gdbConsoleTab);
+    addAction(m_consoleOutputTab);
     addAction(m_programOutputTab);
     addAction(m_callStackTab);
     addAction(m_breakPointsTab);

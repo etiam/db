@@ -1,7 +1,7 @@
 /*
  * global.cpp
  *
- *  Created on: Aug 19, 2018
+ *  Created on: Sep 2, 2018
  *      Author: jasonr
  */
 
@@ -9,23 +9,13 @@
 # include "config.h"
 #endif
 
-#include <iostream>
 #include <memory>
-#include <thread>
-#include <future>
 
 #include <boost/utility.hpp>
 
-#include "core/global.h"
-#include "core/state.h"
-#include "core/signals.h"
-#include "core/timer.h"
-
 #include "global.h"
-#include "scannerThread.h"
-#include "scanner.h"
 
-namespace Ast
+namespace Ui
 {
 
 class Master: boost::noncopyable
@@ -40,8 +30,6 @@ private:
     Master();
 
     static Master & instance();
-
-    ScannerThread m_scannerThread;
 };
 
 std::unique_ptr<Master> g_instance;
@@ -61,7 +49,6 @@ Master::shutdown()
 
 Master::Master()
 {
-    Core::Signals::sourceListUpdated.connect([this]() { m_scannerThread.trigger(); });
 }
 
 Master::~Master()
@@ -90,4 +77,4 @@ shutdown()
     Master::shutdown();
 }
 
-} // namespace Ast
+} // namespace Ui

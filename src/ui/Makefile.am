@@ -1,4 +1,6 @@
 db_SOURCES               +=                                             \
+                            src/ui/global.cpp                           \
+                                                                        \
                             src/ui/mainWindow.cpp                       \
                             src/ui/editor.cpp                           \
                                                                         \
