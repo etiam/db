@@ -44,8 +44,10 @@ WorkerThread::stop()
 {
     // wait for current process to finish before continuing
     {
-    std::unique_lock<std::mutex> locker(m_doneLock);
+    m_doneLock.lock();
+//    std::unique_lock<std::mutex> locker(m_doneLock);
     m_done = true;
+    m_doneLock.unlock();
     }
 
     m_shouldProcess = false;
@@ -77,7 +79,8 @@ WorkerThread::run()
 
         if (m_shouldProcess)
         {
-            std::unique_lock<std::mutex> locker(m_doneLock);
+            m_doneLock.lock();
+//            std::unique_lock<std::mutex> locker(m_doneLock);
             try
             {
                 process();
@@ -85,9 +88,10 @@ WorkerThread::run()
 
             catch (...)
             {
-                std::cerr << "ov: uncaught unknown exception." << std::endl;
+                std::cerr << "db: uncaught unknown exception." << std::endl;
                 std::cerr << dumpStack() << std::endl;
             }
+            m_doneLock.unlock();
         }
     }
 }

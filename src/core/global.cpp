@@ -16,6 +16,8 @@
 #include "ast/scanner.h"
 
 #include "state.h"
+#include "redirector.h"
+#include "stdWatcherThread.h"
 #include "global.h"
 
 namespace Core
@@ -37,6 +39,9 @@ private:
     static Master & instance();
 
     StatePtr m_state;
+    std::unique_ptr<Redirector> m_stdout;
+    std::unique_ptr<Redirector> m_stderr;
+    std::unique_ptr<StdWatcherThread> m_stdWatcher;
 };
 
 std::unique_ptr<Master> g_instance;
@@ -61,8 +66,15 @@ Master::state()
 }
 
 Master::Master() :
-    m_state(std::make_unique<State>())
+    m_state(std::make_unique<State>()),
+    m_stdout(std::make_unique<Redirector>(stdout))
+//    m_stderr(std::make_unique<Redirector>(stderr))
 {
+//    if (m_stdout->getReadDescriptor() != -1 && m_stderr->getReadDescriptor() != -1)
+    {
+//        m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), m_stderr->getReadDescriptor());
+        m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), 0);
+    }
 }
 
 Master &

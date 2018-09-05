@@ -33,6 +33,8 @@ LoaderThread::~LoaderThread()
 {
 }
 
+// TODO : look into moving all this to fileexec.cpp
+
 void
 LoaderThread::process()
 {

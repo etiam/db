@@ -51,6 +51,7 @@ Main::Main(int &argc, char *argv[])
 
 Main::~Main()
 {
+    // TODO : move to Gdb::shutdown()
     writeSettings();
 }
 

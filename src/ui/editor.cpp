@@ -28,7 +28,7 @@ Q_DECLARE_METATYPE(Core::Location);
 namespace Ui
 {
 
-// For sending java script messages to std::cerr
+// For sending java-script messages to std::cerr
 
 class MyWebPage : public QWebPage
 {
@@ -152,8 +152,7 @@ Editor::Editor(QMainWindow *parent) :
 
     qRegisterMetaType<Core::Location>("Location");
 
-    // signal handlers TODO : use lambdas
-
+    // setup signal handlers
     Core::Signals::loadEditorSource.connect([this](const std::string &f)
     {
         QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(f)));

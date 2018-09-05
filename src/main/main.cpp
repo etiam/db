@@ -105,6 +105,8 @@ processArgs(const po::variables_map &vm)
             vars.set("progname", prog);
             vars.set("buildpath", buildpath);
 
+            // TODO : add handler for gdb-version.  in handler perform loadProgram()...
+
             // give gdb-version time to complete
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -186,7 +188,7 @@ main(int argc, char *argv[])
         Core::state()->vars().set("args", vm["args"].as<std::vector<std::string>>());
     }
 
-    // TODO : move this to a Gdb::initialize()
+    // TODO : move to Gdb::initialize()
     QSettings settings;
     Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
 
@@ -204,4 +206,8 @@ main(int argc, char *argv[])
 
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
+
+    Core::shutdown();
+
+    std::cout << "bye" << std::endl;
 }

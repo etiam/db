@@ -17,14 +17,22 @@
 namespace Core
 {
 
-class ConsoleWatcher: public WorkerThread
+class StdWatcherThread: public WorkerThread
 {
 public:
-    ConsoleWatcher();
-    virtual ~ConsoleWatcher();
+    StdWatcherThread(int stdout, int stderr);
+    virtual ~StdWatcherThread();
+
+protected:
+    // custom version of run that doesn't wait for a trigger
+    virtual void run() final;
 
 private:
     virtual void process() final;
+
+    int m_stdout, m_stderr;
+    fd_set m_rfds;
+    struct timeval m_tv;
 };
 
 } // namespace Core

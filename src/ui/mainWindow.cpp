@@ -381,6 +381,8 @@ MainWindow::showEvent(QShowEvent* event)
 
     QMainWindow::showEvent(event);
 
+    // TODO : trigger signal here and let something in Gdb ns execute command
+
     // get gdb version, output will go to console
     if (!first)
     {

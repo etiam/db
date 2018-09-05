@@ -4,7 +4,10 @@ db_SOURCES               +=                                             \
                             src/core/state.cpp                          \
                             src/core/utils.cpp                          \
                             src/core/signals.cpp                        \
+                            src/core/redirector.cpp                     \
+                                                                        \
                             src/core/workerThread.cpp                   \
+                            src/core/stdWatcherThread.cpp               \
                                                                         \
                             src/core/archive.cpp                        \
                             src/core/serializers.cpp

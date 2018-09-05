@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <regex>
-#include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
 #include "core/state.h"
