@@ -29,10 +29,9 @@ protected:
 
 private:
     virtual void process() final;
+    void readAndSignal(int fd);
 
     int m_stdout, m_stderr;
-    fd_set m_rfds;
-    struct timeval m_tv;
 };
 
 } // namespace Core

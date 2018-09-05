@@ -10,6 +10,7 @@
 #endif
 
 #include <iostream>
+#include <unistd.h>
 
 #include "utils.h"
 #include "stdWatcherThread.h"
@@ -36,13 +37,6 @@ StdWatcherThread::run()
 
     (void)m_stderr;
 
-    // setup select fds
-    FD_ZERO(&m_rfds);
-    FD_SET(m_stdout, &m_rfds);
-
-    // no timeout
-    m_tv.tv_sec = 0;
-    m_tv.tv_usec = 0;
 
     std::cerr << "watching fileno " << m_stdout << std::endl;
 
@@ -63,20 +57,67 @@ StdWatcherThread::run()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-
 }
 
 void
 StdWatcherThread::process()
 {
-    auto retval = select(m_stdout + 1, &m_rfds, NULL, NULL, &m_tv);
+    fd_set rfds;
+    struct timeval tv;
+
+    // setup select fds
+    FD_ZERO(&rfds);
+    FD_SET(m_stdout, &rfds);
+
+    // no timeout
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+
+    auto retval = select(m_stdout + 1, &rfds, NULL, NULL, &tv);
 
     if (retval == -1)
+    {
         perror("select()");
+    }
     else if (retval)
-        std::cerr << "Data is available now" << std::endl;
-//    else
-//        std::cerr << "No data" << std::endl;
+    {
+        if (FD_ISSET(m_stdout, &rfds))
+        {
+            std::cerr << "Data is available now" << std::endl;
+            readAndSignal(m_stdout);
+        }
+    }
+}
+
+void
+StdWatcherThread::readAndSignal(int fd)
+{
+    std::string captured;
+    const int bufSize = 1025;
+    char buf[bufSize];
+    int bytesRead = 0;
+    bool fd_blocked(false);
+
+    do
+    {
+        bytesRead = 0;
+        fd_blocked = false;
+        bytesRead = read(fd, buf, bufSize-1);
+        if (bytesRead > 0)
+        {
+            buf[bytesRead] = 0;
+            captured += buf;
+        }
+        else if (bytesRead < 0)
+        {
+            fd_blocked = (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR);
+            if (fd_blocked)
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    while(fd_blocked || bytesRead == (bufSize-1));
+
+    std::cerr << captured;
 }
 
 } // namespace Core
