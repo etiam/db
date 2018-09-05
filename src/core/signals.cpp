@@ -30,6 +30,8 @@ Signal<> clearCurrentLocation;
 Signal<const std::string &> appendConsoleText;
 Signal<const std::string &> appendLogText;
 Signal<const std::string &> appendOutputText;
+Signal<const std::string &> appendStdoutText;
+Signal<const std::string &> appendStderrText;
 
 Signal<const std::string &> setStatusbarText;
 

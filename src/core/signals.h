@@ -130,6 +130,8 @@ extern Signal<> clearCurrentLocation;
 extern Signal<const std::string & /*text*/> appendConsoleText;
 extern Signal<const std::string & /*text*/> appendLogText;
 extern Signal<const std::string & /*text*/> appendOutputText;
+extern Signal<const std::string & /*text*/> appendStdoutText;
+extern Signal<const std::string & /*text*/> appendStderrText;
 
 // set statusbar text
 extern Signal<const std::string & /*text*/> setStatusbarText;

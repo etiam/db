@@ -81,6 +81,16 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(m_programOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
+    Core::Signals::appendStdoutText.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
+
+    Core::Signals::appendStderrText.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
+
     Core::Signals::setStatusbarText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));

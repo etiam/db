@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "utils.h"
+#include "signals.h"
 #include "stdWatcherThread.h"
 
 namespace Core
@@ -68,12 +69,13 @@ StdWatcherThread::process()
     // setup select fds
     FD_ZERO(&rfds);
     FD_SET(m_stdout, &rfds);
+    FD_SET(m_stderr, &rfds);
 
     // no timeout
     tv.tv_sec = 0;
     tv.tv_usec = 0;
 
-    auto retval = select(m_stdout + 1, &rfds, NULL, NULL, &tv);
+    auto retval = select(std::max(m_stdout, m_stderr) + 1, &rfds, NULL, NULL, &tv);
 
     if (retval == -1)
     {
@@ -83,8 +85,11 @@ StdWatcherThread::process()
     {
         if (FD_ISSET(m_stdout, &rfds))
         {
-            std::cerr << "Data is available now" << std::endl;
-            readAndSignal(m_stdout);
+//            readAndSignal(m_stdout);
+        }
+        else if (FD_ISSET(m_stderr, &rfds))
+        {
+            readAndSignal(m_stderr);
         }
     }
 }
@@ -117,7 +122,7 @@ StdWatcherThread::readAndSignal(int fd)
     }
     while(fd_blocked || bytesRead == (bufSize-1));
 
-    std::cerr << captured;
+    Core::Signals::appendStdoutText(captured);
 }
 
 } // namespace Core
