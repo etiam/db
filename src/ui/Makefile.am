@@ -5,6 +5,7 @@ db_SOURCES               +=                                             \
                             src/ui/editor.cpp                           \
                                                                         \
                             src/ui/output.cpp                           \
+                            src/ui/coloredOutput.cpp                    \
                             src/ui/gdbConsole.cpp                       \
                             src/ui/consoleInput.cpp                     \
                                                                         \
@@ -22,6 +23,7 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_editor.cpp                       \
                                                                         \
                             src/ui/moc_output.cpp                       \
+                            src/ui/moc_coloredOutput.cpp                \
                             src/ui/moc_gdbConsole.cpp                   \
                             src/ui/moc_consoleInput.cpp                 \
                                                                         \

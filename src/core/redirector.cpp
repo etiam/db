@@ -28,8 +28,6 @@ Redirector::Redirector(FILE *fp)
     }
     else
     {
-        fprintf(fp, "redirecting fileno %d (%d %d)\n", fileno(fp), m_pipefd[READ], m_pipefd[WRITE]);
-
         m_oldfd = dup(m_fn);
         if (m_oldfd == -1 && errno != EBADF)
         {

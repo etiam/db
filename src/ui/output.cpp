@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include <QScrollBar>
-#include <QPainter>
+#include <QFontDatabase>
 
 #include "output.h"
 
@@ -20,7 +20,7 @@ namespace Ui
 {
 
 Output::Output(QWidget *parent) :
-    QPlainTextEdit(parent)
+    QTextEdit(parent)
 {
     setObjectName("output");
     setReadOnly(true);

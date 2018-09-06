@@ -33,7 +33,8 @@
 
 #include "editor.h"
 #include "output.h"
-#include <ui/gdbConsole.h>
+#include "coloredOutput.h"
+#include "gdbConsole.h"
 #include "callStack.h"
 #include "breakPoints.h"
 #include "debugControls.h"
@@ -83,12 +84,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Core::Signals::appendStdoutText.connect([this](const std::string &t)
     {
-        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)), Q_ARG(QColor, Qt::green));
     });
 
     Core::Signals::appendStderrText.connect([this](const std::string &t)
     {
-        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+        QMetaObject::invokeMethod(m_consoleOutputTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)), Q_ARG(QColor, Qt::red));
     });
 
     Core::Signals::setStatusbarText.connect([this](const std::string &t)
@@ -229,7 +230,7 @@ MainWindow::createDocks()
     if (index >= 0)
         m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
 
-    m_consoleOutputTab = new Output(this);
+    m_consoleOutputTab = new ColoredOutput(this);
     m_consoleOutputTab->setObjectName("Console");
     m_consoleOutputTab->setProperty("tabname", tr("Console"));
     index = getIndex(m_consoleOutputTab, 0);

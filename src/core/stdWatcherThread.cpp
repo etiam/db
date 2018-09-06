@@ -36,10 +36,6 @@ StdWatcherThread::run()
 {
     pthread_setname_np(pthread_self(), m_threadName.c_str());
 
-    (void)m_stderr;
-
-    std::cout << "watching fileno " << m_stdout << " " << m_stderr << std::endl;
-
     // loop until end is signaled
     while(!m_done)
     {
@@ -82,8 +78,6 @@ StdWatcherThread::process()
     }
     else if (retval)
     {
-//        std::cout << "got data" << std::endl;
-
         if (FD_ISSET(m_stdout, &rfds))
         {
             readAndSignal(m_stdout);
@@ -120,10 +114,12 @@ StdWatcherThread::readAndSignal(int fd)
             if (fd_blocked)
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
-    }
-    while(fd_blocked || bytesRead == (bufSize-1));
+    } while(fd_blocked || bytesRead == (bufSize-1));
 
-    Core::Signals::appendStdoutText(captured);
+    if (fd == m_stdout)
+        Core::Signals::appendStdoutText(captured);
+    else
+        Core::Signals::appendStderrText(captured);
 }
 
 } // namespace Core

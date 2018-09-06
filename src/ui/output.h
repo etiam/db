@@ -13,23 +13,23 @@
 # include "config.h"
 #endif
 
-#include <QPlainTextEdit>
+#include <QTextEdit>
 
 namespace Ui
 {
 
-class Output: public QPlainTextEdit
+class Output: public QTextEdit
 {
-  Q_OBJECT
+Q_OBJECT
 
-  public:
+public:
     explicit Output(QWidget *parent = nullptr);
     ~Output() = default;
 
-  public Q_SLOTS:
+public Q_SLOTS:
     void appendText(const QString &text);
 
-  private:
+private:
     void insertText(const QString &text);
 
     int m_cursorPos = 0;

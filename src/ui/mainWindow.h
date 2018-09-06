@@ -27,6 +27,7 @@ namespace Ui
 
 class Editor;
 class Output;
+class ColoredOutput;
 class GdbConsole;
 class CallStack;
 class DebugControls;
@@ -82,7 +83,7 @@ private:
 
     GdbConsole * m_gdbConsoleTab;
     Output * m_programOutputTab;
-    Output * m_consoleOutputTab;
+    ColoredOutput * m_consoleOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;
 

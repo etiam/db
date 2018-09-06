@@ -73,7 +73,7 @@ Master::Master() :
     if (m_stdout->getReadDescriptor() != -1 && m_stderr->getReadDescriptor() != -1)
     {
         m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), m_stderr->getReadDescriptor());
-//        m_stdWatcher = std::make_unique<StdWatcherThread>(0, m_stderr->getReadDescriptor());
+//        m_stdWatcher = std::make_unique<StdWatcherThread>(0, 0);
     }
 }
 
