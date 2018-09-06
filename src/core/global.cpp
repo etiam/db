@@ -67,13 +67,13 @@ Master::state()
 
 Master::Master() :
     m_state(std::make_unique<State>()),
-    m_stdout(std::make_unique<Redirector>(stdout)),
+//    m_stdout(std::make_unique<Redirector>(stdout)),
     m_stderr(std::make_unique<Redirector>(stderr))
 {
-    if (m_stdout->getReadDescriptor() != -1 && m_stderr->getReadDescriptor() != -1)
+//    if (m_stdout->getReadDescriptor() != -1 && m_stderr->getReadDescriptor() != -1)
     {
-        m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), m_stderr->getReadDescriptor());
-//        m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), 0);
+//        m_stdWatcher = std::make_unique<StdWatcherThread>(m_stdout->getReadDescriptor(), m_stderr->getReadDescriptor());
+        m_stdWatcher = std::make_unique<StdWatcherThread>(0, m_stderr->getReadDescriptor());
     }
 }
 

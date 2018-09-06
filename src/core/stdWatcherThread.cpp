@@ -38,8 +38,7 @@ StdWatcherThread::run()
 
     (void)m_stderr;
 
-
-    std::cerr << "watching fileno " << m_stdout << std::endl;
+    std::cout << "watching fileno " << m_stdout << " " << m_stderr << std::endl;
 
     // loop until end is signaled
     while(!m_done)
@@ -68,7 +67,7 @@ StdWatcherThread::process()
 
     // setup select fds
     FD_ZERO(&rfds);
-    FD_SET(m_stdout, &rfds);
+//    FD_SET(m_stdout, &rfds);
     FD_SET(m_stderr, &rfds);
 
     // no timeout
@@ -83,6 +82,8 @@ StdWatcherThread::process()
     }
     else if (retval)
     {
+        std::cout << "got data" << std::endl;
+
         if (FD_ISSET(m_stdout, &rfds))
         {
 //            readAndSignal(m_stdout);

@@ -129,7 +129,7 @@ int
 main(int argc, char *argv[])
 {
     Core::Timer timer;
-    pthread_setname_np(pthread_self(), "main");
+    pthread_setname_np(pthread_self(), "db");
 
     // Declare a group of options that will be on command line
     po::options_description generic("Command line options");
