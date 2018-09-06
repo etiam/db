@@ -5,13 +5,12 @@
  *      Author: jasonr
  */
 
-
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <iostream>
 #include <regex>
+#include <numeric>
 
 #include "core/global.h"
 #include "core/state.h"
@@ -19,6 +18,8 @@
 
 #include "gdb/result.h"
 #include "gdb/controller.h"
+#include "gdb/global.h"
+#include "gdb/commands.h"
 
 namespace Gdb
 {
@@ -36,6 +37,26 @@ fileexec(const Gdb::Result &result, int token, boost::any data)
         Core::state()->setDebuggerState(Core::State::Debugger::LOADED);
         Core::Signals::appendConsoleText(result.message.string.data + '\n');
         Core::Signals::programLoaded();
+
+        auto &gdb = Gdb::commands();
+        auto &vars = Core::state()->vars();
+
+        // set program arguments
+        if (vars.has("args"))
+        {
+            const auto args = vars.get<std::vector<std::string>>("args");
+            std::string argstr = std::accumulate(std::begin(args), std::end(args), std::string{},
+                [](std::string &s, const std::string &piece) -> decltype(auto) { return s += piece + " "; });
+            gdb->setArgs(argstr);
+        }
+
+        // if breakonmain true, set breakpoint, otherwise find source file for main
+        if (vars.has("breakonmain") && vars.get<bool>("breakonmain"))
+            gdb->insertBreakpoint("main");
+        else
+            gdb->infoAddress("main");
+
+        gdb->getSourceFiles();
     }
 
     return {"fileexec", match, Controller::MatchType::TOKEN};

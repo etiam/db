@@ -24,7 +24,6 @@
 
 #include "global.h"
 #include "commands.h"
-#include "loaderThread.h"
 
 namespace Gdb
 {
@@ -44,7 +43,6 @@ private:
 
     static Master & instance();
 
-    LoaderThread m_loaderThread;
     Gdb::CommandsPtr m_gdbCommands;
 };
 
@@ -72,7 +70,6 @@ Master::gdbCommands()
 Master::Master() :
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
-    Core::Signals::programLoaded.connect([this]() { m_loaderThread.trigger(); });
 }
 
 Master::~Master()
