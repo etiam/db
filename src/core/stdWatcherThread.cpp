@@ -67,7 +67,7 @@ StdWatcherThread::process()
 
     // setup select fds
     FD_ZERO(&rfds);
-//    FD_SET(m_stdout, &rfds);
+    FD_SET(m_stdout, &rfds);
     FD_SET(m_stderr, &rfds);
 
     // no timeout
@@ -82,11 +82,11 @@ StdWatcherThread::process()
     }
     else if (retval)
     {
-        std::cout << "got data" << std::endl;
+//        std::cout << "got data" << std::endl;
 
         if (FD_ISSET(m_stdout, &rfds))
         {
-//            readAndSignal(m_stdout);
+            readAndSignal(m_stdout);
         }
         else if (FD_ISSET(m_stderr, &rfds))
         {
