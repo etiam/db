@@ -16,8 +16,10 @@ namespace Ui
 {
 
 // global init
-void initialize();
+void initialize(int &argc, char *argv[]);
 void shutdown();
+
+void run();
 
 } // namespace Ui
 

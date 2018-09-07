@@ -22,22 +22,19 @@ namespace Ui
 
 class Main
 {
-  public:
+public:
     Main(int &argc, char *argv[]);
     ~Main();
 
-    void                            run();
+    void run();
 
-  private:
-    void                            initialize();
+private:
+    void initialize();
 
-    void                            readSettings();
-    void                            writeSettings() const;
+    bool m_initialized = false;
 
-    bool                            m_initialized = false;
-
-    std::unique_ptr<QApplication>   m_app;
-    std::unique_ptr<MainWindow>     m_mainWindow;
+    std::unique_ptr<QApplication> m_app;
+    std::unique_ptr<MainWindow> m_mainWindow;
 };
 
 }
