@@ -15,7 +15,9 @@
 
 #include "core/global.h"
 #include "core/state.h"
+#include "core/redirector.h"
 
+#include "consoleWatcherThread.h"
 #include "mainWindow.h"
 #include "main.h"
 
@@ -24,6 +26,19 @@ namespace Ui
 
 Main::Main(int &argc, char *argv[])
 {
+    // setup stdout/stderr redirectors
+    if (1)
+    {
+        m_stdout = std::make_unique<Core::Redirector>(stdout);
+        m_stderr = std::make_unique<Core::Redirector>(stderr);
+
+        if (m_stdout->getReadDescriptor() != -1 && m_stderr->getReadDescriptor() != -1)
+        {
+            m_consoleWatcher = std::make_unique<ConsoleWatcherThread>(m_stdout->getReadDescriptor(),
+                                                                      m_stderr->getReadDescriptor());
+        }
+    }
+
     // has to get called before creating instance of QApplication
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

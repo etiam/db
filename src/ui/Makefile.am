@@ -1,5 +1,6 @@
 db_SOURCES               +=                                             \
                             src/ui/global.cpp                           \
+                            src/ui/consoleWatcherThread.cpp             \
                                                                         \
                             src/ui/mainWindow.cpp                       \
                             src/ui/editor.cpp                           \

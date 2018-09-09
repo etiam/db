@@ -5,23 +5,23 @@
  *      Author: jasonr
  */
 
-#ifndef CORE_REDIRECTTHREAD_H_
-#define CORE_REDIRECTTHREAD_H_
+#ifndef UI_CONSOLEWATCHERTHREAD_H_
+#define UI_CONSOLEWATCHERTHREAD_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include "workerThread.h"
+#include "core/workerThread.h"
 
-namespace Core
+namespace Ui
 {
 
-class StdWatcherThread: public WorkerThread
+class ConsoleWatcherThread: public Core::WorkerThread
 {
 public:
-    StdWatcherThread(int stdout, int stderr);
-    virtual ~StdWatcherThread();
+    ConsoleWatcherThread(int stdout, int stderr);
+    virtual ~ConsoleWatcherThread();
 
 protected:
     // custom version of run that doesn't wait for a trigger
@@ -34,6 +34,6 @@ private:
     int m_stdout, m_stderr;
 };
 
-} // namespace Core
+} // namespace Ui
 
-#endif // CORE_REDIRECTTHREAD_H_
+#endif // UI_CONSOLEWATCHERTHREAD_H_

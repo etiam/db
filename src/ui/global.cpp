@@ -30,6 +30,7 @@ private:
     Master();
 
     static Master & instance();
+
 };
 
 std::unique_ptr<Master> g_instance;

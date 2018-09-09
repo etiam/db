@@ -188,26 +188,16 @@ main(int argc, char *argv[])
         Core::state()->vars().set("args", vm["args"].as<std::vector<std::string>>());
     }
 
-    // TODO : move to Gdb::initialize()
-    QSettings settings;
-    Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
-
-    // initialization
-    Core::initialize();
-    Ui::initialize();
-    Gdb::initialize();
-    Ast::initialize();
+    // process command line args
+    processArgs(vm);
 
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);
 
-    // process command line args
-    processArgs(vm);
-
     std::cout << "startup in " << timer << " ms" << std::endl;
     gui->run();
 
-    Core::shutdown();
+    gui.reset();
 
     std::cout << "bye" << std::endl;
 }
