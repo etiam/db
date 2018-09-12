@@ -37,8 +37,12 @@ ScannerThread::~ScannerThread()
 void
 ScannerThread::process()
 {
-    // TODO : get this from gsettings
-    auto scannerthreads = 8;
+    auto &vars = Core::state()->vars();
+
+    // wait for number of threads to be read by qsettings
+    while(!vars.has("numastthreads"));
+
+    auto scannerthreads = vars.get<int>("numastthreads");
 
     auto buildpath = Core::state()->vars().get<std::string>("buildpath");
     const auto &sourcefiles = Core::state()->sourceFiles();

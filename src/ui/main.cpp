@@ -66,7 +66,6 @@ Main::Main(int &argc, char *argv[])
 
 Main::~Main()
 {
-    // TODO : move to Gdb::shutdown()
     writeSettings();
 }
 
@@ -90,7 +89,10 @@ Main::readSettings()
 {
     QSettings settings;
 
-    Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
+    auto &vars = Core::state()->vars();
+
+    vars.set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
+    vars.set("numastthreads", settings.value("Core/AstReaderThreads", 4).toInt());
 }
 
 void
@@ -99,7 +101,8 @@ Main::writeSettings() const
     QSettings settings;
 
     const auto &vars = Core::state()->vars();
-    settings.setValue("Core/BreakOnMain", vars.has("breakonmain") && vars.get<bool>("breakonmain"));
+    settings.setValue("Core/BreakOnMain", vars.get<bool>("breakonmain"));
+    settings.setValue("Core/AstReaderThreads", vars.get<int>("numastthreads"));
 }
 
 }
