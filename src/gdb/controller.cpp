@@ -27,6 +27,7 @@
 #include "core/signals.h"
 #include "core/utils.h"
 
+#include "resultReaderThread.h"
 #include "controller.h"
 
 namespace Gdb
@@ -38,15 +39,15 @@ class ControllerImpl
     ControllerImpl() = default;
     ~ControllerImpl();
 
-    void            initialize();
+    void initialize();
 
-    PyObject *      importModule(const std::string &bytecodename, const std::string &modulename);
-    PyObject *      createInstance(const std::string &modulename, const std::string &classname);
+    PyObject * importModule(const std::string &bytecodename, const std::string &modulename);
+    PyObject * createInstance(const std::string &modulename, const std::string &classname);
 
-    void            resultHandler(const Result &result);
-    void            resultReaderThread();
+    void resultHandler(const Result &result);
+    void resultReaderThread();
 
-    int             executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data);
+    int executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data);
 
     /** Add a gdb command handler to the queue of handlers.  When a gdb response is received the handlers are called
      * in priority order (lower is higher priority).  Further checking of handlers stop after the first handler
@@ -56,55 +57,55 @@ class ControllerImpl
      * @param priority lower priority is better.
      * @param persistent handler will not be removed from queue if true.
      * @param blind data sent to handler.
-     *
      */
-    void            addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data);
+    void addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data);
 
-    void            loadProgram(const std::string &filename);
-    void            insertBreakpoint(const std::string &location);
-    void            infoAddress(const std::string &function);
+    void loadProgram(const std::string &filename);
+    void insertBreakpoint(const std::string &location);
+    void infoAddress(const std::string &function);
 
-    bool            m_verbose = false;
-    bool            m_initialized = false;
-    bool            m_valid = true;
-    bool            m_resultThreadActive = true;
-    bool            m_resultThreadDone = false;
+    bool m_verbose = false;
+    bool m_initialized = false;
+    bool m_valid = true;
+    bool m_resultThreadActive = true;
+    bool m_resultThreadDone = false;
 
-    int             m_token = 1;
+    int m_token = 1;
 
-    PyObject *      m_writeMethod = nullptr;        // pyobject holding ref to function that sends command to gdb
-    PyObject *      m_getHandlerMethod = nullptr;   // pyobject holding ref to function that get's next gdb response
+    PyObject * m_writeMethod = nullptr; // pyobject holding ref to function that sends command to gdb
+    PyObject * m_getHandlerMethod = nullptr; // pyobject holding ref to function that get's next gdb response
 
     struct HandlerData
     {
-        Controller::HandlerFunc     handler;
-        int                         token;
-        int                         priority;
-        bool                        persistent;
-        boost::any                  data;
-        boost::uuids::uuid          uuid;
+        Controller::HandlerFunc handler;
+        int token;
+        int priority;
+        bool persistent;
+        boost::any data;
+        boost::uuids::uuid uuid;
     };
 
-    std::vector<HandlerData>        m_handlers;
+    std::vector<HandlerData> m_handlers;
 
-    std::unique_ptr<std::thread>    m_readerThread;
+//    std::unique_ptr<std::thread>    m_readerThread;
+    std::unique_ptr<ResultReaderThread> m_readerThread;
 };
 
 ControllerImpl::~ControllerImpl()
 {
-    if (m_readerThread)
-    {
-        // stops result thread loop
-        m_resultThreadActive = false;
-
-        // waits for result thread loop to stop
-        while(!m_resultThreadDone);
-
-        // waits for result thread to finish
-        m_readerThread->join();
-
-//        Py_Finalize();        // TODO : fixme!
-    }
+//    if (m_readerThread)
+//    {
+//        // stops result thread loop
+//        m_resultThreadActive = false;
+//
+//        // waits for result thread loop to stop
+//        while(!m_resultThreadDone);
+//
+//        // waits for result thread to finish
+//        m_readerThread->join();
+//
+////        Py_Finalize();        // TODO : fixme!
+//    }
 }
 
 void
@@ -164,7 +165,8 @@ ControllerImpl::initialize()
                 m_valid = false;
 
             // start read thread
-            m_readerThread = std::make_unique<std::thread>(&ControllerImpl::resultReaderThread, std::ref(*this));
+//            m_readerThread = std::make_unique<std::thread>(&ControllerImpl::resultReaderThread, std::ref(*this));
+            m_readerThread = std::make_unique<ResultReaderThread>(std::bind(&ControllerImpl::resultHandler, this, std::placeholders::_1), m_getHandlerMethod, m_verbose);
         }
         else
             m_valid = false;
