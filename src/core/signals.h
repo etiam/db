@@ -154,6 +154,9 @@ extern Signal<> functionListUpdated;
 // emitted when program is loaded
 extern Signal<> programLoaded;
 
+// emitted when ui is realized (show for first time)
+extern Signal<> UiRealized;
+
 }
 
 }

@@ -388,17 +388,14 @@ MainWindow::onDebuggerStateUpdated()
 void
 MainWindow::showEvent(QShowEvent* event)
 {
-    static bool first = false;
+    static bool first = true;
 
     QMainWindow::showEvent(event);
 
-    // TODO : trigger signal here and let something in Gdb ns execute command
-
-    // get gdb version, output will go to console
-    if (!first)
+    if (first)
     {
-        Gdb::commands()->executeCommand("gdb-version");
-        first = true;
+        Core::Signals::UiRealized();
+        first = false;
     }
 }
 

@@ -46,6 +46,8 @@ Signal<> sourceListUpdated;
 Signal<> functionListUpdated;
 
 Signal<> programLoaded;
+
+Signal<> UiRealized;
 }
 
 }
