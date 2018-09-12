@@ -46,10 +46,8 @@ public:
 private:
     Master(int &argc, char *argv[]);
 
-    static Master & instance(int &argc, char *argv[]);
+    static Master & instance();
 
-    std::unique_ptr<Application> m_app;
-    std::unique_ptr<MainWindow> m_mainWindow;
 };
 
 std::unique_ptr<Master> g_instance;

@@ -17,8 +17,15 @@
 class QApplication;
 class MainWindow;
 
+namespace Core
+{
+class Redirector;
+}
+
 namespace Ui
 {
+
+class ConsoleWatcherThread;
 
 class Main
 {
@@ -31,10 +38,16 @@ public:
 private:
     void initialize();
 
+    void readSettings();
+    void writeSettings() const;
+
     bool m_initialized = false;
 
     std::unique_ptr<QApplication> m_app;
     std::unique_ptr<MainWindow> m_mainWindow;
+    std::unique_ptr<Core::Redirector> m_stdout;
+    std::unique_ptr<Core::Redirector> m_stderr;
+    std::unique_ptr<ConsoleWatcherThread> m_consoleWatcher;
 };
 
 }

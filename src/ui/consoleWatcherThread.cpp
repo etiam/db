@@ -1,5 +1,5 @@
 /*
- * redirectThread.cpp
+ * consoleWatcherThread.cpp
  *
  *  Created on: Sep 2, 2018
  *      Author: jasonr
@@ -12,27 +12,28 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "utils.h"
-#include "signals.h"
-#include "stdWatcherThread.h"
+#include "core/utils.h"
+#include "core/signals.h"
 
-namespace Core
+#include "consoleWatcherThread.h"
+
+namespace Ui
 {
 
-StdWatcherThread::StdWatcherThread(int stdout, int stderr) :
-    WorkerThread("consolewatcher"),
+ConsoleWatcherThread::ConsoleWatcherThread(int stdout, int stderr) :
+    Core::WorkerThread("consolewatcher"),
     m_stdout(stdout),
     m_stderr(stderr)
 {
-    m_thread = std::make_unique<std::thread>(&StdWatcherThread::run, std::ref(*this));
+    m_thread = std::make_unique<std::thread>(&ConsoleWatcherThread::run, std::ref(*this));
 }
 
-StdWatcherThread::~StdWatcherThread()
+ConsoleWatcherThread::~ConsoleWatcherThread()
 {
 }
 
 void
-StdWatcherThread::run()
+ConsoleWatcherThread::run()
 {
     pthread_setname_np(pthread_self(), m_threadName.c_str());
 
@@ -47,7 +48,7 @@ StdWatcherThread::run()
 
         catch (...)
         {
-            std::cerr << dumpStack() << std::endl;
+            std::cerr << Core::dumpStack() << std::endl;
         }
         m_doneLock.unlock();
 
@@ -56,7 +57,7 @@ StdWatcherThread::run()
 }
 
 void
-StdWatcherThread::process()
+ConsoleWatcherThread::process()
 {
     fd_set rfds;
     struct timeval tv;
@@ -90,7 +91,7 @@ StdWatcherThread::process()
 }
 
 void
-StdWatcherThread::readAndSignal(int fd)
+ConsoleWatcherThread::readAndSignal(int fd)
 {
     std::string captured;
     const int bufSize = 1025;
@@ -122,4 +123,4 @@ StdWatcherThread::readAndSignal(int fd)
         Core::Signals::appendStderrText(captured);
 }
 
-} // namespace Core
+} // namespace Ui

@@ -7,7 +7,6 @@ db_SOURCES               +=                                             \
                             src/core/redirector.cpp                     \
                                                                         \
                             src/core/workerThread.cpp                   \
-                            src/core/stdWatcherThread.cpp               \
                                                                         \
                             src/core/archive.cpp                        \
                             src/core/serializers.cpp
