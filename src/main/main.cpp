@@ -192,10 +192,10 @@ main(int argc, char *argv[])
     processArgs(vm);
 
     // start gui
-//    auto gui = std::make_unique<Ui::Main>(argc, argv);
+    auto gui = std::make_unique<Ui::Main>(argc, argv);
 
     std::cout << "startup in " << timer << " ms" << std::endl;
-//    gui->run();
+    gui->run();
 
     gui.reset();
 

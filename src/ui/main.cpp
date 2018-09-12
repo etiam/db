@@ -11,6 +11,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QSettings>
 
 #include "core/global.h"
 #include "core/state.h"
@@ -45,6 +46,8 @@ Main::Main(int &argc, char *argv[])
     QApplication::setDesktopSettingsAware(true);
     m_app = std::make_unique<QApplication>(argc, argv);
     m_app->setStyle("GTK+");
+
+    // for qsettings
     m_app->setApplicationName("db");
 
     // apply global stylesheet
@@ -52,6 +55,8 @@ Main::Main(int &argc, char *argv[])
     stylefile.open(QFile::ReadOnly);
     QString style(stylefile.readAll());
     m_app->setStyleSheet(style);
+
+    readSettings();
 
     // create a MainWindow
     m_mainWindow = std::make_unique<MainWindow>();
@@ -61,6 +66,8 @@ Main::Main(int &argc, char *argv[])
 
 Main::~Main()
 {
+    // TODO : move to Gdb::shutdown()
+    writeSettings();
 }
 
 void
@@ -76,6 +83,23 @@ void
 Main::initialize()
 {
     m_initialized = true;
+}
+
+void
+Main::readSettings()
+{
+    QSettings settings;
+
+    Core::state()->vars().set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
+}
+
+void
+Main::writeSettings() const
+{
+    QSettings settings;
+
+    const auto &vars = Core::state()->vars();
+    settings.setValue("Core/BreakOnMain", vars.has("breakonmain") && vars.get<bool>("breakonmain"));
 }
 
 }
