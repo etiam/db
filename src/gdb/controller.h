@@ -27,8 +27,8 @@ class ControllerImpl;
 
 class Controller
 {
-  public:
-    explicit Controller();
+public:
+    Controller();
     ~Controller();
 
     enum class MatchType : char
@@ -47,11 +47,11 @@ class Controller
 
     using HandlerFunc = std::function<HandlerReturn(const Result, int, boost::any data)>;
 
-    int     executeCommand(const std::string &command, Controller::HandlerFunc handler = nullptr, boost::any data = nullptr);
-    void    addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data = nullptr);
+    int executeCommand(const std::string &command, HandlerFunc handler = nullptr, boost::any data = nullptr);
+    void addHandler(Controller::HandlerFunc handler, int priority, bool persistent, boost::any data = nullptr);
 
-  private:
-    std::unique_ptr<ControllerImpl>   m_impl;
+private:
+    std::unique_ptr<ControllerImpl> m_impl;
 };
 
 }

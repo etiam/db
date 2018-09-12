@@ -29,6 +29,7 @@ ResultReaderThread::ResultReaderThread(std::function<void (const Result &)> hand
     m_getHandlerMethod(gethandlermethod),
     m_verbose(verbose)
 {
+    m_thread = std::make_unique<std::thread>(&ResultReaderThread::run, std::ref(*this));
 }
 
 ResultReaderThread::~ResultReaderThread()

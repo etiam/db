@@ -37,7 +37,7 @@ class ControllerImpl
 {
   public:
     ControllerImpl() = default;
-    ~ControllerImpl();
+    ~ControllerImpl() = default;
 
     void initialize();
 
@@ -86,27 +86,8 @@ class ControllerImpl
     };
 
     std::vector<HandlerData> m_handlers;
-
-//    std::unique_ptr<std::thread>    m_readerThread;
     std::unique_ptr<ResultReaderThread> m_readerThread;
 };
-
-ControllerImpl::~ControllerImpl()
-{
-//    if (m_readerThread)
-//    {
-//        // stops result thread loop
-//        m_resultThreadActive = false;
-//
-//        // waits for result thread loop to stop
-//        while(!m_resultThreadDone);
-//
-//        // waits for result thread to finish
-//        m_readerThread->join();
-//
-////        Py_Finalize();        // TODO : fixme!
-//    }
-}
 
 void
 ControllerImpl::initialize()
@@ -164,8 +145,7 @@ ControllerImpl::initialize()
                 !m_getHandlerMethod || !PyCallable_Check(m_getHandlerMethod))
                 m_valid = false;
 
-            // start read thread
-//            m_readerThread = std::make_unique<std::thread>(&ControllerImpl::resultReaderThread, std::ref(*this));
+            // start reader thread
             m_readerThread = std::make_unique<ResultReaderThread>(std::bind(&ControllerImpl::resultHandler, this, std::placeholders::_1), m_getHandlerMethod, m_verbose);
         }
         else
