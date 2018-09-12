@@ -14,7 +14,6 @@
 #include <thread>
 #include <regex>
 #include <boost/program_options.hpp>
-#include <boost/filesystem/operations.hpp>
 
 #include <QSettings>
 #include <QStandardPaths>
@@ -32,98 +31,6 @@
 #include "ui/main.h"
 
 namespace po = boost::program_options;
-
-// https://stackoverflow.com/questions/11295019/environment-path-directories-iteration
-const std::vector<std::string> &
-get_environment_path()
-{
-    static std::vector<std::string> result;
-    if (!result.empty())
-        return result;
-
-#if _WIN32
-    const std::string path = convert_to_utf8( _wgetenv(L"PATH") ); // Handle Unicode, just remove if you don't want/need this. convert_to_utf8 uses WideCharToMultiByte in the Win32 API
-    const char delimiter = ';';
-#else
-    const std::string path = getenv("PATH");
-    const char delimiter = ':';
-#endif
-    if (path.empty())
-        throw std::runtime_error("PATH should not be empty");
-
-    size_t previous = 0;
-    size_t index = path.find(delimiter);
-    while (index != std::string::npos)
-    {
-        result.push_back(path.substr(previous, index - previous));
-        previous = index + 1;
-        index = path.find(delimiter, previous);
-    }
-    result.push_back(path.substr(previous));
-
-    return result;
-}
-
-void
-processArgs(const po::variables_map &vm)
-{
-    // try to find prog in current dir
-    if (vm.count("prog"))
-    {
-        auto &state = Core::state();
-        auto &gdb = Gdb::commands();
-        auto &vars = state->vars();
-
-        bool found = false;
-        auto prog = vm["prog"].as<std::string>();
-
-        // if prog doesn't exist in current dir search $PATH for it
-        if(!boost::filesystem::exists(vm["prog"].as<std::string>()))
-        {
-            auto path = get_environment_path();
-            for (const auto &p : path)
-            {
-                if (boost::filesystem::exists(boost::filesystem::path(p) / prog))
-                {
-                    prog = (boost::filesystem::path(p) / prog).string();
-                    found = true;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            found = true;
-        }
-
-        // load prog
-        if (found)
-        {
-            auto prog = vm["prog"].as<std::string>();
-            auto buildpath = boost::filesystem::canonical(boost::filesystem::path(prog).parent_path()).string();
-
-            vars.set("progname", prog);
-            vars.set("buildpath", buildpath);
-
-            // TODO : add handler for gdb-version.  in handler perform loadProgram()...
-
-            // give gdb-version time to complete
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-            Core::Signals::appendConsoleText("Reading symbols from " + prog + "...");
-            gdb->loadProgram(prog);
-        }
-        else
-        {
-            std::stringstream msg;
-            msg << vm["prog"].as<std::string>() << " : No such file or directory." << std::endl;
-            Core::Signals::appendConsoleText(msg.str());
-
-            vars.set("progname", std::string());
-            vars.set("buildpath", std::string());
-        }
-    }
-}
 
 int
 main(int argc, char *argv[])
@@ -188,8 +95,11 @@ main(int argc, char *argv[])
         Core::state()->vars().set("args", vm["args"].as<std::vector<std::string>>());
     }
 
-    // process command line args
-    processArgs(vm);
+    // store progname
+    if (vm.count("prog"))
+    {
+        Core::state()->vars().set("progname", vm["prog"].as<std::string>());
+    }
 
     // start gui
     auto gui = std::make_unique<Ui::Main>(argc, argv);

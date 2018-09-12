@@ -67,6 +67,9 @@ Controller::HandlerReturn breakdisable(const Result &result, int token, boost::a
 // when a breakpoint changes, hitcount, enabled, etc.
 Controller::HandlerReturn breakmodified(const Result &result, int token, boost::any data);
 
+// when a gdb-version returns
+Controller::HandlerReturn gdbversion(const Result &result, int token, boost::any data);
+
 }
 
 }

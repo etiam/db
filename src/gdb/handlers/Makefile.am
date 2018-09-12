@@ -21,6 +21,8 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/fileexec.cpp                       \
                             src/gdb/handlers/listsourcefiles.cpp                \
                                                                                 \
+                            src/gdb/handlers/gdbversion.cpp                     \
+                                                                                \
                             src/gdb/handlers/breakinsert.cpp                    \
                             src/gdb/handlers/breakdelete.cpp                    \
                             src/gdb/handlers/breakenable.cpp                    \

@@ -23,6 +23,7 @@
 #include "core/timer.h"
 
 #include "global.h"
+#include "handlers/handlers.h"
 #include "commands.h"
 
 namespace Gdb
@@ -70,7 +71,7 @@ Master::gdbCommands()
 Master::Master() :
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
-    Core::Signals::UiRealized.connect([this]() { m_gdbCommands->executeCommand("gdb-version"); });
+    Core::Signals::UiRealized.connect([this]() { m_gdbCommands->executeCommand("gdb-version", Handlers::gdbversion ); });
 }
 
 Master::~Master()
