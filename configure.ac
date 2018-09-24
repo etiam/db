@@ -1,18 +1,31 @@
-dnl Process this file with autoconf to produce a configure script.
+# Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT(db, 1.0)
+## ------------------------ ##
+## Autoconf requirements    ##
+## ------------------------ ##
+AC_PREREQ([2.69])
+
+## ------------------------ ##
+## Initialisation           ##
+## ------------------------ ##
+
+# Autoconf
+AC_INIT([db],[0.0.1],[rosson@gmail.com])
 AC_CONFIG_SRCDIR([src/main/main.cpp])
 AC_CONFIG_AUX_DIR([scripts])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AC_SUBST(VERSION)
 
+# Automake
 AM_INIT_AUTOMAKE([1.11 foreign -Wgnu subdir-objects])
 AM_MAINTAINER_MODE
+AM_SANITY_CHECK
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
-# c++ stuff
+## ----------------------- ##
+## Checks for programs     ##
+## ----------------------- ##
 AC_PROG_CXX
 AC_PROG_CC
 
@@ -22,6 +35,10 @@ AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
 
 LIBRARY_VERSION=1:0:0
 AC_SUBST(LIBRARY_VERSION)
+
+## ----------------------------- ##
+## Checks for extra libraries    ##
+## ----------------------------- ##
 
 # qt
 PKG_CHECK_MODULES([QTCORE], [Qt5Core >= 5.1.1], [])
@@ -37,8 +54,8 @@ PKG_CHECK_MODULES([PYTHON], [python >= 2.7], [])
 AX_BOOST_BASE([1.54],, [AC_MSG_ERROR([db needs Boost, but it was not found in your system])])
 AX_BOOST_SYSTEM
 AX_BOOST_PYTHON
-AX_BOOST_FILESYSTEM
 AX_BOOST_PROGRAM_OPTIONS
+AX_BOOST_FILESYSTEM
 
 # libclang
 AX_LIBCLANG([0], [35])
@@ -121,6 +138,12 @@ if test "x$profile" != xfalse; then
   CXXFLAGS="-g3 -fno-inline -fno-omit-frame-pointer ${CXXFLAGS}"
 fi
 AM_CONDITIONAL([DO_PROFILER], [test x$profile = xtrue]) 
+
+# gperf
+if test "x$profile" != xfalse; then
+    PKG_CHECK_MODULES([GPERFPROFILER], [libprofiler >= 2.4], [])
+    AC_SUBST(GPERFPROFILER_LIBS)
+fi
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
