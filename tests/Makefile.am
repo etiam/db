@@ -2,7 +2,8 @@ EXTRA_PROGRAMS             +=                                                   
                               $(top_builddir)/tests/helloworld/helloworld       \
                               $(top_builddir)/tests/multiunit/multiunit         \
                               $(top_builddir)/tests/infiniteloop/infiniteloop   \
-                              $(top_builddir)/tests/cli_args/cli_args
+                              $(top_builddir)/tests/cli_args/cli_args           \
+                              $(top_builddir)/tests/calcpi/calcpi
 
 __top_builddir__tests_helloworld_helloworld_SOURCES            = tests/helloworld.cpp
 __top_builddir__tests_helloworld_helloworld_LDFLAGS            = $(ALL_LDFLAGS)
@@ -23,3 +24,8 @@ __top_builddir__tests_cli_args_cli_args_SOURCES        		   = tests/cli_args.cpp
 __top_builddir__tests_cli_args_cli_args_LDFLAGS        		   = $(ALL_LDFLAGS)
 __top_builddir__tests_cli_args_cli_args_CPPFLAGS       		   = $(ALL_CPPFLAGS)
 __top_builddir__tests_cli_args_cli_args_LDADD          		   = $(ALL_LDADD)
+
+__top_builddir__tests_calcpi_calcpi_SOURCES        		       = tests/calcpi.cpp
+__top_builddir__tests_calcpi_calcpi_LDFLAGS        		       = $(ALL_LDFLAGS)
+__top_builddir__tests_calcpi_calcpi_CPPFLAGS       		       = $(ALL_CPPFLAGS)
+__top_builddir__tests_calcpi_calcpi_LDADD          		       = $(ALL_LDADD)
