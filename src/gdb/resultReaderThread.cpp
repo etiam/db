@@ -56,7 +56,7 @@ ResultReaderThread::run()
         }
         m_doneLock.unlock();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
 
@@ -66,7 +66,8 @@ ResultReaderThread::process()
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
 
-    auto args = Py_BuildValue("(d,i,i)", 0.1, false, m_verbose);
+    // call get_gdb_response with no timeout
+    auto args = Py_BuildValue("(d,i,i)", 0.0, false, m_verbose);
     auto value = PyObject_Call(m_getHandlerMethod, args, nullptr);
 
     if (PyErr_Occurred())

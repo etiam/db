@@ -45,7 +45,6 @@ class ControllerImpl
     PyObject * createInstance(const std::string &modulename, const std::string &classname);
 
     void resultHandler(const Result &result);
-    void resultReaderThread();
 
     int executeCommand(const std::string &command, Controller::HandlerFunc handler, boost::any data);
 
@@ -217,6 +216,7 @@ ControllerImpl::createInstance(const std::string &modulename, const std::string 
 void
 ControllerImpl::resultHandler(const Result &result)
 {
+    static auto verbose = Core::state()->vars().has("verbose");
     bool match = false;
 
     // since m_handlers can get modified inside the loop, store the uuid
@@ -228,8 +228,9 @@ ControllerImpl::resultHandler(const Result &result)
         auto res = it->handler(result, it->token, it->data);
         if (res.matched)
         {
-            std::cout << "handler \"" << res.name << "\" matched ("
-                      << (res.type == Controller::MatchType::TOKEN ? "token" : "regex") << ")" << std::endl;
+            if (verbose)
+                std::cout << "handler \"" << res.name << "\" matched ("
+                          << (res.type == Controller::MatchType::TOKEN ? "token" : "regex") << ")" << std::endl;
             match = true;
             break;
         }
@@ -248,76 +249,6 @@ ControllerImpl::resultHandler(const Result &result)
     {
         std::cout << "no match : " << result << std::endl;
     }
-}
-
-void
-ControllerImpl::resultReaderThread()
-{
-    pthread_setname_np(pthread_self(), "resultreader");
-
-    while(m_resultThreadActive)
-    {
-        // acquire python GIL
-        auto gstate = PyGILState_Ensure();
-
-        auto args = Py_BuildValue("(d,i,i)", 0.1, false, m_verbose);
-        auto value = PyObject_Call(m_getHandlerMethod, args, nullptr);
-
-        /////
-
-        if (PyErr_Occurred())
-        {
-            namespace bp = boost::python;
-
-            PyObject *exc, *val, *tb;
-            bp::object formatted_list, formatted;
-            PyErr_Fetch(&exc, &val, &tb);
-            bp::handle<> hexc(exc), hval(bp::allow_null(val));
-            bp::object traceback(bp::import("traceback"));
-            bp::object excstrobject(traceback.attr("format_exception_only"));
-            formatted_list = excstrobject(hexc, hval);
-
-            auto excstr = bp::extract<std::string>(formatted_list[0])();
-            if (excstr.find("NoGdbProcessError:") != std::string::npos)
-            {
-                Core::Signals::quitRequested();
-            }
-
-            PyErr_Clear();
-        }
-
-        /////
-
-        else if (value && PyList_Check(value))
-        {
-            auto n = PyList_Size(value);
-            for (auto i=0; i < n; i++)
-            {
-                auto r = parseResult(PyList_GetItem(value, i));
-
-                try
-                {
-                    resultHandler(r);
-                }
-                catch (const std::exception &e)
-                {
-                    std::cerr << "Exception caught in Gdb::Controller::resultReaderThread(): " << e.what() << std::endl;
-                    std::cerr << Core::dumpStack() << std::endl;
-                }
-            }
-        }
-        else
-        {
-            PyErr_Print();
-        }
-
-        // release python GIL
-        PyGILState_Release(gstate);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-
-    m_resultThreadDone = true;
 }
 
 int

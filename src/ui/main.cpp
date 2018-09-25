@@ -93,6 +93,10 @@ Main::readSettings()
 
     vars.set("breakonmain", settings.value("Core/BreakOnMain", true).toBool());
     vars.set("numastthreads", settings.value("Core/AstReaderThreads", 4).toInt());
+
+    /*
+    unsigned int n = std::thread::hardware_concurrency();
+    */
 }
 
 void

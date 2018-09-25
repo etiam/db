@@ -14,11 +14,14 @@
 #endif
 
 #include <QTextEdit>
+#include <QString>
+
+class QTimer;
 
 namespace Ui
 {
 
-class Output: public QTextEdit
+class Output : public QTextEdit
 {
 Q_OBJECT
 
@@ -28,11 +31,17 @@ public:
 
 public Q_SLOTS:
     void appendText(const QString &text);
+    void flush();
 
 private:
-    void insertText(const QString &text);
+    void trim();
 
-    int m_cursorPos = 0;
+    // TODO : get these from config file
+    unsigned int m_maxScrollbackSize = 10000;
+    unsigned int m_bufferSize = 4096;
+    QString m_buffer;
+    QTimer * m_flushTimer;
+    QTimer * m_trimTimer;
 };
 
 }

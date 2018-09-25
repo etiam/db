@@ -115,12 +115,14 @@ ConsoleWatcherThread::readAndSignal(int fd)
             if (fd_blocked)
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
-    } while(fd_blocked || bytesRead == (bufSize-1));
 
-    if (fd == m_stdout)
-        Core::Signals::appendStdoutText(captured);
-    else
-        Core::Signals::appendStderrText(captured);
+        // send buffer to gui
+        if (fd == m_stdout)
+            Core::Signals::appendStdoutText(buf);
+        else
+            Core::Signals::appendStderrText(buf);
+
+    } while(fd_blocked || bytesRead == (bufSize-1));
 }
 
 } // namespace Ui

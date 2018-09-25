@@ -10,9 +10,11 @@
 #endif
 
 #include <iostream>
+#include <thread>
 
 #include <QScrollBar>
 #include <QFontDatabase>
+#include <QTimer>
 
 #include "output.h"
 
@@ -27,37 +29,73 @@ Output::Output(QWidget *parent) :
 
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     setCursorWidth(9);
+
+    m_buffer.reserve(m_bufferSize);
+
+    // flush the output buffer every 0.5sec
+    m_flushTimer = new QTimer(this);
+    m_flushTimer->setInterval(500);
+    m_flushTimer->start();
+    connect(m_flushTimer, &QTimer::timeout, [this]() { flush();});
+
+    // trim the scrollback buffer every 0.5sec
+    m_trimTimer = new QTimer(this);
+    m_trimTimer->setInterval(500);
+    m_trimTimer->start();
+    connect(m_trimTimer, &QTimer::timeout, [this]() { trim();});
 }
 
 void
 Output::appendText(const QString &text)
 {
-    auto sanitized = text;
-    sanitized.replace("\\n", "\n");
-    sanitized.replace("\\t", "    ");
-    sanitized.replace("\\\"", "\"");
+    if (text.length() > m_bufferSize - m_buffer.length())
+    {
+        flush();
+    }
 
-    // skip text with only a newline
-    if (sanitized != "\n")
-        insertText(sanitized);
-
-    // scroll to bottom of text
-    verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+    m_buffer += text;
 }
 
 void
-Output::insertText(const QString &text)
+Output::flush()
 {
-    // jump to last known valid position
-    auto cursor = textCursor();
-    cursor.setPosition(m_cursorPos);
-    setTextCursor(cursor);
+    if (m_buffer.size() > 0)
+    {
+        auto sanitized = m_buffer;
+        sanitized.replace("\\n", "\n");
+        sanitized.replace("\\t", "    ");
+        sanitized.replace("\\\"", "\"");
 
-    // insert the text
-    insertPlainText(text);
+        // skip text with only a newline
+        if (sanitized != "\n")
+        {
+            moveCursor (QTextCursor::End);
+            insertPlainText(sanitized);
+            moveCursor (QTextCursor::End);
+        }
 
-    // update last known valid position
-    m_cursorPos = textCursor().position();
+        // scroll to bottom of text
+        verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+
+        m_buffer.clear();
+    }
+}
+
+void
+Output::trim()
+{
+    auto tmp = toPlainText();
+    auto delta = tmp.size() - static_cast<int>(m_maxScrollbackSize);
+    if (delta > 0)
+    {
+        // remove number of bytes over m_maxScrollbackSize
+        tmp.remove(0, tmp.indexOf("\n", delta) + 1);
+        setPlainText(tmp);
+
+        // scroll to bottom of text
+        verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+    }
+
 }
 
 }

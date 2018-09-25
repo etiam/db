@@ -21,21 +21,21 @@ namespace Ui
 class Output;
 class ConsoleInput;
 
-class GdbConsole: public QFrame
+class GdbConsole : public QFrame
 {
-  Q_OBJECT
+Q_OBJECT
 
-  public:
+public:
     explicit GdbConsole(QWidget *parent = nullptr, bool editable = false);
     ~GdbConsole() = default;
 
-  public Q_SLOTS:
+public Q_SLOTS:
     void appendText(const QString &text);
 
-  protected:
+protected:
     bool focusNextPrevChild(bool next) override;
 
-  private:
+private:
     Output * m_output;
     ConsoleInput * m_lineedit;
 };
