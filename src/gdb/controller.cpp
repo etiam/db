@@ -273,6 +273,9 @@ ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFu
     auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
     PyObject_Call(m_writeMethod, args, kw);
 
+    Py_DECREF(args);
+    Py_DECREF(kw);
+
     // release python GIL
     PyGILState_Release(gstate);
 

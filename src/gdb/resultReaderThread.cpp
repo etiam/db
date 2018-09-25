@@ -70,6 +70,8 @@ ResultReaderThread::process()
     auto args = Py_BuildValue("(d,i,i)", 0.0, false, m_verbose);
     auto value = PyObject_Call(m_getHandlerMethod, args, nullptr);
 
+    Py_DECREF(args);
+
     if (PyErr_Occurred())
     {
         namespace bp = boost::python;
@@ -100,7 +102,10 @@ ResultReaderThread::process()
         auto n = PyList_Size(value);
         for (auto i=0; i < n; i++)
         {
+            auto item = PyList_GetItem(value, i);
+            Py_INCREF(item);
             auto r = parseResult(PyList_GetItem(value, i));
+            Py_DECREF(item);
 
             try
             {
@@ -117,6 +122,8 @@ ResultReaderThread::process()
     {
         PyErr_Print();
     }
+
+    Py_DECREF(value);
 
     // release python GIL
     PyGILState_Release(gstate);

@@ -56,7 +56,10 @@ parseObject(PyObject *object)
 
         for (auto i=0; i < n; i++)
         {
-            list[i] = parseObject(PyList_GetItem(object, i));
+            auto item = PyList_GetItem(object, i);
+            Py_INCREF(item);
+            list[i] = parseObject(item);
+            Py_DECREF(item);
         }
 
         return list;
@@ -72,8 +75,14 @@ parseObject(PyObject *object)
         {
             auto key = PyList_GetItem(list, i);
             auto val = PyDict_GetItem(object, key);
+            Py_INCREF(key);
+            Py_INCREF(val);
             map[PyString_AsString(key)] = parseObject(val);
+            Py_DECREF(key);
+            Py_DECREF(val);
         }
+
+        Py_DECREF(list);
 
         return map;
     }
@@ -82,7 +91,9 @@ parseObject(PyObject *object)
         return nullptr;
 
     std::stringstream errmsg;
-    errmsg << "ParseObject(): un-handled type " << PyString_AsString(PyObject_Str(object));
+    auto objstr = PyObject_Str(object);
+    errmsg << "parseObject(): un-handled type " << PyString_AsString(objstr);
+    Py_DECREF(objstr);
     throw std::runtime_error(errmsg.str().c_str());
 }
 
@@ -120,7 +131,11 @@ parseStream(PyObject* object)
         if (string == "stdout")
             stream = Stream::STDOUT;
         else
-            std::cerr << "parseStream(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+        {
+            auto objstr = PyObject_Str(object);
+            std::cerr << "parseStream(): unknown value : " << PyString_AsString(objstr) << std::endl;
+            Py_DECREF(objstr);
+        }
     }
 
     return stream;
@@ -141,7 +156,9 @@ parseToken(PyObject* object)
     }
     else
     {
-        std::cerr << "parseToken(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+        auto objstr = PyObject_Str(object);
+        std::cerr << "parseToken(): unknown value : " << PyString_AsString(objstr) << std::endl;
+        Py_DECREF(objstr);
     }
 
 
@@ -167,7 +184,11 @@ parseType(PyObject* object)
         else if (string == "log")
             type = Type::LOG;
         else
-            std::cerr << "parseType(): unknown value : " << PyString_AsString(PyObject_Str(object)) << std::endl;
+        {
+            auto objstr = PyObject_Str(object);
+            std::cerr << "parseType(): unknown value : " << PyString_AsString(objstr) << std::endl;
+            Py_DECREF(objstr);
+        }
     }
 
     return type;
@@ -180,7 +201,9 @@ parseResult(PyObject *object)
     if (!PyDict_Check(object))
     {
         std::stringstream errmsg;
-        errmsg << "ParseMessage(): invalid data : " << PyString_AsString(PyObject_Str(object));
+        auto objstr = PyObject_Str(object);
+        errmsg << "parseResult(): invalid data " << PyString_AsString(objstr);
+        Py_DECREF(objstr);
         throw std::runtime_error(errmsg.str().c_str());
     }
 
@@ -194,6 +217,7 @@ parseResult(PyObject *object)
     {
         auto key = std::string(PyString_AsString(PyList_GetItem(list, i)));
         auto val = PyDict_GetItem(object, PyList_GetItem(list, i));
+        Py_INCREF(val);
 
         if (key == "message")
         {
@@ -219,7 +243,9 @@ parseResult(PyObject *object)
         {
             std::cerr << "ParseMessage(): unknown key : " << key << std::endl;
         }
+        Py_DECREF(val);
     }
+    Py_DECREF(list);
 
     return result;
 }
