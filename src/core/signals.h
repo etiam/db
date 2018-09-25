@@ -111,8 +111,8 @@ namespace Signals
 // request that the source editor load the contents of filename
 extern Signal<const std::string & /*filename*/> loadEditorSource;
 
-// emitted when quit is requested
-extern Signal<> quitRequested;
+// quit the program
+extern Signal<> requestQuit;
 
 // move the cursor and optionally scroll to the location in the source editor
 extern Signal<const Location & /*location*/> setCursorLocation;

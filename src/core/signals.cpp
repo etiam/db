@@ -18,7 +18,7 @@ namespace Signals
 {
 
 Signal<const std::string &> loadEditorSource;
-Signal<> quitRequested;
+Signal<> requestQuit;
 
 Signal<const Location &> setCursorLocation;
 Signal<const Location &> highlightLocation;

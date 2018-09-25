@@ -45,7 +45,6 @@ WorkerThread::stop()
     // wait for current process to finish before continuing
     {
     m_doneLock.lock();
-//    std::unique_lock<std::mutex> locker(m_doneLock);
     m_done = true;
     m_doneLock.unlock();
     }
@@ -80,7 +79,6 @@ WorkerThread::run()
         if (m_shouldProcess)
         {
             m_doneLock.lock();
-//            std::unique_lock<std::mutex> locker(m_doneLock);
             try
             {
                 process();

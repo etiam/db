@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
-    Core::Signals::quitRequested.connect([this]()
+    Core::Signals::requestQuit.connect([this]()
     {
         QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
     });
