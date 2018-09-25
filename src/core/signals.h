@@ -86,7 +86,7 @@ public:
         slots_.clear();
     }
 
-    void operator()(Args... p)
+    void emit(Args... p)
     {
         for (auto it : slots_)
         {

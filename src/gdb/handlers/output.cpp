@@ -37,7 +37,7 @@ output(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signals::appendOutputText(result.payload.string.data + '\n');
+        Core::Signals::appendOutputText.emit(result.payload.string.data + '\n');
     }
 
     return {"output", match, Controller::MatchType::REGEX};

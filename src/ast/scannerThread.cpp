@@ -63,7 +63,7 @@ ScannerThread::process()
         {
             auto filename = sourcefiles[n];
 
-            Core::Signals::setStatusbarText("parsing " + filename);
+            Core::Signals::setStatusbarText.emit("parsing " + filename);
             localast.parseFunctions(filename);
         }
 
@@ -102,8 +102,8 @@ ScannerThread::process()
 
     std::cout << "scanned " << count << " files in " << timer << " ms" << std::endl;
 
-    Core::Signals::setStatusbarText("");
-    Core::Signals::functionListUpdated();
+    Core::Signals::setStatusbarText.emit("");
+    Core::Signals::functionListUpdated.emit();
 
     // store ast in cache
     astdata.save("/home/jasonr/ast.data");

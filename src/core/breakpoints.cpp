@@ -22,8 +22,8 @@ Breakpoints::insertBreakpoint(const Breakpoint &breakpoint)
 {
     m_breakpoints.push_back(breakpoint);
 
-    Core::Signals::breakPointsUpdated();
-    Core::Signals::updateGutterMarker(breakpoint.location);
+    Core::Signals::breakPointsUpdated.emit();
+    Core::Signals::updateGutterMarker.emit(breakpoint.location);
 }
 
 void
@@ -37,8 +37,8 @@ Breakpoints::enableBreakpoint(int number)
         it->enabled = true;
     }
 
-    Core::Signals::breakPointsUpdated();
-    Core::Signals::updateGutterMarker(it->location);
+    Core::Signals::breakPointsUpdated.emit();
+    Core::Signals::updateGutterMarker.emit(it->location);
 }
 
 void
@@ -52,8 +52,8 @@ Breakpoints::disableBreakpoint(int number)
         it->enabled = false;
     }
 
-    Core::Signals::breakPointsUpdated();
-    Core::Signals::updateGutterMarker(it->location);
+    Core::Signals::breakPointsUpdated.emit();
+    Core::Signals::updateGutterMarker.emit(it->location);
 }
 
 void
@@ -67,8 +67,8 @@ Breakpoints::deleteBreakpoint(int number)
         m_breakpoints.erase(it);
     }
 
-    Core::Signals::breakPointsUpdated();
-    Core::Signals::updateGutterMarker(it->location);
+    Core::Signals::breakPointsUpdated.emit();
+    Core::Signals::updateGutterMarker.emit(it->location);
 }
 
 bool

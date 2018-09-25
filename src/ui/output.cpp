@@ -32,6 +32,8 @@ Output::Output(QWidget *parent) :
 
     m_buffer.reserve(m_bufferSize);
 
+    // TODO : maybe combine these two timers
+
     // flush the output buffer every 0.5sec
     m_flushTimer = new QTimer(this);
     m_flushTimer->setInterval(500);
@@ -95,7 +97,6 @@ Output::trim()
         // scroll to bottom of text
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
     }
-
 }
 
 }

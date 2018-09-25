@@ -114,7 +114,7 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
                 }
             }
 
-            Core::Signals::sourceListUpdated();
+            Core::Signals::sourceListUpdated.emit();
         }
     }
 

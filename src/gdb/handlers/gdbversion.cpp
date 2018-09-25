@@ -106,14 +106,14 @@ gdbversion(const Result &result, int token, boost::any data)
                 auto buildpath = boost::filesystem::canonical(boost::filesystem::path(prog).parent_path()).string();
                 vars.set("buildpath", buildpath);
 
-                Core::Signals::appendConsoleText("Reading symbols from " + prog + "...");
+                Core::Signals::appendConsoleText.emit("Reading symbols from " + prog + "...");
                 commands()->loadProgram(prog);
             }
             else
             {
                 std::stringstream msg;
                 msg << prog << " : No such file or directory." << std::endl;
-                Core::Signals::appendConsoleText(msg.str());
+                Core::Signals::appendConsoleText.emit(msg.str());
             }
 
 

@@ -98,9 +98,9 @@ breakinsert(const Result &result, int token, boost::any data)
             auto &vars = Core::state()->vars();
             if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
             {
-                Core::Signals::loadEditorSource(fullname);
-                Core::Signals::setCursorLocation(location);
-                Core::Signals::setCursorLocation(location);
+                Core::Signals::loadEditorSource.emit(fullname);
+                Core::Signals::setCursorLocation.emit(location);
+                Core::Signals::setCursorLocation.emit(location);
                 vars.set("initialdisplay", true);
             }
         }

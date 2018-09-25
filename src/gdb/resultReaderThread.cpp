@@ -91,7 +91,7 @@ ResultReaderThread::process()
         // emit a quitRequested signal in this case to shutdown everything
         if (exceptionstring.find("NoGdbProcessError:") != std::string::npos)
         {
-            Core::Signals::quitRequested();
+            Core::Signals::quitRequested.emit();
         }
 
         PyErr_Clear();

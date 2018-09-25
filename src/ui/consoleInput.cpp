@@ -216,7 +216,7 @@ ConsoleInput::autoComplete(bool notify)
     // if notify, and multiple matches just send list of matches to console
     if (notify && matches.size() > 1)
     {
-        Core::Signals::appendConsoleText("> " + matches.join(" ").toStdString() + "\n");
+        Core::Signals::appendConsoleText.emit("> " + matches.join(" ").toStdString() + "\n");
     }
 
     // otherwise try to complete

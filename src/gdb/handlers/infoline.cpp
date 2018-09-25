@@ -59,8 +59,8 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         // if the editor has not displayed anything yet load filename and set the cursor
         if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
         {
-            Core::Signals::loadEditorSource(boost::filesystem::canonical(filename).string());
-            Core::Signals::setCursorLocation(location);
+            Core::Signals::loadEditorSource.emit(boost::filesystem::canonical(filename).string());
+            Core::Signals::setCursorLocation.emit(location);
             vars.set("initialdisplay", true);
         }
     }

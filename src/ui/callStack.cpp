@@ -92,8 +92,8 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
     {
         const auto location = stack[row].location;
 
-        Core::Signals::loadEditorSource(location.filename);
-        Core::Signals::setCursorLocation(location);
+        Core::Signals::loadEditorSource.emit(location.filename);
+        Core::Signals::setCursorLocation.emit(location);
     }
 }
 

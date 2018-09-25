@@ -118,9 +118,9 @@ ConsoleWatcherThread::readAndSignal(int fd)
 
         // send buffer to gui
         if (fd == m_stdout)
-            Core::Signals::appendStdoutText(buf);
+            Core::Signals::appendStdoutText.emit(buf);
         else
-            Core::Signals::appendStderrText(buf);
+            Core::Signals::appendStderrText.emit(buf);
 
     } while(fd_blocked || bytesRead == (bufSize-1));
 }

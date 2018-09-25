@@ -53,9 +53,9 @@ stopped(const Result &result, int token, boost::any data)
             const auto location = Core::Location({func, fullname, line});
 
             Core::state()->setDebuggerState(Core::State::Debugger::PAUSED);
-            Core::Signals::loadEditorSource(fullname);
-            Core::Signals::highlightLocation(location);
-            Core::Signals::setCursorLocation(location);
+            Core::Signals::loadEditorSource.emit(fullname);
+            Core::Signals::highlightLocation.emit(location);
+            Core::Signals::setCursorLocation.emit(location);
 
             // update call stack
             Gdb::commands()->updateCallStack();

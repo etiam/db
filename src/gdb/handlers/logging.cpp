@@ -36,7 +36,7 @@ logging(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signals::appendLogText(result.payload.string.data + '\n');
+        Core::Signals::appendLogText.emit(result.payload.string.data + '\n');
     }
 
     return {"logging", match, Controller::MatchType::REGEX};

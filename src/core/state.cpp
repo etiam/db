@@ -37,7 +37,7 @@ void
 State::setDebuggerState(State::Debugger state)
 {
     m_debuggerState = state;
-    Core::Signals::debuggerStateUpdated();
+    Core::Signals::debuggerStateUpdated.emit();
 }
 
 State::Debugger
@@ -51,7 +51,7 @@ State::setCallStack(const CallStack& callstack)
 {
     m_callStack = callstack;
 
-    Signals::callStackUpdated();
+    Signals::callStackUpdated.emit();
 }
 
 std::vector<std::string> &

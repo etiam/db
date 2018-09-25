@@ -36,7 +36,7 @@ notify(const Result &result, int token, boost::any data)
 
     if (match)
     {
-        Core::Signals::appendLogText(result.message.string.data + '\n');
+        Core::Signals::appendLogText.emit(result.message.string.data + '\n');
     }
 
     return {"notify", match, Controller::MatchType::REGEX};

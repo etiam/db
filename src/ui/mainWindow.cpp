@@ -394,7 +394,7 @@ MainWindow::showEvent(QShowEvent* event)
 
     if (first)
     {
-        Core::Signals::UiRealized();
+        Core::Signals::UiRealized.emit();
         first = false;
     }
 }

@@ -71,8 +71,8 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
         bp.hitcount = times;
         bp.enabled = enabled;
 
-        Core::Signals::breakPointsUpdated();
-        Core::Signals::updateGutterMarker(Core::Location({func, fullname, line}));
+        Core::Signals::breakPointsUpdated.emit();
+        Core::Signals::updateGutterMarker.emit(Core::Location({func, fullname, line}));
     }
 
     return {"breakmodified", match, Controller::MatchType::REGEX};
