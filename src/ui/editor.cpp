@@ -263,6 +263,7 @@ Editor::onGutterClicked(int row)
 
     if (!breakpoints.exists(location))
     {
+        assert(m_currentLocation.filename.size() != 0);
         gdb->insertBreakpoint(m_currentLocation.filename + ":" + std::to_string(row));
     }
     else
@@ -368,6 +369,8 @@ Editor::loadFile(const QString &filename)
         showGutter();
         clearGutterMarkers();
         updateGutterMarkers(filename);
+
+        m_currentLocation.filename = filename.toStdString();
     }
     else
     {

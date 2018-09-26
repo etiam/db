@@ -50,7 +50,7 @@ fileexec(const Gdb::Result &result, int token, boost::any data)
             gdb->setArgs(argstr);
         }
 
-        // wait for number of threads to be read by qsettings
+        // wait for "breakonmain" to be available
         while(!vars.has("breakonmain"));
 
         // if breakonmain true, set breakpoint, otherwise find source file for main

@@ -132,7 +132,7 @@ Commands::run()
 void
 Commands::cont()
 {
-    m_controller->executeCommand("exec-continue", Handlers::execrun);
+    Core::Signals::executeGdbCommand.emit("continue");
 }
 
 void
