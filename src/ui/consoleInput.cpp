@@ -19,6 +19,7 @@
 #include <QStandardItemModel>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QCoreApplication>
 
 #include "core/global.h"
 #include "core/signals.h"
@@ -31,7 +32,7 @@
 namespace
 {
 
-// custom block style cursor
+// style that produces a block style cursor
 class ConsoleInputStyle : public QProxyStyle
 {
   public:
@@ -58,6 +59,8 @@ ConsoleInputStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, c
     return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
+// return whether all the input strings contain a common prefix and if true
+// return that prefix
 bool
 commonPrefix(const QStringList &strings, QString &prefix)
 {
@@ -75,8 +78,6 @@ commonPrefix(const QStringList &strings, QString &prefix)
             pos = std::distance(b, std::mismatch(b, b + std::strlen(b), a).first);
         else
             pos = std::distance(a, std::mismatch(a, a + std::strlen(a), b).first);
-
-//        std::cout << n << " " << a << " " << b << " " << pos << " " << minpos << std::endl;
 
         minpos = std::min(minpos, pos);
         if (n > 1 && pos == 0)
@@ -98,6 +99,7 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
 {
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
+    // block style cursor
     setStyle(new ConsoleInputStyle(style()));
 
     setText("(gdb) ");
@@ -118,6 +120,11 @@ ConsoleInput::ConsoleInput(QWidget *parent) :
     Core::Signals::functionListUpdated.connect([this]()
     {
         QMetaObject::invokeMethod(this, "updateCompletionData", Qt::QueuedConnection);
+    });
+
+    Core::Signals::executeGdbCommand.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(this, "injectCommand", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 }
 
@@ -232,7 +239,7 @@ ConsoleInput::autoComplete(bool notify)
                 completion = matches[0];
             }
 
-            // more than one, if there is a common prefix and use that
+            // more than one, if there is a common prefix use that
             else
             {
                 QString prefix;
@@ -304,6 +311,14 @@ ConsoleInput::updateCompletionData()
             model->setData(model->index(rowcount, 1), QString::fromStdString(funcname));
         }
     }
+}
+
+void
+ConsoleInput::injectCommand(const QString &command)
+{
+    setText("(gdb) " + command);
+    auto event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+    QCoreApplication::postEvent(this, event);
 }
 
 }

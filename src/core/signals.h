@@ -157,6 +157,9 @@ extern Signal<> programLoaded;
 // emitted when ui is realized (show for first time)
 extern Signal<> UiRealized;
 
+// execute gdb command
+extern Signal<const std::string & /*text*/> executeGdbCommand;
+
 }
 
 }

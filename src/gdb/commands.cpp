@@ -125,7 +125,7 @@ Commands::disableBreakpoint(int number)
 void
 Commands::run()
 {
-    m_controller->executeCommand("exec-run", Handlers::execrun);
+    Core::Signals::executeGdbCommand.emit("run");
 }
 
 void

@@ -48,6 +48,8 @@ Signal<> functionListUpdated;
 Signal<> programLoaded;
 
 Signal<> UiRealized;
+
+Signal<const std::string &> executeGdbCommand;
 }
 
 }

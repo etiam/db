@@ -140,9 +140,13 @@ DebugControls::run()
     Core::Signals::clearCurrentLocation.emit();
 
     if (Core::state()->debuggerState() == Core::State::Debugger::PAUSED)
-        Gdb::commands()->cont();
+    {
+        Core::Signals::executeGdbCommand.emit("continue");
+    }
     else
-        Gdb::commands()->run();
+    {
+        Core::Signals::executeGdbCommand.emit("run");
+    }
 }
 
 } // namespace Ui

@@ -12,6 +12,7 @@
 #include "external/lineedit/src/history_line_edit.hpp"
 
 class QCompleter;
+class QString;
 
 namespace Ui
 {
@@ -29,6 +30,7 @@ class ConsoleInput : public HistoryLineEdit
 
   private Q_SLOTS:
     void updateCompletionData();
+    void injectCommand(const QString &command);
 
   private:
     void autoComplete(bool notify);
