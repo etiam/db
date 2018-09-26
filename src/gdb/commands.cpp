@@ -29,6 +29,7 @@ Commands::Commands() :
     m_controller(std::make_unique<Controller>())
 {
     // add persistent handlers, lower number priority tested first
+    m_controller->addHandler(Handlers::running,             10, true);
     m_controller->addHandler(Handlers::stopped,             10, true);
     m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
     m_controller->addHandler(Handlers::infoline,            10, true);

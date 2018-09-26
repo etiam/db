@@ -53,7 +53,7 @@ Controller::HandlerReturn logging(const Result &result, int token, boost::any da
 Controller::HandlerReturn notify(const Result &result, int token, boost::any data);
 Controller::HandlerReturn output(const Result &result, int token, boost::any data);
 
-Controller::HandlerReturn execrun(const Result &result, int token, boost::any data);
+Controller::HandlerReturn running(const Result &result, int token, boost::any data);
 Controller::HandlerReturn execnext(const Result &result, int token, boost::any data);
 
 Controller::HandlerReturn fileexec(const Result &result, int token, boost::any data);
