@@ -27,7 +27,7 @@ namespace Ui
 Main::Main(int &argc, char *argv[])
 {
     // setup stdout/stderr redirectors
-    if (1)
+    if (!Core::state()->vars().has("nostdcap"))
     {
         m_stdout = std::make_unique<Core::Redirector>(stdout);
         m_stderr = std::make_unique<Core::Redirector>(stderr);

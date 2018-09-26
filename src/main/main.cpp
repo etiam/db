@@ -46,7 +46,8 @@ main(int argc, char *argv[])
 
 #ifdef DEBUG_ENABLED
     generic.add_options()
-    ("verbose,v", "be noisy.");
+    ("verbose,v", "be noisy.")
+    ("nostdcap,n", "don't capture stdout/stderr.");
 #endif
 
     // Hidden options, will be allowed both on command line and
@@ -87,6 +88,12 @@ main(int argc, char *argv[])
     if (vm.count("verbose"))
     {
         Core::state()->vars().set("verbose", true);
+    }
+
+    // --nostdap
+    if (vm.count("nostdcap"))
+    {
+        Core::state()->vars().set("nostdcap", true);
     }
 
     // store args
