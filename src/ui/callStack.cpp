@@ -35,7 +35,7 @@ CallStack::CallStack(QWidget *parent) :
 
     m_model = new CallStackItemModel(0, 3, this);
 
-    m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
+    m_model->setHeaderData(0, Qt::Horizontal, "#");
     m_model->setHeaderData(1, Qt::Horizontal, tr("Function"));
     m_model->setHeaderData(2, Qt::Horizontal, tr("Filename"));
 
@@ -45,12 +45,13 @@ CallStack::CallStack(QWidget *parent) :
     setModel(m_model);
 
     // column width defaults
-    setColumnWidth(0, 30);
+    setColumnWidth(0, 20);
     setColumnWidth(1, 150);
     setColumnWidth(2, 300);
 
     // prevent resize of 1st column width
     header()->setSectionResizeMode(0, QHeaderView::Fixed);
+    header()->setSectionResizeMode(1, QHeaderView::Fixed);
 
     // don't allow columns to be re-ordered
     header()->setSectionsMovable(false);
@@ -76,6 +77,7 @@ CallStack::onCallStackUpdated()
         QFileInfo fileinfo(QString::fromStdString(stackline.location.filename));
         QString filename = fileinfo.fileName() + ", line " + QString::number(stackline.location.row);
 
+        m_model->setData(m_model->index(rowcount, 0), stackline.level);
         m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(stackline.location.function));
         m_model->setData(m_model->index(rowcount, 2), filename);
     }
@@ -95,13 +97,6 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
         Core::Signals::loadEditorSource.emit(location.filename);
         Core::Signals::setCursorLocation.emit(location);
     }
-}
-
-void
-CallStack::mousePressEvent(QMouseEvent *event)
-{
-    const auto index = indexAt(event->pos());
-    selectionModel()->select(index.sibling(index.row(), 2), QItemSelectionModel::ClearAndSelect);
 }
 
 } // namespace Ui

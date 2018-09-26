@@ -33,7 +33,7 @@ class CallStack : public QTreeView
 
   protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;
-    void mousePressEvent(QMouseEvent *event) override;
+//    void mousePressEvent(QMouseEvent *event) override;
 
   private:
     CallStackItemModel *    m_model;
