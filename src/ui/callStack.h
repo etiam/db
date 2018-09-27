@@ -25,18 +25,21 @@ class CallStack : public QTreeView
 {
   Q_OBJECT
 
-  public:
+public:
     CallStack(QWidget *parent = nullptr);
     ~CallStack() = default;
 
     void onCallStackUpdated();
 
-  protected:
-//    void mouseDoubleClickEvent(QMouseEvent *) override;
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
-  private:
-    CallStackItemModel *    m_model;
+private:
+    void loadSourceAtRow(int row);
+
+    CallStackItemModel * m_model;
 };
 
 } // namespace Ui

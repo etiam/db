@@ -81,12 +81,48 @@ CallStack::onCallStackUpdated()
         m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(stackline.location.function));
         m_model->setData(m_model->index(rowcount, 2), filename);
     }
+
+    setCurrentIndex(indexAt(QPoint(0, 0)));
+}
+
+void
+CallStack::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    // do nothing
 }
 
 void
 CallStack::mousePressEvent(QMouseEvent *event)
 {
     const auto row = indexAt(event->pos()).row();
+    loadSourceAtRow(row);
+
+    QTreeView::mousePressEvent(event);
+}
+
+void
+CallStack::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key())
+    {
+        case Qt::Key_Up:
+        case Qt::Key_Down:
+            {
+            QTreeView::keyPressEvent(event);
+
+            const auto row = currentIndex().row();
+            loadSourceAtRow(row);
+            break;
+            }
+
+        default:
+            QTreeView::keyPressEvent(event);
+    }
+}
+
+void
+CallStack::loadSourceAtRow(int row)
+{
     const auto &stack = Core::state()->callStack();
 
     // bounds check
@@ -97,8 +133,6 @@ CallStack::mousePressEvent(QMouseEvent *event)
         Core::Signals::loadEditorSource.emit(location.filename);
         Core::Signals::setCursorLocation.emit(location);
     }
-
-    QTreeView::mousePressEvent(event);
 }
 
 } // namespace Ui
