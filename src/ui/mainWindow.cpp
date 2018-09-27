@@ -138,7 +138,7 @@ MainWindow::toggleTab(QWidget *tab)
     for (auto n=0; n < m_bottomTabWidget->count(); ++n)
         tabs.push_back(m_bottomTabWidget->widget(n));
 
-    // remove or insert tab depending on whether it already currently exists
+    // remove or insert tab depending on whether it currently exists
     auto it = std::find(std::begin(tabs), std::end(tabs), tab);
     if (it != std::end(tabs))
         m_bottomTabWidget->removeTab(it - std::begin(tabs));
@@ -208,92 +208,49 @@ MainWindow::createDocks()
     m_bottomTabWidget->setMovable(true);
 
     // lambda to return index of tab from settings or default value if not set
-    auto getSettingsIndex = [&](const QWidget *tab)
+    auto settingsIndex = [&](const QWidget *tab)
     {
         auto key = "MainWindow/BottomDock/TabOrder/" + tab->objectName();
-//        std::cout << tab->objectName().toStdString() << " " << key.toStdString() << " " << (m_settings->contains(key) ? m_settings->value(key).toInt() : def) << std::endl;
         return m_settings->contains(key) ? m_settings->value(key).toInt() : -1;
     };
 
-    // lambda to return index of tab from name
-    auto getIndex = [&](const QString &name)
-    {
-        auto page = m_bottomTabWidget->findChild<QWidget *>(name);
-        return m_bottomTabWidget->indexOf(page);
-    };
-
-//    int index;
-//    (void)index;
-    (void)getIndex;
+    std::vector<QWidget*> tabs;
 
     // add individual tab widgets
     m_gdbConsoleTab = new GdbConsole(this, true);
     m_gdbConsoleTab->setObjectName("Gdb");
     m_gdbConsoleTab->setProperty("tabname", tr("Gdb"));
-
-//    index = getIndex(m_gdbConsoleTab, 0);
-//    if (index >= 0)
-//        m_bottomTabWidget->insertTab(index, m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
-
-    m_bottomTabWidget->addTab(m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
-
+    tabs.push_back(m_gdbConsoleTab);
 
     m_programOutputTab = new Output(this);
     m_programOutputTab->setObjectName("Output");
     m_programOutputTab->setProperty("tabname", "Output");
-//    index = getIndex(m_programOutputTab, 1);
-//    if (index >= 0)
-//        m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
-
-    m_bottomTabWidget->addTab(m_programOutputTab, m_programOutputTab->property("tabname").toString());
+    tabs.push_back(m_programOutputTab);
 
     m_callStackTab = new CallStack(this);
     m_callStackTab->setObjectName("CallStack");
     m_callStackTab->setProperty("tabname", tr("Call Stack"));
-//    index = getIndex(m_callStackTab, 2);
-//    if (index >= 0)
-//        m_bottomTabWidget->insertTab(index, m_callStackTab, m_callStackTab->property("tabname").toString());
-
-    m_bottomTabWidget->addTab(m_callStackTab, m_callStackTab->property("tabname").toString());
+    tabs.push_back(m_callStackTab);
 
     m_breakPointsTab = new BreakPoints(this);
     m_breakPointsTab->setObjectName("BreakPoints");
     m_breakPointsTab->setProperty("tabname", tr("Break Points"));
-//    index = getIndex(m_breakPointsTab, 3);
-//    if (index >= 0)
-//        m_bottomTabWidget->insertTab(index, m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
-
-    m_bottomTabWidget->addTab(m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
+    tabs.push_back(m_breakPointsTab);
 
     m_consoleOutputTab = new ColoredOutput(this);
     m_consoleOutputTab->setObjectName("Console");
     m_consoleOutputTab->setProperty("tabname", tr("Console"));
-//    index = getIndex(m_consoleOutputTab, 4);
-//    if (index >= 0)
-//        m_bottomTabWidget->insertTab(index, m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+    tabs.push_back(m_consoleOutputTab);
 
-    m_bottomTabWidget->addTab(m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+    // sort tabs by settings index value
+    std::sort(std::begin(tabs), std::end(tabs), [&](QWidget *a, QWidget *b) { return settingsIndex(a) < settingsIndex(b); });
 
-
-    //////////////
-
-    for (const auto child : m_bottomTabWidget->findChildren<QWidget *>())
+    // add previously created tab widgets
+    for (const auto &tab : tabs)
     {
-        auto tabname = child->property("tabname");
-        if (tabname.isValid())
-        {
-            auto oldindex = m_bottomTabWidget->indexOf(child);
-            auto newindex = getSettingsIndex(child);
-            if (newindex != -1 && newindex != oldindex)
-            {
-                m_bottomTabWidget->tabBar()->move(oldindex, newindex);
-                std::cout << "moving tab " << child->objectName().toStdString() << " from " << oldindex << " to " << newindex << std::endl;
-//            m_settings->setValue("MainWindow/BottomDock/TabOrder/" + child->objectName(), m_bottomTabWidget->indexOf(child));
-            }
-        }
+        if (settingsIndex(tab) != -1)
+            m_bottomTabWidget->addTab(tab, tab->property("tabname").toString());
     }
-
-    //    m_bottomTabWidget->tabBar()->move();
 
     // signal connections
     connect(m_bottomTabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeBottomTab(index); });
@@ -302,8 +259,8 @@ MainWindow::createDocks()
     bottomdock->setWidget(m_bottomTabWidget);
     addDockWidget(Qt::BottomDockWidgetArea, bottomdock);
 
-    // restore current index from settings
-    m_bottomTabWidget->setCurrentIndex(m_settings->value("MainWindow/BottomDock/TabIndex", 0).toInt());
+    // set current tab from settings
+    m_bottomTabWidget->setCurrentIndex(m_settings->value("MainWindow/BottomDock/CurrentTab", 0).toInt());
 }
 
 void
