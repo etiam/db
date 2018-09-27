@@ -84,7 +84,7 @@ CallStack::onCallStackUpdated()
 }
 
 void
-CallStack::mouseDoubleClickEvent(QMouseEvent *event)
+CallStack::mousePressEvent(QMouseEvent *event)
 {
     const auto row = indexAt(event->pos()).row();
     const auto &stack = Core::state()->callStack();
@@ -97,6 +97,8 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
         Core::Signals::loadEditorSource.emit(location.filename);
         Core::Signals::setCursorLocation.emit(location);
     }
+
+    QTreeView::mousePressEvent(event);
 }
 
 } // namespace Ui

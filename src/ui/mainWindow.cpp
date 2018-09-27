@@ -161,9 +161,10 @@ MainWindow::writeSettings() const
     m_settings->setValue("MainWindow/State", saveState());
     m_settings->setValue("MainWindow/Geometry", saveGeometry());
 
-    // bottom dock's current tab
+    // save bottom dock's current tab
     m_settings->setValue("MainWindow/BottomDock/CurrentTab", m_bottomTabWidget->currentIndex());
 
+    // save index of bottomdock's tabs
     for (const auto child : findChildren<QWidget *>())
     {
         auto tabname = child->property("tabname");
@@ -207,49 +208,92 @@ MainWindow::createDocks()
     m_bottomTabWidget->setMovable(true);
 
     // lambda to return index of tab from settings or default value if not set
-    auto getIndex = [&](const QWidget *tab, int def)
+    auto getSettingsIndex = [&](const QWidget *tab)
     {
         auto key = "MainWindow/BottomDock/TabOrder/" + tab->objectName();
-        return m_settings->contains(key) ? m_settings->value(key).toInt() : def;
+//        std::cout << tab->objectName().toStdString() << " " << key.toStdString() << " " << (m_settings->contains(key) ? m_settings->value(key).toInt() : def) << std::endl;
+        return m_settings->contains(key) ? m_settings->value(key).toInt() : -1;
     };
 
-    int index;
+    // lambda to return index of tab from name
+    auto getIndex = [&](const QString &name)
+    {
+        auto page = m_bottomTabWidget->findChild<QWidget *>(name);
+        return m_bottomTabWidget->indexOf(page);
+    };
 
-    // tabs within tab window
+//    int index;
+//    (void)index;
+    (void)getIndex;
+
+    // add individual tab widgets
     m_gdbConsoleTab = new GdbConsole(this, true);
     m_gdbConsoleTab->setObjectName("Gdb");
     m_gdbConsoleTab->setProperty("tabname", tr("Gdb"));
-    index = getIndex(m_gdbConsoleTab, 0);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
+
+//    index = getIndex(m_gdbConsoleTab, 0);
+//    if (index >= 0)
+//        m_bottomTabWidget->insertTab(index, m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
+
+    m_bottomTabWidget->addTab(m_gdbConsoleTab, m_gdbConsoleTab->property("tabname").toString());
+
 
     m_programOutputTab = new Output(this);
     m_programOutputTab->setObjectName("Output");
     m_programOutputTab->setProperty("tabname", "Output");
-    index = getIndex(m_programOutputTab, 1);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
+//    index = getIndex(m_programOutputTab, 1);
+//    if (index >= 0)
+//        m_bottomTabWidget->insertTab(index, m_programOutputTab, m_programOutputTab->property("tabname").toString());
 
-    m_consoleOutputTab = new ColoredOutput(this);
-    m_consoleOutputTab->setObjectName("Console");
-    m_consoleOutputTab->setProperty("tabname", tr("Console"));
-    index = getIndex(m_consoleOutputTab, 0);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+    m_bottomTabWidget->addTab(m_programOutputTab, m_programOutputTab->property("tabname").toString());
 
     m_callStackTab = new CallStack(this);
     m_callStackTab->setObjectName("CallStack");
     m_callStackTab->setProperty("tabname", tr("Call Stack"));
-    index = getIndex(m_callStackTab, 2);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_callStackTab, m_callStackTab->property("tabname").toString());
+//    index = getIndex(m_callStackTab, 2);
+//    if (index >= 0)
+//        m_bottomTabWidget->insertTab(index, m_callStackTab, m_callStackTab->property("tabname").toString());
+
+    m_bottomTabWidget->addTab(m_callStackTab, m_callStackTab->property("tabname").toString());
 
     m_breakPointsTab = new BreakPoints(this);
     m_breakPointsTab->setObjectName("BreakPoints");
     m_breakPointsTab->setProperty("tabname", tr("Break Points"));
-    index = getIndex(m_breakPointsTab, 3);
-    if (index >= 0)
-        m_bottomTabWidget->insertTab(index, m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
+//    index = getIndex(m_breakPointsTab, 3);
+//    if (index >= 0)
+//        m_bottomTabWidget->insertTab(index, m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
+
+    m_bottomTabWidget->addTab(m_breakPointsTab, m_breakPointsTab->property("tabname").toString());
+
+    m_consoleOutputTab = new ColoredOutput(this);
+    m_consoleOutputTab->setObjectName("Console");
+    m_consoleOutputTab->setProperty("tabname", tr("Console"));
+//    index = getIndex(m_consoleOutputTab, 4);
+//    if (index >= 0)
+//        m_bottomTabWidget->insertTab(index, m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+
+    m_bottomTabWidget->addTab(m_consoleOutputTab, m_consoleOutputTab->property("tabname").toString());
+
+
+    //////////////
+
+    for (const auto child : m_bottomTabWidget->findChildren<QWidget *>())
+    {
+        auto tabname = child->property("tabname");
+        if (tabname.isValid())
+        {
+            auto oldindex = m_bottomTabWidget->indexOf(child);
+            auto newindex = getSettingsIndex(child);
+            if (newindex != -1 && newindex != oldindex)
+            {
+                m_bottomTabWidget->tabBar()->move(oldindex, newindex);
+                std::cout << "moving tab " << child->objectName().toStdString() << " from " << oldindex << " to " << newindex << std::endl;
+//            m_settings->setValue("MainWindow/BottomDock/TabOrder/" + child->objectName(), m_bottomTabWidget->indexOf(child));
+            }
+        }
+    }
+
+    //    m_bottomTabWidget->tabBar()->move();
 
     // signal connections
     connect(m_bottomTabWidget, &QTabWidget::tabCloseRequested, [&](int index){ closeBottomTab(index); });
