@@ -33,11 +33,12 @@ CallStack::CallStack(QWidget *parent) :
     setObjectName("callstack");
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
-    m_model = new CallStackItemModel(0, 3, this);
+    m_model = new CallStackItemModel(0, 4, this);
 
-    m_model->setHeaderData(0, Qt::Horizontal, "#");
-    m_model->setHeaderData(1, Qt::Horizontal, tr("Function"));
-    m_model->setHeaderData(2, Qt::Horizontal, tr("Filename"));
+    m_model->setHeaderData(0, Qt::Horizontal, "", Qt::DisplayRole);
+    m_model->setHeaderData(1, Qt::Horizontal, "#");
+    m_model->setHeaderData(2, Qt::Horizontal, tr("Function"));
+    m_model->setHeaderData(3, Qt::Horizontal, tr("Filename"));
 
     setRootIsDecorated(false);
     setIndentation(10);
@@ -45,9 +46,10 @@ CallStack::CallStack(QWidget *parent) :
     setModel(m_model);
 
     // column width defaults
-    setColumnWidth(0, 20);
-    setColumnWidth(1, 150);
-    setColumnWidth(2, 300);
+    setColumnWidth(0, 30);
+    setColumnWidth(1, 40);
+    setColumnWidth(2, 150);
+    setColumnWidth(3, 300);
 
     // prevent resize of 1st column width
     header()->setSectionResizeMode(0, QHeaderView::Fixed);
@@ -77,9 +79,12 @@ CallStack::onCallStackUpdated()
         QFileInfo fileinfo(QString::fromStdString(stackline.location.filename));
         QString filename = fileinfo.fileName() + ", line " + QString::number(stackline.location.row);
 
-        m_model->setData(m_model->index(rowcount, 0), stackline.level);
-        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(stackline.location.function));
-        m_model->setData(m_model->index(rowcount, 2), filename);
+        // draw icon indicating breakpoint status in first column
+        m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
+
+        m_model->setData(m_model->index(rowcount, 1), stackline.level);
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(stackline.location.function));
+        m_model->setData(m_model->index(rowcount, 3), filename);
     }
 
     setCurrentIndex(indexAt(QPoint(0, 0)));

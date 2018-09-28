@@ -47,8 +47,8 @@ BreakPoints::BreakPoints(QWidget *parent) :
     setModel(m_model);
 
     // column width defaults
-    setColumnWidth(0, 10);
-    setColumnWidth(1, 20);
+    setColumnWidth(0, 30);
+    setColumnWidth(1, 40);
     setColumnWidth(2, 150);
     setColumnWidth(3, 300);
     setColumnWidth(4, 30);
