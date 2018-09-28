@@ -19,20 +19,10 @@
 #include "anymap.h"
 #include "types.h"
 #include "breakpoints.h"
+#include "callStack.h"
 
 namespace Core
 {
-
-struct CallStackEntry
-{
-    CallStackEntry(Location loc, int le) :
-        location(std::move(loc)),
-        level(le) {}
-    Location    location;
-    int level;
-};
-
-using CallStack = std::vector<CallStackEntry>;
 
 class State
 {

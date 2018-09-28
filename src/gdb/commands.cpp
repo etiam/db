@@ -91,6 +91,7 @@ void
 Commands::updateCallStack()
 {
     m_controller->executeCommand("stack-list-frames", Handlers::stacklistframes);
+    m_controller->executeCommand("stack-info-frame", Handlers::stackinfoframe);
 }
 
 void

@@ -82,7 +82,7 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
 
                 auto fullname = boost::any_cast<char *>(entry.at("fullname"));
                 auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));
-                callstack.emplace_back(Core::Location({func, fullname, line}), level);
+                callstack.entries().emplace_back(Core::Location({func, fullname, line}), level);
             }
         }
 

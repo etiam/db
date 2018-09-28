@@ -6,6 +6,7 @@ db_SOURCES               +=                                                     
                                                                                 \
                             src/gdb/handlers/stopped.cpp                        \
                             src/gdb/handlers/stacklistframes.cpp                \
+                            src/gdb/handlers/stackinfoframe.cpp                 \
                             src/gdb/handlers/threadgroupstarted.cpp             \
                             src/gdb/handlers/running.cpp                        \
                             src/gdb/handlers/execnext.cpp                       \

@@ -20,6 +20,7 @@
 #include "core/signals.h"
 #include "core/global.h"
 #include "core/state.h"
+#include "core/utils.h"
 
 #include "callStackItemModel.h"
 #include "callStack.h"
@@ -70,9 +71,15 @@ CallStack::onCallStackUpdated()
     // clear all rows from model
     m_model->removeRows(0, m_model->rowCount());
 
+    auto &callstack = Core::state()->callStack();
+    auto currentframe = callstack.currentFrame();
+
     // populate model from call stack data
-    for (const auto &stackline : Core::state()->callStack())
+    for (auto &&entry : Core::enumerate(callstack.entries()))
     {
+        auto index = std::get<0>(entry);
+        auto stackline = std::get<1>(entry);
+
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);
 
@@ -80,20 +87,26 @@ CallStack::onCallStackUpdated()
         QString filename = fileinfo.fileName() + ", line " + QString::number(stackline.location.row);
 
         // draw icon indicating breakpoint status in first column
-        m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
+        if (index == currentframe)
+            m_model->setData(m_model->index(rowcount, 0), QIcon(":/img/currentline"), Qt::DecorationRole);
 
         m_model->setData(m_model->index(rowcount, 1), stackline.level);
         m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(stackline.location.function));
         m_model->setData(m_model->index(rowcount, 3), filename);
     }
 
-    setCurrentIndex(indexAt(QPoint(0, 0)));
+    setCurrentIndex(model()->index(currentframe, 0));
 }
 
 void
 CallStack::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    // do nothing
+    const auto row = indexAt(event->pos()).row();
+
+    auto &callstack = Core::state()->callStack();
+    callstack.setCurrentFrame(row);
+
+    Core::Signals::callStackUpdated.emit();
 }
 
 void
@@ -128,7 +141,7 @@ CallStack::keyPressEvent(QKeyEvent *event)
 void
 CallStack::loadSourceAtRow(int row)
 {
-    const auto &stack = Core::state()->callStack();
+    const auto &stack = Core::state()->callStack().entries();
 
     // bounds check
     if (row <= stack.size())

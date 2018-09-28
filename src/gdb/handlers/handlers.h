@@ -31,6 +31,9 @@ Controller::HandlerReturn stopped(const Result &result, int token, boost::any da
 // handle stack-list-frames response
 Controller::HandlerReturn stacklistframes(const Result &result, int token, boost::any data);
 
+// handle stack-info-frame response
+Controller::HandlerReturn stackinfoframe(const Result &result, int token, boost::any data);
+
 Controller::HandlerReturn threadgroupstarted(const Result &result, int token, boost::any data);
 
 // handle result of info line console command
