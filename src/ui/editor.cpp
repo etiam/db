@@ -386,17 +386,13 @@ Editor::loadFile(const QString &filename)
 void
 Editor::highlightLocation(const Core::Location &location)
 {
+    std::cout << "FUCKFUCK" << std::endl;
+    std::cout << location << std::endl;
+
     if (getNumLines() > location.row)
     {
-        auto row = m_impl->executeJavaScript(QString("editor.getCursorPosition().row")).toInt() + 1;
-        auto col=  m_impl->executeJavaScript(QString("editor.getCursorPosition().col")).toInt() + 1;
-
-        m_impl->executeJavaScript(QString("unhighlightlast()"));
+        m_impl->executeJavaScript(QString("unhighlightcurrentline()"));
         m_impl->executeJavaScript(QString("highlightline(%1)").arg(location.row-1));
-
-        setCursorPosition(1, location.row);
-
-        m_impl->executeJavaScript(QString("editor.moveCursorTo(%1, %2)").arg(row-1).arg(col-1));
     }
 
     m_currentLocation = location;

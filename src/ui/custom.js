@@ -14,19 +14,22 @@ function property(param, value)
 
 // the number of lines in the document
 property("lines", 1);
+
+// the size in pixels of a character in the editor
 property("charheight", editor.renderer.characterHeight);
-property("currentlinemarker", ace.require('ace/range').Range);
 
 var Range = ace.require('ace/range').Range;
 var currmark;
 
+// highlight a line in the editor
 function highlightline(row)
 {
     var r = new Range(row, 0,row, 1); 
     currmark = editor.session.addMarker(r, "current-line-marker", "fullLine");
 }
 
-function unhighlightlast()
+// unhighlight the last line highlighted by highlightline
+function unhighlightcurrentline()
 {
     if (currmark != null) 
     {

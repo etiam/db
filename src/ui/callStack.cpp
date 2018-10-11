@@ -149,6 +149,7 @@ CallStack::loadSourceAtRow(int row)
         const auto location = stack[row].location;
 
         Core::Signals::loadEditorSource.emit(location.filename);
+        Core::Signals::highlightLocation.emit(location);
         Core::Signals::setCursorLocation.emit(location);
     }
 }

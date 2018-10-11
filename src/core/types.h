@@ -13,6 +13,7 @@
 #endif
 
 #include <string>
+#include <iostream>
 
 namespace Core
 {
@@ -28,6 +29,13 @@ struct Location
         return other.function == function && other.filename == filename && other.row == row;
     }
 };
+
+inline
+std::ostream &
+operator <<(std::ostream &out, const Location &location)
+{
+    return out << "(" << location.function << ", " << location.filename << ", " << location.row << ")";
+}
 
 }
 
