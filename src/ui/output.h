@@ -35,6 +35,7 @@ public Q_SLOTS:
 
 private:
     void trim();
+    void onDebuggerStateUpdated();
 
     // TODO : get these from config file
     unsigned int m_maxScrollbackSize = 10000;

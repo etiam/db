@@ -35,6 +35,7 @@ class BreakPoints : public QTreeView
 
   private:
     void onBreakPointsUpdated();
+    void onDebuggerStateUpdated();
 
     BreakPointsItemModel * m_model;
 };

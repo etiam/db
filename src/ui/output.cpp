@@ -12,6 +12,10 @@
 #include <iostream>
 #include <thread>
 
+#include "core/global.h"
+#include "core/state.h"
+#include "core/signals.h"
+
 #include <QScrollBar>
 #include <QFontDatabase>
 #include <QTimer>
@@ -45,6 +49,9 @@ Output::Output(QWidget *parent) :
     m_trimTimer->setInterval(500);
     m_trimTimer->start();
     connect(m_trimTimer, &QTimer::timeout, [this]() { trim();});
+
+    // connect signal handlers
+    Core::Signals::debuggerStateUpdated.connect(this, &Output::onDebuggerStateUpdated);
 }
 
 void
@@ -96,6 +103,27 @@ Output::trim()
 
         // scroll to bottom of text
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+    }
+}
+
+void
+Output::onDebuggerStateUpdated()
+{
+    const auto state = Core::state()->debuggerState();
+
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            break;
+
+        default:
+            break;
     }
 }
 

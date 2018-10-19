@@ -62,7 +62,9 @@ CallStack::CallStack(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
+    // connect signal handlers
     Core::Signals::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
+    Core::Signals::debuggerStateUpdated.connect(this, &CallStack::onDebuggerStateUpdated);
 }
 
 void
@@ -151,6 +153,28 @@ CallStack::loadSourceAtRow(int row)
         Core::Signals::loadEditorSource.emit(location.filename);
         Core::Signals::highlightLocation.emit(location);
         Core::Signals::setCursorLocation.emit(location);
+    }
+}
+
+
+void
+CallStack::onDebuggerStateUpdated()
+{
+    const auto state = Core::state()->debuggerState();
+
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            break;
+
+        default:
+            break;
     }
 }
 

@@ -12,9 +12,12 @@
 #include <QVBoxLayout>
 #include <QTimer>
 
+#include "core/global.h"
+#include "core/signals.h"
+
 #include "output.h"
 #include "consoleInput.h"
-#include <ui/gdbConsole.h>
+#include "gdbConsole.h"
 
 namespace Ui
 {
@@ -41,6 +44,8 @@ GdbConsole::GdbConsole(QWidget *parent, bool editable) :
     layout->addWidget(m_lineedit);
 
     setLayout(layout);
+
+    Core::Signals::debuggerStateUpdated.connect(this, &GdbConsole::onDebuggerStateUpdated);
 }
 
 void
@@ -54,6 +59,29 @@ GdbConsole::focusNextPrevChild(bool next)
 {
     // prevent focus from leaving console input widget
     return false;
+}
+
+void
+GdbConsole::onDebuggerStateUpdated()
+{
+    const auto state = Core::state()->debuggerState();
+
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            m_output->setDisabled(false);
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            m_output->setDisabled(true);
+            break;
+
+        default:
+            break;
+    }
 }
 
 }

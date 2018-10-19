@@ -36,6 +36,9 @@ protected:
     bool focusNextPrevChild(bool next) override;
 
 private:
+    // signal handlers
+    void onDebuggerStateUpdated();
+
     Output * m_output;
     ConsoleInput * m_lineedit;
 };

@@ -33,7 +33,7 @@ namespace Ui
 class MyWebPage : public QWebPage
 {
   public:
-    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) {};
+    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) { };
 
   protected:
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
@@ -138,7 +138,7 @@ Editor::Editor(QMainWindow *parent) :
     m_impl->executeJavaScript(QString("editor.setOptions({ fontFamily: \"%1\" })").arg(fontname));
 
     // don't display the cursor
-//    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
+    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
 
     // don't highlight active line/gutter
     m_impl->executeJavaScript("editor.setOptions({ highlightActiveLine: false })");
@@ -152,7 +152,7 @@ Editor::Editor(QMainWindow *parent) :
 
     qRegisterMetaType<Core::Location>("Location");
 
-    // setup signal handlers
+    // connect signal handlers
     Core::Signals::loadEditorSource.connect([this](const std::string &f)
     {
         QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(f)));
@@ -172,6 +172,8 @@ Editor::Editor(QMainWindow *parent) :
     {
         QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, 1), Q_ARG(int, l.row));
     });
+
+    Core::Signals::debuggerStateUpdated.connect(this, &Editor::onDebuggerStateUpdated);
 }
 
 Editor::~Editor()
@@ -424,6 +426,29 @@ Editor::updateGutterMarker(const Core::Location &location)
     }
 
     m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(location.row-1).arg(QString::fromStdString(klass)));
+}
+
+void
+Editor::onDebuggerStateUpdated()
+{
+    const auto state = Core::state()->debuggerState();
+
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            m_impl->executeJavaScript("editor.container.style.opacity=1.0");
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            m_impl->executeJavaScript("editor.container.style.opacity=0.8");
+            break;
+
+        default:
+            break;
+    }
 }
 
 }

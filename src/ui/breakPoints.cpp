@@ -64,7 +64,21 @@ BreakPoints::BreakPoints(QWidget *parent) :
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
+    // connect signal handlers
     Core::Signals::breakPointsUpdated.connect(this, &BreakPoints::onBreakPointsUpdated);
+    Core::Signals::debuggerStateUpdated.connect(this, &BreakPoints::onDebuggerStateUpdated);
+}
+
+void
+BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
+{
+}
+
+void
+BreakPoints::mousePressEvent(QMouseEvent *event)
+{
+    const auto index = indexAt(event->pos());
+    selectionModel()->select(index.sibling(index.row(), 3), QItemSelectionModel::ClearAndSelect);
 }
 
 void
@@ -96,15 +110,24 @@ BreakPoints::onBreakPointsUpdated()
 }
 
 void
-BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
+BreakPoints::onDebuggerStateUpdated()
 {
-}
+    const auto state = Core::state()->debuggerState();
 
-void
-BreakPoints::mousePressEvent(QMouseEvent *event)
-{
-    const auto index = indexAt(event->pos());
-    selectionModel()->select(index.sibling(index.row(), 3), QItemSelectionModel::ClearAndSelect);
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            break;
+
+        default:
+            break;
+    }
 }
 
 } // namespace Ui

@@ -73,6 +73,8 @@ private Q_SLOTS:
     void updateGutterMarker(const Core::Location &location);
 
 private:
+    void onDebuggerStateUpdated();
+
     std::unique_ptr<EditorImpl> m_impl;
     Core::Location m_currentLocation;
 };

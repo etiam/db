@@ -38,6 +38,7 @@ protected:
 
 private:
     void loadSourceAtRow(int row);
+    void onDebuggerStateUpdated();
 
     CallStackItemModel * m_model;
 };
