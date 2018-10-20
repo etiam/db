@@ -388,9 +388,6 @@ Editor::loadFile(const QString &filename)
 void
 Editor::highlightLocation(const Core::Location &location)
 {
-    std::cout << "FUCKFUCK" << std::endl;
-    std::cout << location << std::endl;
-
     if (getNumLines() > location.row)
     {
         m_impl->executeJavaScript(QString("unhighlightcurrentline()"));

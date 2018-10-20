@@ -105,9 +105,7 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
 {
     const auto row = indexAt(event->pos()).row();
 
-    auto &callstack = Core::state()->callStack();
-    callstack.setCurrentFrame(row);
-
+    Core::state()->callStack().setCurrentFrame(row);
     Core::Signals::callStackUpdated.emit();
 }
 
@@ -125,6 +123,7 @@ CallStack::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key())
     {
+        // move up or down then load the stack frame of the moved to row
         case Qt::Key_Up:
         case Qt::Key_Down:
             {
@@ -134,6 +133,17 @@ CallStack::keyPressEvent(QKeyEvent *event)
             loadSourceAtRow(row);
             break;
             }
+
+        // make the stack frame at the current row the current frame
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        case Qt::Key_Space:
+        {
+            const auto row = currentIndex().row();
+            Core::state()->callStack().setCurrentFrame(row);
+            Core::Signals::callStackUpdated.emit();
+            break;
+        }
 
         default:
             QTreeView::keyPressEvent(event);
