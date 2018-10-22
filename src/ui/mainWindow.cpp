@@ -95,14 +95,14 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
-    Core::Signals::loadEditorSource.connect([this](const std::string &t)
-    {
-        QMetaObject::invokeMethod(this, "onLoadEditorSource", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
-    });
-
     Core::Signals::requestQuit.connect([this]()
     {
         QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
+    });
+
+    Core::Signals::loadEditorSource.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(this, "onLoadEditorSource", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
     Core::Signals::debuggerStateUpdated.connect([this]()
@@ -360,12 +360,12 @@ MainWindow::createHotkeys()
 // signal handlers
 
 void
-MainWindow::onLoadEditorSource(const std::string &filename)
+MainWindow::onLoadEditorSource(const QString &filename)
 {
-    QFileInfo checkfile(QString::fromStdString(filename));
+    QFileInfo checkfile(filename);
     if (checkfile.exists() && checkfile.isFile())
     {
-        setWindowTitle("db " + QString::fromStdString(filename));
+        setWindowTitle("db " + filename);
     }
 }
 

@@ -72,7 +72,7 @@ protected:
 
 private Q_SLOTS:
     void quit();
-    void onLoadEditorSource(const std::string &filename);
+    void onLoadEditorSource(const QString &filename);
     void onDebuggerStateUpdated();
 
 private:

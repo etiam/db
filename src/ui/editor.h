@@ -70,7 +70,7 @@ private:
     Core::Location m_currentLocation;
 
 private Q_SLOTS:
-    void loadFile(const QString &filename);
+    void onLoadEditorSource(const QString &filename);
     void highlightLocation(const Core::Location &location);
     void setCursorPosition(int col, int row);
     void onDebuggerStateUpdated();

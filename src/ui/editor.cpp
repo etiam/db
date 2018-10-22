@@ -155,7 +155,7 @@ Editor::Editor(QMainWindow *parent) :
     // connect signal handlers
     Core::Signals::loadEditorSource.connect([this](const std::string &f)
     {
-        QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(f)));
+        QMetaObject::invokeMethod(this, "onLoadEditorSource", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(f)));
     });
 
     Core::Signals::updateGutterMarker.connect([this](const Core::Location &l)
@@ -388,7 +388,7 @@ Editor::onDebuggerStateUpdated()
 // private slots
 
 void
-Editor::loadFile(const QString &filename)
+Editor::onLoadEditorSource(const QString &filename)
 {
     // read file into editor
     QFileInfo checkfile(filename);
