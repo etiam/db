@@ -53,6 +53,9 @@ public Q_SLOTS:
     void onCursorMoved(int x, int y);
     void onMouseMoved(int index);
 
+protected:
+    void enterEvent(QEvent *event) override;
+
 private:
     QString getLineText(int row) const;
     int getNumLines() const;

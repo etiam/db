@@ -293,6 +293,18 @@ Editor::onMouseMoved(int index)
 //    std::cout << index << std::endl;
 }
 
+void
+Editor::enterEvent(QEvent *event)
+{
+    // give qt editor widget focus
+    setFocus();
+
+    // give ace editor focus
+    m_impl->executeJavaScript("editor.focus()");
+
+    QWidget::enterEvent(event);
+}
+
 // private functions
 
 QString

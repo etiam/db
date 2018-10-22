@@ -26,6 +26,7 @@ namespace Ui
 {
 
 class Editor;
+class TabWidget;
 class Output;
 class ColoredOutput;
 class GdbConsole;
@@ -79,7 +80,7 @@ private Q_SLOTS:
 private:
     Editor * m_editor;
 
-    QTabWidget * m_bottomTabWidget;
+    TabWidget * m_bottomTabWidget;
 
     GdbConsole * m_gdbConsoleTab;
     Output * m_programOutputTab;

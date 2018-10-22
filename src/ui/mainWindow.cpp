@@ -32,6 +32,7 @@
 #include "gdb/commands.h"
 
 #include "editor.h"
+#include "tabWidget.h"
 #include "output.h"
 #include "coloredOutput.h"
 #include "gdbConsole.h"
@@ -202,7 +203,7 @@ MainWindow::createDocks()
     bottomdock->setTitleBarWidget(titlewidget);
 
     // tabs window
-    m_bottomTabWidget = new QTabWidget(this);
+    m_bottomTabWidget = new TabWidget(this);
     m_bottomTabWidget->setObjectName("tabwidget");
     m_bottomTabWidget->setTabsClosable(true);
     m_bottomTabWidget->setMovable(true);
