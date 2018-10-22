@@ -65,8 +65,15 @@ BreakPoints::BreakPoints(QWidget *parent) :
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
     // connect signal handlers
-    Core::Signals::breakPointsUpdated.connect(this, &BreakPoints::onBreakPointsUpdated);
-    Core::Signals::debuggerStateUpdated.connect(this, &BreakPoints::onDebuggerStateUpdated);
+    Core::Signals::breakPointsUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onBreakPointsUpdated", Qt::QueuedConnection);
+    });
+
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
+    });
 }
 
 void

@@ -21,23 +21,24 @@ namespace Ui
 
 class BreakPointsItemModel;
 
-class BreakPoints : public QTreeView
+class BreakPoints: public QTreeView
 {
-  Q_OBJECT
+Q_OBJECT
 
-  public:
+public:
     BreakPoints(QWidget *parent = nullptr);
     ~BreakPoints() = default;
 
-  protected:
+protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
 
-  private:
+private:
+    BreakPointsItemModel * m_model;
+
+private Q_SLOTS:
     void onBreakPointsUpdated();
     void onDebuggerStateUpdated();
-
-    BreakPointsItemModel * m_model;
 };
 
 } // namespace Ui

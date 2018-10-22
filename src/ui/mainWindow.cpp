@@ -70,9 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createStatusbar();
 
     // signal handlers
-    Core::Signals::loadEditorSource.connect(this, &MainWindow::onLoadFileSignal);
-    Core::Signals::debuggerStateUpdated.connect(this, &MainWindow::onDebuggerStateUpdated);
-
     Core::Signals::appendConsoleText.connect([this](const std::string &t)
     {
         QMetaObject::invokeMethod(m_gdbConsoleTab, "appendText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
@@ -98,9 +95,19 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(statusBar(), "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
     });
 
+    Core::Signals::loadEditorSource.connect([this](const std::string &t)
+    {
+        QMetaObject::invokeMethod(this, "onLoadEditorSource", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(t)));
+    });
+
     Core::Signals::requestQuit.connect([this]()
     {
         QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
+    });
+
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
     });
 }
 
@@ -353,7 +360,7 @@ MainWindow::createHotkeys()
 // signal handlers
 
 void
-MainWindow::onLoadFileSignal(const std::string &filename)
+MainWindow::onLoadEditorSource(const std::string &filename)
 {
     QFileInfo checkfile(QString::fromStdString(filename));
     if (checkfile.exists() && checkfile.isFile())
@@ -396,7 +403,7 @@ MainWindow::showEvent(QShowEvent* event)
 
     if (first)
     {
-        Core::Signals::UiRealized.emit();
+        Core::Signals::uiRealized.emit();
         first = false;
     }
 }

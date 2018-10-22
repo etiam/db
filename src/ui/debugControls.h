@@ -21,17 +21,16 @@ namespace Ui
 
 class MainWindow;
 
-class DebugControls : public QToolBar
+class DebugControls: public QToolBar
 {
-  public:
-    DebugControls(MainWindow *parent=0);
+Q_OBJECT
+
+public:
+    DebugControls(MainWindow *parent = 0);
     ~DebugControls() = default;
 
-  private:
+private:
     void run();
-
-    // signal handlers
-    void onDebuggerStateUpdated();
 
     QAction * m_runAct;
     QAction * m_pauseAct;
@@ -39,6 +38,9 @@ class DebugControls : public QToolBar
     QAction * m_stepoverAct;
     QAction * m_stepintoAct;
     QAction * m_stepoutAct;
+
+private Q_SLOTS:
+    void onDebuggerStateUpdated();
 };
 
 } // namespace Ui

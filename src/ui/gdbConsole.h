@@ -37,11 +37,11 @@ protected:
     void enterEvent(QEvent *event) override;
 
 private:
-    // signal handlers
-    void onDebuggerStateUpdated();
-
     Output * m_output;
     ConsoleInput * m_lineedit;
+
+private Q_SLOTS:
+    void onDebuggerStateUpdated();
 };
 
 }

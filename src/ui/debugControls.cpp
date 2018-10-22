@@ -85,7 +85,11 @@ DebugControls::DebugControls(MainWindow *parent) :
     // set initial state
     onDebuggerStateUpdated();
 
-    Core::Signals::debuggerStateUpdated.connect(this, &DebugControls::onDebuggerStateUpdated);
+    // connect signal handlers
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
+    });
 }
 
 void

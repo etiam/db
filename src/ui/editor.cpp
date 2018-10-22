@@ -173,7 +173,10 @@ Editor::Editor(QMainWindow *parent) :
         QMetaObject::invokeMethod(this, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, 1), Q_ARG(int, l.row));
     });
 
-    Core::Signals::debuggerStateUpdated.connect(this, &Editor::onDebuggerStateUpdated);
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
+    });
 }
 
 Editor::~Editor()

@@ -71,7 +71,7 @@ Master::gdbCommands()
 Master::Master() :
     m_gdbCommands(std::make_unique<Gdb::Commands>())
 {
-    Core::Signals::UiRealized.connect([this]() { m_gdbCommands->executeCommand("gdb-version", Handlers::gdbversion ); });
+    Core::Signals::uiRealized.connect([this]() { m_gdbCommands->executeCommand("gdb-version", Handlers::gdbversion ); });
 }
 
 Master::~Master()

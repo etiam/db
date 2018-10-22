@@ -33,8 +33,10 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_callStack.cpp                    \
                             src/ui/moc_breakPoints.cpp                  \
                                                                         \
-                            src/ui/moc_breakPointsItemModel.cpp         \
                             src/ui/moc_callStackItemModel.cpp           \
+                            src/ui/moc_breakPointsItemModel.cpp         \
+                                                                        \
+                            src/ui/moc_debugControls.cpp                \
                                                                         \
                             src/ui/qrc_editor.cpp
 

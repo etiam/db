@@ -63,8 +63,15 @@ CallStack::CallStack(QWidget *parent) :
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
     // connect signal handlers
-    Core::Signals::callStackUpdated.connect(this, &CallStack::onCallStackUpdated);
-    Core::Signals::debuggerStateUpdated.connect(this, &CallStack::onDebuggerStateUpdated);
+    Core::Signals::callStackUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onCallStackUpdated", Qt::QueuedConnection);
+    });
+
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
+    });
 }
 
 void
@@ -165,7 +172,6 @@ CallStack::loadSourceAtRow(int row)
         Core::Signals::setCursorLocation.emit(location);
     }
 }
-
 
 void
 CallStack::onDebuggerStateUpdated()

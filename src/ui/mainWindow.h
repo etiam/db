@@ -67,15 +67,13 @@ private:
 
     void createHotkeys();
 
-    // signal handlers
-    void onLoadFileSignal(const std::string &filename);
-    void onDebuggerStateUpdated();
-
 protected:
     void showEvent(QShowEvent* event);
 
 private Q_SLOTS:
     void quit();
+    void onLoadEditorSource(const std::string &filename);
+    void onDebuggerStateUpdated();
 
 private:
     Editor * m_editor;

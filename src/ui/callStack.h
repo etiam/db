@@ -29,8 +29,6 @@ public:
     CallStack(QWidget *parent = nullptr);
     ~CallStack() = default;
 
-    void onCallStackUpdated();
-
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -38,9 +36,12 @@ protected:
 
 private:
     void loadSourceAtRow(int row);
-    void onDebuggerStateUpdated();
 
     CallStackItemModel * m_model;
+
+private Q_SLOTS:
+    void onCallStackUpdated();
+    void onDebuggerStateUpdated();
 };
 
 } // namespace Ui

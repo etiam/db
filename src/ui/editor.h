@@ -65,7 +65,6 @@ private:
     void updateGutterMarkers(const QString &filename);
     void showGutter();
     void hideGutter();
-    void onDebuggerStateUpdated();
 
     std::unique_ptr<EditorImpl> m_impl;
     Core::Location m_currentLocation;
@@ -74,6 +73,7 @@ private Q_SLOTS:
     void loadFile(const QString &filename);
     void highlightLocation(const Core::Location &location);
     void setCursorPosition(int col, int row);
+    void onDebuggerStateUpdated();
 
     // update the gutter marker at the current row
     void updateGutterMarker(const Core::Location &location);

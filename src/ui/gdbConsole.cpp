@@ -45,7 +45,11 @@ GdbConsole::GdbConsole(QWidget *parent, bool editable) :
 
     setLayout(layout);
 
-    Core::Signals::debuggerStateUpdated.connect(this, &GdbConsole::onDebuggerStateUpdated);
+    // connect signal handlers
+    Core::Signals::debuggerStateUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onDebuggerStateUpdated", Qt::QueuedConnection);
+    });
 }
 
 void
