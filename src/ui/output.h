@@ -16,18 +16,22 @@
 #include <QTextEdit>
 #include <QString>
 
+#include "tabPage.h"
+
 class QTimer;
 
 namespace Ui
 {
 
-class Output : public QTextEdit
+class Output : public QTextEdit, public TabPage
 {
 Q_OBJECT
 
 public:
     explicit Output(QWidget *parent = nullptr);
     ~Output() = default;
+
+    void setTabFocus() override;
 
 public Q_SLOTS:
     void appendText(const QString &text);

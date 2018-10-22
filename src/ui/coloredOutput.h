@@ -13,6 +13,7 @@
 #endif
 
 #include "output.h"
+#include "tabPage.h"
 
 namespace Ui
 {
@@ -24,6 +25,8 @@ Q_OBJECT
 public:
     explicit ColoredOutput(QWidget *parent = nullptr);
     virtual ~ColoredOutput();
+
+    void setTabFocus() override;
 
 public Q_SLOTS:
     void appendText(const QString &text, const QColor &color);

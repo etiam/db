@@ -55,6 +55,12 @@ Output::Output(QWidget *parent) :
 }
 
 void
+Output::setTabFocus()
+{
+    setFocus();
+}
+
+void
 Output::appendText(const QString &text)
 {
     if (text.length() > m_bufferSize - m_buffer.length())

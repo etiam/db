@@ -14,6 +14,8 @@
 
 #include <QTreeView>
 
+#include "tabPage.h"
+
 class QStandardItemModel;
 
 namespace Ui
@@ -21,13 +23,15 @@ namespace Ui
 
 class CallStackItemModel;
 
-class CallStack : public QTreeView
+class CallStack : public QTreeView, public TabPage
 {
   Q_OBJECT
 
 public:
     CallStack(QWidget *parent = nullptr);
     ~CallStack() = default;
+
+    void setTabFocus() override;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;

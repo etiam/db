@@ -53,6 +53,12 @@ GdbConsole::GdbConsole(QWidget *parent, bool editable) :
 }
 
 void
+GdbConsole::setTabFocus()
+{
+    m_lineedit->setFocus();
+}
+
+void
 GdbConsole::appendText(const QString &text)
 {
     m_output->appendText(text);
@@ -69,7 +75,7 @@ void
 GdbConsole::enterEvent(QEvent *event)
 {
     // give line editor widget focus
-    m_lineedit->setFocus();
+//    m_lineedit->setFocus();
 
     QFrame::enterEvent(event);
 }

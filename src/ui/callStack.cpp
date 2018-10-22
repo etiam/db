@@ -75,6 +75,12 @@ CallStack::CallStack(QWidget *parent) :
 }
 
 void
+CallStack::setTabFocus()
+{
+    setFocus();
+}
+
+void
 CallStack::onCallStackUpdated()
 {
     // clear all rows from model

@@ -14,6 +14,8 @@
 
 #include <QTreeView>
 
+#include "tabPage.h"
+
 class QStandardItemModel;
 
 namespace Ui
@@ -21,13 +23,15 @@ namespace Ui
 
 class BreakPointsItemModel;
 
-class BreakPoints: public QTreeView
+class BreakPoints: public QTreeView, public TabPage
 {
 Q_OBJECT
 
 public:
     BreakPoints(QWidget *parent = nullptr);
     ~BreakPoints() = default;
+
+    void setTabFocus() override;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;

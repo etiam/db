@@ -24,6 +24,12 @@ ColoredOutput::~ColoredOutput()
 }
 
 void
+ColoredOutput::setTabFocus()
+{
+    setFocus();
+}
+
+void
 ColoredOutput::appendText(const QString &text, const QColor &color)
 {
     setTextColor(color);

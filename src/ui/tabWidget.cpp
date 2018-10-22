@@ -10,6 +10,8 @@
 #endif
 
 #include <iostream>
+
+#include "tabPage.h"
 #include "tabWidget.h"
 
 namespace Ui
@@ -24,6 +26,8 @@ void
 TabWidget::enterEvent(QEvent *event)
 {
     // TODO : draw border around tab widget
+
+    dynamic_cast<TabPage*>(currentWidget())->setTabFocus();
 
     QTabWidget::enterEvent(event);
 }

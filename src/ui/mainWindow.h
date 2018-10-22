@@ -78,15 +78,16 @@ private Q_SLOTS:
 private:
     Editor * m_editor;
 
+    DebugControls * m_debugControls;
+
     TabWidget * m_bottomTabWidget;
 
+    // tab widgets
     GdbConsole * m_gdbConsoleTab;
     Output * m_programOutputTab;
     ColoredOutput * m_consoleOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;
-
-    DebugControls * m_debugControls;
 
     QLabel * m_statusIcon;
 

@@ -15,19 +15,23 @@
 
 #include <QFrame>
 
+#include "tabPage.h"
+
 namespace Ui
 {
 
 class Output;
 class ConsoleInput;
 
-class GdbConsole : public QFrame
+class GdbConsole : public QFrame, public TabPage
 {
 Q_OBJECT
 
 public:
     explicit GdbConsole(QWidget *parent = nullptr, bool editable = false);
     ~GdbConsole() = default;
+
+    void setTabFocus() override;
 
 public Q_SLOTS:
     void appendText(const QString &text);

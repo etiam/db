@@ -77,6 +77,12 @@ BreakPoints::BreakPoints(QWidget *parent) :
 }
 
 void
+BreakPoints::setTabFocus()
+{
+    setFocus();
+}
+
+void
 BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
 {
 }
