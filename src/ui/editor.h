@@ -60,9 +60,12 @@ private:
     int getCharacterHeight() const;
     void clearGutterMarkers();
     void updateGutterMarkers(const QString &filename);
-
     void showGutter();
     void hideGutter();
+    void onDebuggerStateUpdated();
+
+    std::unique_ptr<EditorImpl> m_impl;
+    Core::Location m_currentLocation;
 
 private Q_SLOTS:
     void loadFile(const QString &filename);
@@ -71,12 +74,6 @@ private Q_SLOTS:
 
     // update the gutter marker at the current row
     void updateGutterMarker(const Core::Location &location);
-
-private:
-    void onDebuggerStateUpdated();
-
-    std::unique_ptr<EditorImpl> m_impl;
-    Core::Location m_currentLocation;
 };
 
 }

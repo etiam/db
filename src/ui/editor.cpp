@@ -347,6 +347,29 @@ Editor::hideGutter()
     m_impl->executeJavaScript(QString("editor.renderer.setShowGutter(false)"));
 }
 
+void
+Editor::onDebuggerStateUpdated()
+{
+    const auto state = Core::state()->debuggerState();
+
+    switch(state)
+    {
+        case Core::State::Debugger::PAUSED:
+        case Core::State::Debugger::LOADED:
+            setDisabled(false);
+            m_impl->executeJavaScript("editor.container.style.opacity=1.0");
+            break;
+
+        case Core::State::Debugger::RUNNING:
+            setDisabled(true);
+            m_impl->executeJavaScript("editor.container.style.opacity=0.8");
+            break;
+
+        default:
+            break;
+    }
+}
+
 // private slots
 
 void
@@ -423,29 +446,6 @@ Editor::updateGutterMarker(const Core::Location &location)
     }
 
     m_impl->executeJavaScript(QString("editor.getSession().setBreakpoint(%1, \"%2\")").arg(location.row-1).arg(QString::fromStdString(klass)));
-}
-
-void
-Editor::onDebuggerStateUpdated()
-{
-    const auto state = Core::state()->debuggerState();
-
-    switch(state)
-    {
-        case Core::State::Debugger::PAUSED:
-        case Core::State::Debugger::LOADED:
-            setDisabled(false);
-            m_impl->executeJavaScript("editor.container.style.opacity=1.0");
-            break;
-
-        case Core::State::Debugger::RUNNING:
-            setDisabled(true);
-            m_impl->executeJavaScript("editor.container.style.opacity=0.8");
-            break;
-
-        default:
-            break;
-    }
 }
 
 }
