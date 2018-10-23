@@ -15,6 +15,8 @@
 #include <string>
 #include <iostream>
 
+#include <boost/any.hpp>
+
 namespace Core
 {
 
@@ -36,6 +38,19 @@ operator <<(std::ostream &out, const Location &location)
 {
     return out << "(" << location.function << ", " << location.filename << ", " << location.row << ")";
 }
+
+struct Variable
+{
+    Variable(const std::string &name_, const std::string &type_, const boost::any &value_) :
+        name(name_),
+        type(type_),
+        value(value_) {}
+    std::string name;
+    std::string type;
+    boost::any value;
+};
+
+using Variables = std::vector<Variable>;
 
 struct CallStackEntry
 {

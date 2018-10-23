@@ -5,7 +5,8 @@ db_SOURCES               +=                                                     
                             src/gdb/handlers/output.cpp                         \
                                                                                 \
                             src/gdb/handlers/stacklistframes.cpp                \
-                            src/gdb/handlers/stacklistvariables.cpp             \
+                            src/gdb/handlers/stacklistvariablessimple.cpp       \
+                            src/gdb/handlers/stacklistvariablesall.cpp          \
                             src/gdb/handlers/stackinfoframe.cpp                 \
                                                                                 \
                             src/gdb/handlers/threadgroupstarted.cpp             \

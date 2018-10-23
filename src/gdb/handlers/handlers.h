@@ -28,8 +28,11 @@ namespace Handlers
 // execution has stopped due to a breakpoint, signal, etc
 Controller::HandlerReturn stopped(const Result &result, int token, boost::any data);
 
-// handle stack-list-variables response
-Controller::HandlerReturn stacklistvariables(const Result &result, int token, boost::any data);
+// handle stack-list-variables --simple-values response
+Controller::HandlerReturn stacklistvariablessimple(const Result &result, int token, boost::any data);
+
+// handle stack-list-variables --all-values response
+Controller::HandlerReturn stacklistvariablesall(const Result &result, int token, boost::any data);
 
 // handle stack-list-frames response
 Controller::HandlerReturn stacklistframes(const Result &result, int token, boost::any data);

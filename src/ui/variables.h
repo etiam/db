@@ -31,15 +31,13 @@ public:
 
     void setTabFocus() override;
 
-protected:
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
-
 private:
+    int m_currentFrame = 0;
     VariablesItemModel * m_model;
 
 private Q_SLOTS:
+    void onCallStackUpdated();
+    void onVariablesUpdated();
     void onDebuggerStateUpdated();
 };
 

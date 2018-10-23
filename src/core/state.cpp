@@ -33,6 +33,12 @@ State::callStack()
     return m_callStack;
 }
 
+Variables &
+State::variables()
+{
+    return m_variables;
+}
+
 int
 State::currentStackFrame() const
 {

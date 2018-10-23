@@ -54,7 +54,7 @@ processexited(const Gdb::Result &result, int token, boost::any data)
             {
                 auto pid = Core::state()->vars().get<int>("pid");
 
-                // if response msg pid matched current process pid set state to LOADED
+                // if response message pid matched current process pid set state to LOADED
                 if (payloadpid == pid)
                 {
                     Core::state()->setDebuggerState(Core::State::Debugger::LOADED);

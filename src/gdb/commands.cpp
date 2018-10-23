@@ -18,7 +18,9 @@
 #include "core/state.h"
 #include "core/signals.h"
 
+#include "fmt/format.h"
 #include "handlers/handlers.h"
+
 #include "controller.h"
 #include "commands.h"
 
@@ -102,7 +104,23 @@ Commands::updateCallStack()
 void
 Commands::updateVariables()
 {
-    m_controller->executeCommand("stack-list-variables --all-values", Handlers::stacklistvariables);
+    auto &state = Core::state();
+
+    auto currentframe = state->currentStackFrame();
+//    auto currentthread = state->currentThread();
+    int currentthread = 1;
+
+    state->variables().clear();
+
+    {
+    auto cmd = fmt::format("stack-list-variables --frame {0} --thread {1} --simple-values", currentframe, currentthread);
+    m_controller->executeCommand(cmd, Handlers::stacklistvariablessimple);
+    }
+
+    {
+    auto cmd = fmt::format("stack-list-variables --frame {0} --thread {1} --all-values", currentframe, currentthread);
+    m_controller->executeCommand(cmd, Handlers::stacklistvariablesall);
+    }
 }
 
 void

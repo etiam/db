@@ -37,6 +37,8 @@ Signal<const std::string &> setStatusbarText;
 
 Signal<> callStackUpdated;
 
+Signal<> variablesUpdated;
+
 Signal<> debuggerStateUpdated;
 
 Signal<> breakPointsUpdated;

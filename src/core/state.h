@@ -41,8 +41,8 @@ class State
 
     Breakpoints & breakPoints();
     CallStack & callStack();
+    Variables & variables();
 
-    const Location & currentLocation() const;
     int currentStackFrame() const;
     void setCurrentStackFrame(int level);
 
@@ -56,6 +56,7 @@ class State
 
   private:
     CallStack m_callStack;
+    Variables m_variables;
     AnyMap m_vars;
     Breakpoints m_breakpoints;
     Debugger m_debuggerState = Debugger::NONE;

@@ -142,6 +142,9 @@ extern Signal<> debuggerStateUpdated;
 // emitted when the global callstack is updated
 extern Signal<> callStackUpdated;
 
+// emitted when the global variables list is updated
+extern Signal<> variablesUpdated;
+
 // emitted when the global breakpoint list is updated
 extern Signal<> breakPointsUpdated;
 

@@ -15,6 +15,9 @@
 #include "core/signals.h"
 #include "core/global.h"
 
+#include "gdb/global.h"
+#include "gdb/commands.h"
+
 #include "variablesItemModel.h"
 #include "variables.h"
 
@@ -43,17 +46,28 @@ Variables::Variables(QWidget *parent) :
     setColumnWidth(1, 150);
     setColumnWidth(2, 150);
 
+    // allow column sorting
+    setSortingEnabled(true);
+
     // don't allow columns to be re-ordered
     header()->setSectionsMovable(false);
+
+    // show sort indicator
+    header()->setSortIndicatorShown(true);
 
     // needed for int types in QStandardItemModel
     qRegisterMetaType<QVector<int>>("QVector<int>");
 
     // connect signal handlers
-//    Core::Signals::callStackUpdated.connect([this]()
-//    {
-//        QMetaObject::invokeMethod(this, "onCallStackUpdated", Qt::QueuedConnection);
-//    });
+    Core::Signals::callStackUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onCallStackUpdated", Qt::QueuedConnection);
+    });
+
+    Core::Signals::variablesUpdated.connect([this]()
+    {
+        QMetaObject::invokeMethod(this, "onVariablesUpdated", Qt::QueuedConnection);
+    });
 
     Core::Signals::debuggerStateUpdated.connect([this]()
     {
@@ -68,53 +82,37 @@ Variables::setTabFocus()
 }
 
 void
-Variables::mouseDoubleClickEvent(QMouseEvent *event)
+Variables::onCallStackUpdated()
 {
-//    const auto row = indexAt(event->pos()).row();
-//
-//    Core::state()->callStack().setCurrentFrame(row);
-//    Core::Signals::callStackUpdated.emit();
+    auto currentframe = Core::state()->currentStackFrame();
+
+    if (currentframe != m_currentFrame)
+    {
+        m_currentFrame = currentframe;
+
+        // trigger update of variables from gdb
+        Gdb::commands()->updateVariables();
+    }
 }
 
 void
-Variables::mousePressEvent(QMouseEvent *event)
+Variables::onVariablesUpdated()
 {
-//    const auto row = indexAt(event->pos()).row();
-//    loadSourceAtRow(row);
+    // clear all rows from model
+    m_model->removeRows(0, m_model->rowCount());
 
-    QTreeView::mousePressEvent(event);
-}
+    auto &variables = Core::state()->variables();
 
-void
-Variables::keyPressEvent(QKeyEvent *event)
-{
-//    switch (event->key())
-//    {
-//        // move up or down then load the stack frame of the moved to row
-//        case Qt::Key_Up:
-//        case Qt::Key_Down:
-//            {
-//            QTreeView::keyPressEvent(event);
-//
-//            const auto row = currentIndex().row();
-//            loadSourceAtRow(row);
-//            break;
-//            }
-//
-//        // make the stack frame at the current row the current frame
-//        case Qt::Key_Enter:
-//        case Qt::Key_Return:
-//        case Qt::Key_Space:
-//        {
-//            const auto row = currentIndex().row();
-//            Core::state()->callStack().setCurrentFrame(row);
-//            Core::Signals::callStackUpdated.emit();
-//            break;
-//        }
-//
-//        default:
-//            QTreeView::keyPressEvent(event);
-//    }
+    // populate model from call stack data
+    for (const auto &variable : variables)
+    {
+        auto rowcount = m_model->rowCount();
+        m_model->insertRow(rowcount);
+
+        m_model->setData(m_model->index(rowcount, 0), QString::fromStdString(variable.name));
+        m_model->setData(m_model->index(rowcount, 1), 0);
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(variable.type));
+    }
 }
 
 void
