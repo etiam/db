@@ -22,7 +22,7 @@
 namespace Ui
 {
 
-GdbConsole::GdbConsole(QWidget *parent, bool editable) :
+GdbConsole::GdbConsole(QWidget *parent) :
     QFrame(parent)
 {
     setObjectName("gdb");

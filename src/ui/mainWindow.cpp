@@ -225,7 +225,7 @@ MainWindow::createDocks()
     std::vector<QWidget*> tabs;
 
     // add individual tab widgets
-    m_gdbConsoleTab = new GdbConsole(this, true);
+    m_gdbConsoleTab = new GdbConsole(this);
     m_gdbConsoleTab->setObjectName("Gdb");
     m_gdbConsoleTab->setProperty("tabname", tr("Gdb"));
     tabs.push_back(m_gdbConsoleTab);

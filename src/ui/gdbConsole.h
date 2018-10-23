@@ -28,7 +28,7 @@ class GdbConsole : public QFrame, public TabPage
 Q_OBJECT
 
 public:
-    explicit GdbConsole(QWidget *parent = nullptr, bool editable = false);
+    explicit GdbConsole(QWidget *parent = nullptr);
     ~GdbConsole() = default;
 
     void setTabFocus() override;
