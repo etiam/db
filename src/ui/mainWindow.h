@@ -33,6 +33,7 @@ class GdbConsole;
 class CallStack;
 class DebugControls;
 class BreakPoints;
+class Variables;
 
 class MainWindow : public QMainWindow
 {
@@ -88,6 +89,7 @@ private:
     ColoredOutput * m_consoleOutputTab;
     CallStack * m_callStackTab;
     BreakPoints * m_breakPointsTab;
+    Variables * m_variablesTab;
 
     QLabel * m_statusIcon;
 

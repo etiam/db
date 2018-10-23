@@ -10,6 +10,7 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 
 #include "tabPage.h"
 #include "tabWidget.h"

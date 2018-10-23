@@ -95,6 +95,12 @@ Commands::updateCallStack()
 }
 
 void
+Commands::updateVariables()
+{
+    m_controller->executeCommand("stack-list-variables --all-values", Handlers::stacklistvariables);
+}
+
+void
 Commands::infoAddress(const std::string &function)
 {
     executeConsoleCommand("info address " + function);

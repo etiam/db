@@ -59,6 +59,9 @@ stopped(const Result &result, int token, boost::any data)
 
             // update call stack
             Gdb::commands()->updateCallStack();
+
+            // update variables
+            Gdb::commands()->updateVariables();
         }
     }
 

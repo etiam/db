@@ -1,12 +1,12 @@
 /*
- * callStack.h
+ * variables.h
  *
- *  Created on: Jun 6, 2018
+ *  Created on: Oct 22, 2018
  *      Author: jasonr
  */
 
-#ifndef SRC_UI_CALLSTACK_H_
-#define SRC_UI_CALLSTACK_H_
+#ifndef SRC_UI_VARIABLES_H_
+#define SRC_UI_VARIABLES_H_
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -16,20 +16,18 @@
 
 #include "tabPage.h"
 
-class QStandardItemModel;
-
 namespace Ui
 {
 
-class CallStackItemModel;
+class VariablesItemModel;
 
-class CallStack : public QTreeView, public TabPage
+class Variables : public QTreeView, public TabPage
 {
   Q_OBJECT
 
 public:
-    explicit CallStack(QWidget *parent = nullptr);
-    ~CallStack() = default;
+    explicit Variables(QWidget *parent = nullptr);
+    ~Variables() = default;
 
     void setTabFocus() override;
 
@@ -39,15 +37,12 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    void loadSourceAtRow(int row);
-
-    CallStackItemModel * m_model;
+    VariablesItemModel * m_model;
 
 private Q_SLOTS:
-    void onCallStackUpdated();
     void onDebuggerStateUpdated();
 };
 
 } // namespace Ui
 
-#endif // SRC_UI_CALLSTACK_H_
+#endif // SRC_UI_VARIABLES_H_

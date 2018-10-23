@@ -11,11 +11,13 @@ db_SOURCES               +=                                             \
                             src/ui/gdbConsole.cpp                       \
                             src/ui/consoleInput.cpp                     \
                                                                         \
+                            src/ui/variables.cpp                        \
                             src/ui/callStack.cpp                        \
                             src/ui/breakPoints.cpp                      \
                                                                         \
                             src/ui/callStackItemModel.cpp               \
                             src/ui/breakPointsItemModel.cpp             \
+                            src/ui/variablesItemModel.cpp               \
                                                                         \
                             src/ui/debugControls.cpp                    \
                             src/ui/main.cpp
@@ -30,11 +32,13 @@ nodist_db_SOURCES        +=                                             \
                             src/ui/moc_gdbConsole.cpp                   \
                             src/ui/moc_consoleInput.cpp                 \
                                                                         \
+                            src/ui/moc_variables.cpp                    \
                             src/ui/moc_callStack.cpp                    \
                             src/ui/moc_breakPoints.cpp                  \
                                                                         \
                             src/ui/moc_callStackItemModel.cpp           \
                             src/ui/moc_breakPointsItemModel.cpp         \
+                            src/ui/moc_variablesItemModel.cpp           \
                                                                         \
                             src/ui/moc_debugControls.cpp                \
                                                                         \

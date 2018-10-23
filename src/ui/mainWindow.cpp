@@ -38,6 +38,7 @@
 #include "gdbConsole.h"
 #include "callStack.h"
 #include "breakPoints.h"
+#include "variables.h"
 #include "debugControls.h"
 #include "mainWindow.h"
 
@@ -250,10 +251,15 @@ MainWindow::createDocks()
     m_consoleOutputTab->setProperty("tabname", tr("Console"));
     tabs.push_back(m_consoleOutputTab);
 
+    m_variablesTab = new Variables(this);
+    m_variablesTab->setObjectName(tr("Variables"));
+    m_variablesTab->setProperty("tabname", m_variablesTab->objectName());
+    tabs.push_back(m_variablesTab);
+
     // sort tabs by settings index value
     std::sort(std::begin(tabs), std::end(tabs), [&](QWidget *a, QWidget *b) { return settingsIndex(a) < settingsIndex(b); });
 
-    // add previously created tab widgets
+    // add created tab widgets
     for (const auto &tab : tabs)
     {
         if (settingsIndex(tab) != -1)
@@ -329,6 +335,7 @@ MainWindow::createViewMenu()
     addAction(m_programOutputTab);
     addAction(m_callStackTab);
     addAction(m_breakPointsTab);
+    addAction(m_variablesTab);
 }
 
 void

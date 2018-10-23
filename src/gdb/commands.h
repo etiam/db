@@ -45,6 +45,9 @@ class Commands
     // requests list of source files from gdb
     void    getSourceFiles();
 
+    // requests list of current variables from gdb
+    void    updateVariables();
+
     // requests current call stack from gdb
     void    updateCallStack();
 
