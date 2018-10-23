@@ -37,6 +37,17 @@ operator <<(std::ostream &out, const Location &location)
     return out << "(" << location.function << ", " << location.filename << ", " << location.row << ")";
 }
 
+struct CallStackEntry
+{
+    CallStackEntry(Location loc, int le) :
+        location(std::move(loc)),
+        level(le) {}
+    Location location;
+    int level;
+};
+
+using CallStack = std::vector<CallStackEntry>;
+
 }
 
 #endif // SRC_CORE_TYPES_H_

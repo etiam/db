@@ -152,6 +152,9 @@ AC_SUBST(CXXFLAGS)
 # keywords which would conflict 
 AC_DEFINE(QT_NO_KEYWORDS,,[do not use qt keywords])
 
+# enable header only fmtlib
+AC_DEFINE(FMT_HEADER_ONLY,,[use header only fmtlib])
+
 # processor type
 if test "x$host_cpu" == xx86_64; then
   AC_DEFINE(X86_64,,[64 bit arch])

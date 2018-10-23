@@ -90,7 +90,12 @@ Commands::getFunctionNames()
 void
 Commands::updateCallStack()
 {
+    Core::state()->callStack().clear();
+
+    // get all stack frame data
     m_controller->executeCommand("stack-list-frames", Handlers::stacklistframes);
+
+    // get the current stack frame
     m_controller->executeCommand("stack-info-frame", Handlers::stackinfoframe);
 }
 

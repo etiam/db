@@ -19,7 +19,6 @@
 #include "anymap.h"
 #include "types.h"
 #include "breakpoints.h"
-#include "callStack.h"
 
 namespace Core
 {
@@ -44,11 +43,11 @@ class State
     CallStack & callStack();
 
     const Location & currentLocation() const;
+    int currentStackFrame() const;
+    void setCurrentStackFrame(int level);
 
     void setDebuggerState(Debugger state);
     Debugger debuggerState() const;
-
-    void setCallStack(const CallStack &callstack);
 
     std::vector<std::string> & sourceFiles();
 
@@ -60,6 +59,7 @@ class State
     AnyMap m_vars;
     Breakpoints m_breakpoints;
     Debugger m_debuggerState = Debugger::NONE;
+    int m_currentStackFrame = 0;
 
     std::vector<std::string> m_sourceFiles;
     Ast::Data m_data;

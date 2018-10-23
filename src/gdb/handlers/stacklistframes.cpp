@@ -62,14 +62,10 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
      'stream': 'stdout',
      'token': 16,
      'type': 'result'}
-
     */
 
     if (match)
     {
-        Core::CallStack callstack;
-
-        // build callstack from results
         const auto &dict = result.payload.dict;
         if (dict.find("stack") != std::end(dict))
         {
@@ -88,12 +84,11 @@ stacklistframes(const Gdb::Result &result, int token, boost::any data)
                 if (entry.find("line") != std::end(entry))
                     line = std::stoi(boost::any_cast<char *>(entry.at("line")));
 
-                callstack.entries().emplace_back(Core::Location({func, fullname, line}), level);
+                Core::state()->callStack().emplace_back(Core::Location({func, fullname, line}), level);
             }
         }
 
-        // set the callstack global state
-        Core::state()->setCallStack(callstack);
+        Core::Signals::callStackUpdated.emit();
     }
 
     return {"stacklistframes", match, Controller::MatchType::TOKEN};

@@ -33,6 +33,19 @@ State::callStack()
     return m_callStack;
 }
 
+int
+State::currentStackFrame() const
+{
+    return m_currentStackFrame;
+}
+
+void
+State::setCurrentStackFrame(int frame)
+{
+    m_currentStackFrame = frame;
+    Core::Signals::callStackUpdated.emit();
+}
+
 void
 State::setDebuggerState(State::Debugger state)
 {
@@ -44,14 +57,6 @@ State::Debugger
 State::debuggerState() const
 {
     return m_debuggerState;
-}
-
-void
-State::setCallStack(const CallStack& callstack)
-{
-    m_callStack = callstack;
-
-    Signals::callStackUpdated.emit();
 }
 
 std::vector<std::string> &

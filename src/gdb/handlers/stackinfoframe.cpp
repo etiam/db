@@ -56,8 +56,7 @@ stackinfoframe(const Gdb::Result &result, int token, boost::any data)
             auto level = std::stoi(boost::any_cast<char *>(stack.at("level")));
 
             // set global callstack's current level from 'level' in payload result
-            auto &callstack = Core::state()->callStack();
-            callstack.setCurrentFrame(level);
+            Core::state()->setCurrentStackFrame(level);
         }
     }
 

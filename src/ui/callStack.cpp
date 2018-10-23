@@ -86,11 +86,12 @@ CallStack::onCallStackUpdated()
     // clear all rows from model
     m_model->removeRows(0, m_model->rowCount());
 
-    auto &callstack = Core::state()->callStack();
-    auto currentframe = callstack.currentFrame();
+    auto &state = Core::state();
+    auto &callstack = state->callStack();
+    auto currentframe = state->currentStackFrame();
 
     // populate model from call stack data
-    for (auto &&entry : Core::enumerate(callstack.entries()))
+    for (auto &&entry : Core::enumerate(callstack))
     {
         auto index = std::get<0>(entry);
         auto stackline = std::get<1>(entry);
@@ -118,8 +119,7 @@ CallStack::mouseDoubleClickEvent(QMouseEvent *event)
 {
     const auto row = indexAt(event->pos()).row();
 
-    Core::state()->callStack().setCurrentFrame(row);
-    Core::Signals::callStackUpdated.emit();
+    Core::state()->setCurrentStackFrame(row);
 }
 
 void
@@ -153,8 +153,7 @@ CallStack::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Space:
         {
             const auto row = currentIndex().row();
-            Core::state()->callStack().setCurrentFrame(row);
-            Core::Signals::callStackUpdated.emit();
+            Core::state()->setCurrentStackFrame(row);
             break;
         }
 
@@ -166,12 +165,12 @@ CallStack::keyPressEvent(QKeyEvent *event)
 void
 CallStack::loadSourceAtRow(int row)
 {
-    const auto &stack = Core::state()->callStack().entries();
+    const auto &callstack = Core::state()->callStack();
 
     // bounds check
-    if (row <= stack.size())
+    if (row <= callstack.size())
     {
-        const auto location = stack[row].location;
+        const auto location = callstack[row].location;
 
         Core::Signals::loadEditorSource.emit(location.filename);
         Core::Signals::highlightLocation.emit(location);

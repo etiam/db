@@ -1,7 +1,6 @@
 db_SOURCES               +=                                             \
                             src/core/global.cpp                         \
                             src/core/breakpoints.cpp                    \
-                            src/core/callStack.cpp                      \
                             src/core/state.cpp                          \
                             src/core/utils.cpp                          \
                             src/core/signals.cpp                        \
