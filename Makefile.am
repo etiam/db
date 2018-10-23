@@ -9,7 +9,10 @@ BUILT_SOURCES             =
 MOSTLYCLEANFILES          =
 EXTRA_PROGRAMS            =
 
-ALL_CPPFLAGS              = -I$(top_srcdir)/src -MJ $@.json
+ALL_CPPFLAGS              =                                              \
+                            -I$(top_srcdir)/src                          \
+                            -I$(top_srcdir)/src/external/fmtlib/include  \
+                            -MJ $@.json
 
 db_SOURCES                = 
 db_CPPFLAGS               = $(ALL_CPPFLAGS)

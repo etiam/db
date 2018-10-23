@@ -7,3 +7,6 @@
 [submodule "src/external/libut"]
 	path = src/external/libut
 	url = https://github.com/etiam/libut.git
+[submodule "src/external/fmtlib"]
+	path = src/external/fmtlib
+	url = https://github.com/fmtlib/fmt.git
