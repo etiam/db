@@ -76,11 +76,12 @@ stacklistvariablesall(const Gdb::Result &result, int token, boost::any data)
                      {
                          auto value = boost::any_cast<Gdb::Payload::Dict>(entry.at("value"));
                          (void)value;
+                         it->value = std::string("");
                      }
 
                      else if (entry.at("value").type() == typeid(char*))
                      {
-                         auto value = boost::any_cast<char *>(entry.at("value"));
+                         auto value = std::string(boost::any_cast<char *>(entry.at("value")));
                          it->value = value;
                      }
                  }
