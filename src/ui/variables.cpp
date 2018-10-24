@@ -110,7 +110,7 @@ Variables::onVariablesUpdated()
         m_model->insertRow(rowcount);
 
         m_model->setData(m_model->index(rowcount, 0), QString::fromStdString(variable.name));
-        m_model->setData(m_model->index(rowcount, 1), 0);
+        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(boost::any_cast<char *>(variable.value)));
         m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(variable.type));
     }
 }

@@ -53,34 +53,42 @@ stacklistvariablesall(const Gdb::Result &result, int token, boost::any data)
  'stream': 'stdout',
  'token': 9,
  'type': 'result'}
-
-
     */
 
     if (match)
-    {
-//        Core::CallStack callstack;
-//
-//        // build callstack from results
-//        const auto &dict = result.payload.dict;
-//        if (dict.find("stack") != std::end(dict))
-//        {
-//            auto stack = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("stack"));
-//            for (const auto &stackentry : stack)
-//            {
-//                const auto &entry = boost::any_cast<Gdb::Payload::Dict>(stackentry);
-//                auto func = boost::any_cast<char *>(entry.at("func"));
-//                auto level = std::stoi(boost::any_cast<char *>(entry.at("level")));
-//
-//                auto fullname = boost::any_cast<char *>(entry.at("fullname"));
-//                auto line = std::stoi(boost::any_cast<char *>(entry.at("line")));
-//                callstack.entries().emplace_back(Core::Location({func, fullname, line}), level);
-//            }
-//        }
-//
-//        // set the callstack global state
-//        Core::state()->setCallStack(callstack);
-    }
+     {
+         const auto &dict = result.payload.dict;
+         if (dict.find("variables") != std::end(dict))
+         {
+             auto &vars = Core::state()->variables();
+
+             auto variables = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("variables"));
+             for (const auto &variable : variables)
+             {
+                 const auto &entry = boost::any_cast<Gdb::Payload::Dict>(variable);
+
+                 auto name = boost::any_cast<char *>(entry.at("name"));
+
+                 auto it = std::find_if(std::begin(vars), std::end(vars), [&](const Core::Variable &v) { return name == v.name; });
+                 if (it != std::end(vars))
+                 {
+                     if (entry.at("value").type() == typeid(Payload::Dict))
+                     {
+                         auto value = boost::any_cast<Gdb::Payload::Dict>(entry.at("value"));
+                         (void)value;
+                     }
+
+                     else if (entry.at("value").type() == typeid(char*))
+                     {
+                         auto value = boost::any_cast<char *>(entry.at("value"));
+                         it->value = value;
+                     }
+                 }
+             }
+
+             Core::Signals::variablesUpdated.emit();
+         }
+     }
 
     return {"stacklistvariableall", match, Controller::MatchType::TOKEN};
 }
