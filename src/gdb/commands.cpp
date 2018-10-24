@@ -110,6 +110,9 @@ Commands::updateVariables()
 //    auto currentthread = state->currentThread();
     int currentthread = 1;
 
+    // save the current variables state
+    state->previousVariables() = state->variables();
+
     state->variables().clear();
 
     {

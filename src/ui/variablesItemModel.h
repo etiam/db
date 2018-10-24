@@ -26,6 +26,8 @@ class VariablesItemModel : public QStandardItemModel
     VariablesItemModel(int rows, int columns, QObject *parent = nullptr);
 
     ~VariablesItemModel() = default;
+
+    QVariant data(const QModelIndex &index, int role) const;
 };
 
 } // namespace Ui

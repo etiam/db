@@ -39,6 +39,12 @@ State::variables()
     return m_variables;
 }
 
+Variables &
+State::previousVariables()
+{
+    return m_previousVariables;
+}
+
 int
 State::currentStackFrame() const
 {
