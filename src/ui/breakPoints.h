@@ -38,6 +38,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
+    void loadSourceAtRow(int row);
+
     BreakPointsItemModel * m_model;
 
 private Q_SLOTS:

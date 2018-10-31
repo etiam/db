@@ -85,13 +85,30 @@ BreakPoints::setTabFocus()
 void
 BreakPoints::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    const auto row = indexAt(event->pos()).row();
+    loadSourceAtRow(row);
 }
 
 void
 BreakPoints::mousePressEvent(QMouseEvent *event)
 {
-    const auto index = indexAt(event->pos());
-    selectionModel()->select(index.sibling(index.row(), 3), QItemSelectionModel::ClearAndSelect);
+    QTreeView::mousePressEvent(event);
+}
+
+void
+BreakPoints::loadSourceAtRow(int row)
+{
+    const auto &breakpoints = Core::state()->breakPoints().getAll();
+
+    // bounds check
+    if (row <= breakpoints.size())
+    {
+        const auto location = breakpoints[row].location;
+
+        Core::Signals::loadEditorSource.emit(location.filename);
+        Core::Signals::highlightLocation.emit(location);
+        Core::Signals::setCursorLocation.emit(location);
+    }
 }
 
 void
