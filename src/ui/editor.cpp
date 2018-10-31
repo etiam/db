@@ -138,11 +138,21 @@ Editor::Editor(QMainWindow *parent) :
     m_impl->executeJavaScript(QString("editor.setOptions({ fontFamily: \"%1\" })").arg(fontname));
 
     // don't display the cursor
-    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
+//    m_impl->executeJavaScript("editor.renderer.$cursorLayer.element.style.display = \"none\"");
 
     // don't highlight active line/gutter
     m_impl->executeJavaScript("editor.setOptions({ highlightActiveLine: false })");
     m_impl->executeJavaScript("editor.setOptions({ highlightGutterLine: false })");
+
+    // use vim keyboard handler
+    m_impl->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
+
+//    m_impl->executeJavaScript("var dom = require(\"../lib/dom\"); dom.importCssString(\".normal-mode .ace_cursor{\
+//      border: 1px solid white;\
+//      background-color: white;\
+//      opacity: 0.5;\
+//    }\", \"vimMode\")");
+
 
     // syntax highlighting
     setHighlightMode("c_cpp");
@@ -300,7 +310,7 @@ void
 Editor::enterEvent(QEvent *event)
 {
     // give qt editor widget focus
-    setFocus();
+    m_impl->m_webView->setFocus();
 
     // give ace editor focus
     m_impl->executeJavaScript("editor.focus()");
