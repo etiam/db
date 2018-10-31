@@ -38,7 +38,6 @@ public Q_SLOTS:
 
 protected:
     bool focusNextPrevChild(bool next) override;
-    void enterEvent(QEvent *event) override;
 
 private:
     Output * m_output;

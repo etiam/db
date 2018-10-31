@@ -72,15 +72,6 @@ GdbConsole::focusNextPrevChild(bool next)
 }
 
 void
-GdbConsole::enterEvent(QEvent *event)
-{
-    // give line editor widget focus
-//    m_lineedit->setFocus();
-
-    QFrame::enterEvent(event);
-}
-
-void
 GdbConsole::onDebuggerStateUpdated()
 {
     const auto state = Core::state()->debuggerState();
