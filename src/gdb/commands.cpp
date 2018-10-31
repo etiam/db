@@ -13,6 +13,7 @@
 #include <signal.h>
 
 #include <iostream>
+#include <regex>
 
 #include "core/global.h"
 #include "core/state.h"
@@ -74,7 +75,14 @@ Commands::loadProgram(const std::string &filename)
 void
 Commands::setArgs(const std::string &args)
 {
-    m_controller->executeCommand("exec-arguments " + args);
+    static std::regex open(R"regex(\()regex");
+    static std::regex close(R"regex(\))regex");
+
+    auto escaped = args;
+    escaped = std::regex_replace(escaped, open, "\\(");
+    escaped = std::regex_replace(escaped, close, "\\)");
+
+    m_controller->executeCommand("exec-arguments " + escaped);
 }
 
 void
