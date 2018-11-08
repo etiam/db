@@ -54,4 +54,6 @@ Signal<> uiRealized;
 Signal<const std::string &> executeGdbCommand;
 }
 
+std::unique_ptr<Signal<>> SignalsC::uiRealized;
+
 }

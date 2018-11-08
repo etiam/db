@@ -24,6 +24,7 @@
 #include <QScrollBar>
 #include <QStatusBar>
 #include <QLabel>
+#include <QTimer>
 
 #include "core/signals.h"
 #include "core/global.h"
@@ -58,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // main editor window
     m_editor = new Editor(this);
+    m_editor->setObjectName("maineditor");
+
     setCentralWidget(m_editor);
 
     // restore gui settings
@@ -69,6 +72,13 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenus();
     createHotkeys();
     createStatusbar();
+
+    // ============
+    auto focustimer = new QTimer(this);
+    focustimer->setInterval(500);
+    focustimer->start();
+    connect(focustimer, &QTimer::timeout, [&]() { std::cout << "focusWidget: " << (focusWidget() ? focusWidget()->objectName().toStdString() : "N/A") << std::endl; } );
+    // ============
 
     // signal handlers
     Core::Signals::appendConsoleText.connect([this](const std::string &t)

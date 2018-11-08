@@ -15,6 +15,7 @@
 #include <string>
 #include <functional>
 #include <map>
+#include <memory>
 
 #include "state.h"
 
@@ -164,6 +165,12 @@ extern Signal<> uiRealized;
 extern Signal<const std::string & /*text*/> executeGdbCommand;
 
 }
+
+class SignalsC
+{
+public:
+    static std::unique_ptr<Signal<>> uiRealized;
+};
 
 }
 

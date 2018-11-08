@@ -97,6 +97,7 @@ namespace Ui
 ConsoleInput::ConsoleInput(QWidget *parent) :
     HistoryLineEdit(parent)
 {
+    setObjectName("consoleinput");
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
     // block style cursor

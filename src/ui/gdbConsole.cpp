@@ -28,10 +28,10 @@ GdbConsole::GdbConsole(QWidget *parent) :
     setObjectName("gdb");
 
     m_output = new Output(this);
-    m_output->setObjectName("consoleoutput");
+    m_output->setObjectName("gdboutput");
 
     m_lineedit = new ConsoleInput(this);
-    m_lineedit->setObjectName("consolelineedit");
+    m_lineedit->setObjectName("gdblineedit");
 
     // default focus goes to console input widget, use a timer
     // because other (not yet created) widgets might take focus

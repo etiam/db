@@ -33,7 +33,7 @@ namespace Ui
 class MyWebPage : public QWebPage
 {
   public:
-    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) { };
+    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) { setObjectName("webpage"); };
 
   protected:
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
@@ -57,6 +57,7 @@ class EditorImpl: public QObject
         m_webPage(new MyWebPage(parent)),
         m_layout(new QVBoxLayout(parent))
     {
+        setObjectName("editorimpl");
         QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
         m_parent->setLayout(m_layout);
@@ -64,6 +65,7 @@ class EditorImpl: public QObject
         m_layout->setMargin(2);
 
         m_webView->setPage(m_webPage);
+        m_webView->setObjectName("webview");
 
         // scale qwebview font sizes by dpi (https://stackoverflow.com/questions/2019716/differing-dpi-font-sizes-in-qwebview-compared-to-all-other-qwidgets)
        auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
