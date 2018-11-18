@@ -220,7 +220,7 @@ ControllerImpl::resultHandler(const Result &result)
     bool match = false;
 
     // since m_handlers can get modified inside the loop, store the uuid
-    // of the matched handler to possibly delete it later
+    // of the matched handler to possibly delete it later.  so can't use range-for.
     boost::uuids::uuid uuid;
     for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
     {
@@ -229,8 +229,7 @@ ControllerImpl::resultHandler(const Result &result)
         if (res.matched)
         {
             if (verbose)
-                std::cout << "handler \"" << res.name << "\" matched ("
-                          << (res.type == Controller::MatchType::TOKEN ? "token" : "regex") << ")" << std::endl;
+                std::cout << "handler \"" << res.name << "\" matched (" << res.type << ")" << std::endl;
             match = true;
             break;
         }
@@ -321,4 +320,28 @@ Controller::addHandler(Controller::HandlerFunc handler, int priority, bool persi
     m_impl->addHandler(handler, priority, persistent, data);
 }
 
+}
+std::ostream &
+operator <<(std::ostream &out, const Gdb::Controller::MatchType &type)
+{
+    switch (type)
+    {
+        case Gdb::Controller::MatchType::TOKEN:
+            out << "token";
+            break;
+
+        case Gdb::Controller::MatchType::REGEX:
+            out << "regex";
+            break;
+
+        case Gdb::Controller::MatchType::METADATA:
+            out << "metadata";
+            break;
+
+        case Gdb::Controller::MatchType::NONE:
+            out << "None";
+            break;
+    }
+
+    return out;
 }

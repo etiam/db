@@ -40,7 +40,7 @@ console(const Result &result, int token, boost::any data)
         Core::Signals::appendConsoleText.emit(result.payload.string.data);
     }
 
-    return {"console", match, Controller::MatchType::REGEX};
+    return {"console", match, Controller::MatchType::METADATA};
 }
 
 }

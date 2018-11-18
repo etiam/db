@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto focustimer = new QTimer(this);
     focustimer->setInterval(500);
     focustimer->start();
-    connect(focustimer, &QTimer::timeout, [&]() { std::cout << "focusWidget: " << (focusWidget() ? focusWidget()->objectName().toStdString() : "N/A") << std::endl; } );
+//    connect(focustimer, &QTimer::timeout, [&]() { std::cout << "focusWidget: " << (focusWidget() ? focusWidget()->objectName().toStdString() : "N/A") << std::endl; } );
     // ============
 
     // signal handlers

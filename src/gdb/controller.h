@@ -35,6 +35,7 @@ public:
     {
         TOKEN,
         REGEX,
+        METADATA,
         NONE
     };
 
@@ -54,6 +55,8 @@ private:
     std::unique_ptr<ControllerImpl> m_impl;
 };
 
-}
+} // namespace Gdb
+
+std::ostream & operator <<(std::ostream &out, const Gdb::Controller::MatchType &type);
 
 #endif // GDB_CONTROLLER_H_
