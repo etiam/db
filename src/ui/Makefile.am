@@ -25,7 +25,6 @@ db_SOURCES               +=                                             \
 nodist_db_SOURCES        +=                                             \
                             src/ui/moc_mainWindow.cpp                   \
                             src/ui/moc_editor.cpp                       \
-                            src/ui/moc_tabWidget.cpp                    \
                                                                         \
                             src/ui/moc_output.cpp                       \
                             src/ui/moc_coloredOutput.cpp                \

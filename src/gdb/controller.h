@@ -55,8 +55,9 @@ private:
     std::unique_ptr<ControllerImpl> m_impl;
 };
 
+std::ostream & operator <<(std::ostream &out, const Controller::MatchType &type);
+
 } // namespace Gdb
 
-std::ostream & operator <<(std::ostream &out, const Gdb::Controller::MatchType &type);
 
 #endif // GDB_CONTROLLER_H_

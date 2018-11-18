@@ -320,28 +320,30 @@ Controller::addHandler(Controller::HandlerFunc handler, int priority, bool persi
     m_impl->addHandler(handler, priority, persistent, data);
 }
 
-}
 std::ostream &
-operator <<(std::ostream &out, const Gdb::Controller::MatchType &type)
+operator <<(std::ostream &out, const Controller::MatchType &type)
 {
     switch (type)
     {
-        case Gdb::Controller::MatchType::TOKEN:
+        case Controller::MatchType::TOKEN:
             out << "token";
             break;
 
-        case Gdb::Controller::MatchType::REGEX:
+        case Controller::MatchType::REGEX:
             out << "regex";
             break;
 
-        case Gdb::Controller::MatchType::METADATA:
+        case Controller::MatchType::METADATA:
             out << "metadata";
             break;
 
-        case Gdb::Controller::MatchType::NONE:
+        case Controller::MatchType::NONE:
             out << "None";
             break;
     }
 
     return out;
 }
+
+}
+
