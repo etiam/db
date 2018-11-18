@@ -53,7 +53,7 @@ ScannerThread::process()
 
     std::vector<std::shared_future<Ast::Scanner>> jobs;
 
-    // scanner lambda, scans sourcefiles between indices start and end
+    // scanner lambda: scans sourcefiles between indices start and end
     auto scanfiles = [&](int start, int end)
     {
         Ast::Scanner localast;

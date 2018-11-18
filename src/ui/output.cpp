@@ -81,7 +81,7 @@ Output::flush()
         sanitized.replace("\\t", "    ");
         sanitized.replace("\\\"", "\"");
 
-        // skip text with only a newline
+        // don't insert text with only a newline
         if (sanitized != "\n")
         {
             moveCursor (QTextCursor::End);

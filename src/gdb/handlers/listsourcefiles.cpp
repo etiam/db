@@ -27,7 +27,7 @@ namespace
 {
 
 // compare how similar two filenames are based on how many directories
-// are in common between them.  common should be constant among the
+// are in common between them. 'common' should be constant among the
 // set of files compared.
 int
 filenameOverlap(const std::string &filename, const std::string &common)
@@ -75,6 +75,9 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
     {
         auto buildpath = Core::state()->vars().get<std::string>("buildpath");
         auto &sourcefiles = Core::state()->sourceFiles();
+
+        // filter down the list of source files that gdb returns by excluding files
+        // not in the same file system tree as the buildpath.
 
         // create list of fullnames
         std::vector<std::string> fullnames;
