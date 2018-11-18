@@ -51,8 +51,16 @@ infoline(const Gdb::Result &result, int token, boost::any data)
         auto &vars = Core::state()->vars();
 
         const auto line = std::stoi(smatch[1]);
-        const auto filename = smatch[2].str();
         const auto func = smatch[3].str();
+        auto filename = smatch[2].str();
+
+        // if path is relative, convert to absolute based on buildpath
+        auto rel = !boost::filesystem::path(filename).is_absolute();
+        if (rel)
+        {
+            auto parpath = Core::state()->vars().get<std::string>("buildpath");
+            filename = boost::filesystem::canonical(boost::filesystem::path(parpath) / boost::filesystem::path(filename)).string();
+        }
 
         const auto location = Core::Location({func, filename, line});
 
