@@ -102,8 +102,10 @@ class EditorImpl: public QObject
         QString escaped = text;
 
         escaped.replace(R"(\n)", R"(\\n)");
+        escaped.replace(R"(\r)", R"(\\r)");
+
         escaped.replace("\r\n", "\n");
-        escaped.replace("\r", "\n");
+        escaped.replace("\r", "\\r");
         escaped.replace("\n", "\\n");
         escaped.replace("\t", "\\t");
         escaped.replace("\'", "\\'");
