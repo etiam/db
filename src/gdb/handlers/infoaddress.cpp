@@ -35,7 +35,7 @@ namespace Handlers
 Controller::HandlerReturn
 infoaddress(const Gdb::Result &result, int token, boost::any data)
 {
-    static std::regex regex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
+    static std::regex regex(R"regex(Symbol \\"(.*).*\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
     bool match = false;
 
     std::smatch smatch;

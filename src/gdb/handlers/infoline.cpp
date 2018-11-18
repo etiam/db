@@ -33,7 +33,7 @@ namespace Handlers
 Controller::HandlerReturn
 infoline(const Gdb::Result &result, int token, boost::any data)
 {
-    static std::regex startsataddress(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)>.*)regex");
+    static std::regex startsataddress(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*).*>.*)regex");
     bool match = false;
 
     /*
