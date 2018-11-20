@@ -27,7 +27,7 @@ class VariablesItemModel : public QStandardItemModel
 
     ~VariablesItemModel() = default;
 
-    QVariant data(const QModelIndex &index, int role) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 };
 
 } // namespace Ui

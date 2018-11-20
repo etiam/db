@@ -67,6 +67,7 @@ stacklistvariablessimple(const Gdb::Result &result, int token, boost::any data)
         const auto &dict = result.payload.dict;
         if (dict.find("variables") != std::end(dict))
         {
+            auto &svars = Core::state()->variables();
             auto variables = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("variables"));
             for (const auto &variable : variables)
             {
@@ -75,7 +76,7 @@ stacklistvariablessimple(const Gdb::Result &result, int token, boost::any data)
                 auto name = boost::any_cast<char *>(entry.at("name"));
                 auto type = boost::any_cast<char *>(entry.at("type"));
 
-                Core::state()->variables().emplace_back(name, type, std::string());
+                svars[name] = { type, std::string() };
             }
 
             Core::Signals::variablesUpdated.emit();

@@ -109,9 +109,9 @@ Variables::onVariablesUpdated()
         auto rowcount = m_model->rowCount();
         m_model->insertRow(rowcount);
 
-        m_model->setData(m_model->index(rowcount, 0), QString::fromStdString(variable.name));
-        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(boost::any_cast<std::string>(variable.value)));
-        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(variable.type));
+        m_model->setData(m_model->index(rowcount, 0), QString::fromStdString(variable.first));
+        m_model->setData(m_model->index(rowcount, 1), QString::fromStdString(boost::any_cast<std::string>(variable.second.value)));
+        m_model->setData(m_model->index(rowcount, 2), QString::fromStdString(variable.second.type));
     }
 }
 

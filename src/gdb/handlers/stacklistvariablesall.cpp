@@ -69,22 +69,11 @@ stacklistvariablesall(const Gdb::Result &result, int token, boost::any data)
 
                  auto name = boost::any_cast<char *>(entry.at("name"));
 
-                 auto it = std::find_if(std::begin(vars), std::end(vars), [&](const Core::Variable &v) { return name == v.name; });
-                 if (it != std::end(vars))
-                 {
-                     if (entry.at("value").type() == typeid(Payload::Dict))
-                     {
-                         auto value = boost::any_cast<Gdb::Payload::Dict>(entry.at("value"));
-                         (void)value;
-                         it->value = std::string("");
-                     }
+                 if (entry.at("value").type() == typeid(Payload::Dict))
+                     vars[name].value = std::string("<<NOT IMPLEMENTED YET>>");  // TODO : implement this shit!
 
-                     else if (entry.at("value").type() == typeid(char*))
-                     {
-                         auto value = std::string(boost::any_cast<char *>(entry.at("value")));
-                         it->value = value;
-                     }
-                 }
+                 else if (entry.at("value").type() == typeid(char*))
+                     vars[name].value = std::string(boost::any_cast<char *>(entry.at("value")));
              }
 
              Core::Signals::variablesUpdated.emit();

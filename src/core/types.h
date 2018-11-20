@@ -13,6 +13,7 @@
 #endif
 
 #include <string>
+#include <map>
 #include <iostream>
 
 #include <boost/any.hpp>
@@ -41,16 +42,13 @@ operator <<(std::ostream &out, const Location &location)
 
 struct Variable
 {
-    Variable(const std::string &name_, const std::string &type_, const boost::any &value_) :
-        name(name_),
-        type(type_),
-        value(value_) {}
-    std::string name;
+    Variable() : type(""), value(0) {}
+    Variable(const std::string &type_, const boost::any &value_) : type(type_), value(value_) {}
     std::string type;
-    boost::any value;
+    boost::any value;    // TODO : switch this to std::string
 };
 
-using Variables = std::vector<Variable>;
+using Variables = std::map<std::string, Variable>;
 
 struct CallStackEntry
 {
