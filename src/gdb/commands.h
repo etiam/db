@@ -52,7 +52,7 @@ class Commands
     void    updateCallStack();
 
     // requests function address from gdb
-    void    infoAddress(const std::string &function);
+    void    infoAddress(const std::string &functionname);
 
     void    insertBreakpoint(const std::string &location);
     void    deleteBreakpoint(int number);

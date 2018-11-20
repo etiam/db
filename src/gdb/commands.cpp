@@ -35,8 +35,6 @@ Commands::Commands() :
     m_controller->addHandler(Handlers::running,             10, true);
     m_controller->addHandler(Handlers::stopped,             10, true);
     m_controller->addHandler(Handlers::threadgroupstarted,  10, true);
-    m_controller->addHandler(Handlers::infoline,            10, true);
-    m_controller->addHandler(Handlers::infoaddress,         10, true);
     m_controller->addHandler(Handlers::interpreterexec,     10, true);
     m_controller->addHandler(Handlers::processexited,       10, true);
 
@@ -135,9 +133,9 @@ Commands::updateVariables()
 }
 
 void
-Commands::infoAddress(const std::string &function)
+Commands::infoAddress(const std::string &functionname)
 {
-    executeConsoleCommand("info address " + function);
+    executeConsoleCommand("info address " + functionname, Handlers::infoaddress, functionname);
 }
 
 void

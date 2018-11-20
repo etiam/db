@@ -35,17 +35,7 @@ namespace Handlers
 Controller::HandlerReturn
 infofunctions(const Gdb::Result &result, int token, boost::any data)
 {
-    static std::regex regex(R"regex(Symbol \\"(.*)\(.*\)\\" is a function at address (0x[0-9a-f]+)\.\\n)regex");
-    bool match = false;
-
-    std::smatch smatch;
-    if (std::regex_match(result.payload.string.data, smatch, regex))
-    {
-        match = true;
-        Gdb::commands()->executeConsoleCommand("info line *" + smatch[2].str());
-    }
-
-    return {"infofunctions", match, Controller::MatchType::REGEX};
+    return {"infofunctions", false, Controller::MatchType::METADATA};
 }
 
 }

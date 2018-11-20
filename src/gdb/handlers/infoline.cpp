@@ -33,7 +33,8 @@ namespace Handlers
 Controller::HandlerReturn
 infoline(const Gdb::Result &result, int token, boost::any data)
 {
-    static std::regex startsataddress(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*).*>.*)regex");
+    static std::regex pattern1(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)\(.*\)> and ends.*)regex");
+    static std::regex pattern2(R"regex(Line (\d+) of \\"(.*)\\" starts at address 0x[0-9a-f]+ <(.*)> and ends.*)regex");
     bool match = false;
 
     /*
@@ -44,32 +45,40 @@ infoline(const Gdb::Result &result, int token, boost::any data)
     */
 
     std::smatch smatch;
-    if (std::regex_match(result.payload.string.data, smatch, startsataddress))
+    if (std::regex_match(result.payload.string.data, smatch, pattern1) ||
+        std::regex_match(result.payload.string.data, smatch, pattern2))
     {
-        match = true;
+        auto symbolname = boost::any_cast<std::string>(data);
 
-        auto &vars = Core::state()->vars();
+        std::cout << "FOO " << symbolname << " " << smatch[3] << std::endl;
 
-        const auto line = std::stoi(smatch[1]);
-        const auto func = smatch[3].str();
-        auto filename = smatch[2].str();
-
-        // if path is relative, convert to absolute based on buildpath
-        auto rel = !boost::filesystem::path(filename).is_absolute();
-        if (rel)
+        if (symbolname == smatch[3].str())
         {
-            auto parpath = Core::state()->vars().get<std::string>("buildpath");
-            filename = boost::filesystem::canonical(boost::filesystem::path(parpath) / boost::filesystem::path(filename)).string();
-        }
+            match = true;
 
-        const auto location = Core::Location({func, filename, line});
+            auto &vars = Core::state()->vars();
 
-        // if the editor has not displayed anything yet load filename and set the cursor
-        if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
-        {
-            Core::Signals::loadEditorSource.emit(boost::filesystem::canonical(filename).string());
-            Core::Signals::setCursorLocation.emit(location);
-            vars.set("initialdisplay", true);
+            const auto line = std::stoi(smatch[1]);
+            const auto func = smatch[3].str();
+            auto filename = smatch[2].str();
+
+            // if path is relative, convert to absolute based on buildpath
+            auto rel = !boost::filesystem::path(filename).is_absolute();
+            if (rel)
+            {
+                auto parpath = Core::state()->vars().get<std::string>("buildpath");
+                filename = boost::filesystem::canonical(boost::filesystem::path(parpath) / boost::filesystem::path(filename)).string();
+            }
+
+            const auto location = Core::Location({func, filename, line});
+
+            // if the editor has not displayed anything yet load filename and set the cursor
+            if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
+            {
+                Core::Signals::loadEditorSource.emit(boost::filesystem::canonical(filename).string());
+                Core::Signals::setCursorLocation.emit(location);
+                vars.set("initialdisplay", true);
+            }
         }
     }
 
