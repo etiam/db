@@ -1,5 +1,5 @@
 /*
- * stacklistframes.cpp
+ * stacklistvariablesall.cpp
  *
  *  Created on: Jun 5, 2018
  *      Author: jasonr
@@ -10,7 +10,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"

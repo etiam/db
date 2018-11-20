@@ -10,7 +10,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -109,7 +108,7 @@ breakinsert(const Result &result, int token, boost::any data)
         }
     }
 
-    return {"breakinsert", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::REGEX};
+    return {"breakinsert", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::METADATA};
 };
 
 }

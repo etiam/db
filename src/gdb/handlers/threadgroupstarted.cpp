@@ -46,7 +46,7 @@ threadgroupstarted(const Gdb::Result &result, int token, boost::any data)
         Core::state()->vars().set("pid", pid);
     }
 
-    return {"threadgroupstarted", match, Controller::MatchType::REGEX};
+    return {"threadgroupstarted", match, Controller::MatchType::METADATA};
 };
 
 }

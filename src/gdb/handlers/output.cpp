@@ -11,7 +11,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -40,7 +39,7 @@ output(const Result &result, int token, boost::any data)
         Core::Signals::appendOutputText.emit(result.payload.string.data + '\n');
     }
 
-    return {"output", match, Controller::MatchType::REGEX};
+    return {"output", match, Controller::MatchType::METADATA};
 }
 
 }

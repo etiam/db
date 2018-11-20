@@ -11,7 +11,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -39,7 +38,7 @@ notify(const Result &result, int token, boost::any data)
         Core::Signals::appendLogText.emit(result.message.string.data + '\n');
     }
 
-    return {"notify", match, Controller::MatchType::REGEX};
+    return {"notify", match, Controller::MatchType::METADATA};
 }
 
 }

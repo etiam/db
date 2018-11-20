@@ -10,7 +10,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -75,7 +74,7 @@ breakmodified(const Gdb::Result &result, int token, boost::any data)
         Core::Signals::updateGutterMarker.emit(Core::Location({func, fullname, line}));
     }
 
-    return {"breakmodified", match, Controller::MatchType::REGEX};
+    return {"breakmodified", match, Controller::MatchType::METADATA};
 };
 
 }

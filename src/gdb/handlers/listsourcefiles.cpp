@@ -11,7 +11,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <set>
 #include <boost/filesystem/operations.hpp>
 

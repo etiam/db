@@ -11,7 +11,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -65,7 +64,7 @@ stopped(const Result &result, int token, boost::any data)
         }
     }
 
-    return {"stopped", match, Controller::MatchType::REGEX};
+    return {"stopped", match, Controller::MatchType::METADATA};
 }
 
 }

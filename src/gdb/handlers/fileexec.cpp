@@ -9,7 +9,6 @@
 # include "config.h"
 #endif
 
-#include <regex>
 #include <numeric>
 
 #include "core/global.h"

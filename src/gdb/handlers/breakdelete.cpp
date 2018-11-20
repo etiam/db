@@ -10,7 +10,6 @@
 #endif
 
 #include <iostream>
-#include <regex>
 #include <boost/filesystem/operations.hpp>
 
 #include "core/global.h"
@@ -59,7 +58,7 @@ breakdelete(const Gdb::Result &result, int token, boost::any data)
         Core::state()->breakPoints().deleteBreakpoint(number);
     }
 
-    return {"breakdelete", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::REGEX};
+    return {"breakdelete", match, matchtoken ? Controller::MatchType::TOKEN : Controller::MatchType::METADATA};
 };
 
 }
