@@ -48,8 +48,8 @@ Controller::HandlerReturn infoline(const Result &result, int token, boost::any d
 // handle result of info address console command
 Controller::HandlerReturn infoaddress(const Result &result, int token, boost::any data);
 
-// handle result of info functions console command
-Controller::HandlerReturn infofunctions(const Result &result, int token, boost::any data);
+// handle result of info sources console command
+Controller::HandlerReturn infosources(const Result &result, int token, boost::any data);
 
 // handle interpreter-exec console commands
 Controller::HandlerReturn interpreterexec(const Result &result, int token, boost::any data);
