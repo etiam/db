@@ -281,9 +281,9 @@ ConsoleInput::updateCompletionData()
     // insert source file names into column of model
     const auto &sourcefiles = Core::state()->sourceFiles();
     std::vector<std::string> filenames;
-    for (const auto &fullname : sourcefiles)
+    for (const auto &sourcefile: sourcefiles)
     {
-        const auto filename = boost::filesystem::path(fullname).filename().string();
+        const auto filename = boost::filesystem::path(sourcefile.second).filename().string();
         if (std::find(std::begin(filenames), std::end(filenames), filename) == std::end(filenames))
         {
             filenames.push_back(filename);

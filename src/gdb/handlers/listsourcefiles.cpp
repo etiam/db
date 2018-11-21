@@ -11,6 +11,7 @@
 #endif
 
 #include <iostream>
+#include <regex>
 #include <set>
 #include <boost/filesystem/operations.hpp>
 
@@ -25,19 +26,18 @@
 namespace
 {
 
-// compare how similar two filenames are based on how many directories
-// are in common between them. 'common' should be constant among the
-// set of files compared.
+// return the number of identical directories that are present between
+// pathnamea and pathnameb
 int
-filenameOverlap(const std::string &filename, const std::string &common)
+pathnameOverlap(const std::string &pathnamea, const std::string &pathnameb)
 {
-    auto len = std::min(filename.size(), common.size());
+    auto len = std::min(pathnamea.size(), pathnameb.size());
     int c=0;
     for (int n=0; n < len; ++n)
     {
-        if (filename[n] != common[n])
+        if (pathnamea[n] != pathnameb[n])
             break;
-        if (filename[n] == '/')
+        if (pathnamea[n] == '/')
             c++;
     }
 
@@ -75,45 +75,43 @@ listsourcefiles(const Gdb::Result &result, int token, boost::any data)
         auto buildpath = Core::state()->vars().get<std::string>("buildpath");
         auto &sourcefiles = Core::state()->sourceFiles();
 
-        // filter down the list of source files that gdb returns by excluding files
-        // not in the same file system tree as the buildpath.
+        // transform gdb's list of source files in the form of [(file, fullname), (file, fullname), ...]
+        // into a map of form {file: fullname}.  filter down the list by including files closest to the
+        // location of the debugged program.
 
         // create list of fullnames
         std::vector<std::string> fullnames;
+        std::map<std::string, std::string> rawresults;
         auto files = boost::any_cast<Gdb::Payload::List>(result.payload.dict.at("files"));
         for (const auto &file : files)
         {
             const auto &entry = boost::any_cast<Gdb::Payload::Dict>(file);
+            auto fullname = boost::any_cast<char *>(entry.at("fullname"));
 
-            fullnames.push_back(boost::any_cast<char *>(entry.at("fullname")));
+            fullnames.push_back(fullname);
+            rawresults[fullname] = boost::any_cast<char *>(entry.at("file"));
         }
 
         // sort fullnames into buckets based on how much they overlap with the buildpath
         std::map<int, std::set<std::string>> overlapmap;
         for (const auto &fullname : fullnames)
         {
-            auto overlap = filenameOverlap(fullname, buildpath);
+            auto overlap = pathnameOverlap(fullname, buildpath);
             overlapmap[overlap].insert(fullname);
         }
 
-        // choose the bucket with the largest overlap
+        // add files from the bucket with the largest overlap
         std::vector<int> keys;
-        transform(std::begin(overlapmap), std::end(overlapmap), back_inserter(keys),
+        transform(std::begin(overlapmap), std::end(overlapmap), std::back_inserter(keys),
                   [](decltype(overlapmap)::value_type p) { return p.first;} );
-        sort(std::begin(keys), std::end(keys));
+        std::sort(std::begin(keys), std::end(keys), std::greater<int>());
 
         if (keys.size() > 0)
         {
-            auto closestgroup = keys[keys.size()-1];
-
-            // add the filename of each fullname from the largest overlap bucket
-            for (const auto &fullname : overlapmap[closestgroup])
+            // add the sourcefiles from the largest overlap bucket
+            for (const auto &fullname : overlapmap[keys[0]])
             {
-                const auto filename = boost::filesystem::path(fullname).filename().string();
-                if (std::find(std::begin(sourcefiles), std::end(sourcefiles), fullname) == std::end(sourcefiles))
-                {
-                    sourcefiles.push_back(fullname);
-                }
+                sourcefiles[rawresults[fullname]] = fullname;
             }
 
             Core::Signals::sourceListUpdated.emit();

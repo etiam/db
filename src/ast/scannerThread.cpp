@@ -59,9 +59,9 @@ ScannerThread::process()
         Ast::Scanner localast;
         localast.setBuildPath(buildpath);
 
-        for (auto n=start; n < end; ++ n)
+        for (auto it = std::next(sourcefiles.begin(), start); it != std::next(sourcefiles.begin(), end); ++it)
         {
-            auto filename = sourcefiles[n];
+            auto filename = it->second;
 
             Core::Signals::setStatusbarText.emit("parsing " + filename);
             localast.parseFunctions(filename);

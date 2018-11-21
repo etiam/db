@@ -71,7 +71,7 @@ State::debuggerState() const
     return m_debuggerState;
 }
 
-std::vector<std::string> &
+SourceFiles &
 State::sourceFiles()
 {
     return m_sourceFiles;

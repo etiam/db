@@ -50,6 +50,8 @@ struct Variable
 
 using Variables = std::map<std::string, Variable>;
 
+using SourceFiles = std::map<std::string, std::string>;     // {file: fullname}
+
 struct CallStackEntry
 {
     CallStackEntry(Location loc, int le) :

@@ -52,13 +52,14 @@ fileexec(const Gdb::Result &result, int token, boost::any data)
         // wait for "breakonmain" to be available
         while(!vars.has("breakonmain"));
 
+        // get list of source files now as infoAddress() uses
+        gdb->getSourceFiles();
+
         // if breakonmain true, set breakpoint, otherwise find source file for main
         if (vars.get<bool>("breakonmain"))
             gdb->insertBreakpoint("main");
         else
             gdb->infoAddress("main");
-
-        gdb->getSourceFiles();
     }
 
     return {"fileexec", match, Controller::MatchType::TOKEN};

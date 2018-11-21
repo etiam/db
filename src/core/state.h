@@ -50,7 +50,7 @@ class State
     void setDebuggerState(Debugger state);
     Debugger debuggerState() const;
 
-    std::vector<std::string> & sourceFiles();
+    SourceFiles & sourceFiles();
 
     // get reference to ast objects
     Ast::Data & astData();
@@ -64,7 +64,7 @@ class State
     Debugger m_debuggerState = Debugger::NONE;
     int m_currentStackFrame = 0;
 
-    std::vector<std::string> m_sourceFiles;
+    SourceFiles  m_sourceFiles;
     Ast::Data m_data;
 };
 

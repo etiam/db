@@ -90,12 +90,6 @@ Commands::getSourceFiles()
 }
 
 void
-Commands::getFunctionNames()
-{
-    executeConsoleCommand("info functions", Handlers::infofunctions);
-}
-
-void
 Commands::updateCallStack()
 {
     Core::state()->callStack().clear();
