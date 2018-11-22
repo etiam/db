@@ -231,7 +231,6 @@ ControllerImpl::resultHandler(const Result &result)
             if (verbose)
                 std::cout << "handler \"" << res.name << "\" matched (" << res.type << ")" << std::endl;
             match = true;
-            break;
         }
     }
 
