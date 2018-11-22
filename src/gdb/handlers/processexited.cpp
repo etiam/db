@@ -41,7 +41,7 @@ processexited(const Gdb::Result &result, int token, boost::any data)
     bool regexmatch = false;
     if (typematch)
     {
-        static std::regex pattern(R"regex(\[Inferior \d \(process (\d+)\) exited normally\]\\n)regex");
+        static std::regex pattern(R"regex(\[Inferior \d \(process (\d+)\) exited .*]\\n)regex");
 
         std::smatch smatch;
 
