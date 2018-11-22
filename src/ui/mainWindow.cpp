@@ -256,6 +256,7 @@ MainWindow::createDocks()
     m_bottomTabWidget->setObjectName("tabwidget");
     m_bottomTabWidget->setTabsClosable(true);
     m_bottomTabWidget->setMovable(true);
+    m_bottomTabWidget->setUsesScrollButtons(false);
 
     // lambda to return index of tab from settings or default value if not set
     auto settingsIndex = [&](const QWidget *tab)
@@ -358,7 +359,7 @@ MainWindow::createViewMenu()
     auto viewmenu = menuBar()->addMenu(tr("&View"));
     viewmenu->setObjectName("view");
 
-    // function to create action from tab widget and add to view menu
+    // lambda to create action from tab widget and add to view menu
     auto addAction = [&](QWidget *tabwidget)
     {
         auto name = tabwidget->objectName();

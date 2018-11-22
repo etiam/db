@@ -32,10 +32,13 @@ namespace Ui
 
 class MyWebPage : public QWebPage
 {
-  public:
-    explicit MyWebPage(QObject *parent=0) : QWebPage(parent) { setObjectName("webpage"); };
+public:
+    explicit MyWebPage(QObject *parent = nullptr) : QWebPage(parent)
+    {
+        setObjectName("webpage");
+    };
 
-  protected:
+protected:
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID) override
     {
         std::cerr << "\"" << sourceID.toStdString() << "\":"
@@ -50,8 +53,8 @@ class MyWebPage : public QWebPage
 class EditorImpl: public QObject
 {
   public:
-    EditorImpl(Editor *parent=0) :
-        QObject(),
+    explicit EditorImpl(Editor *parent = nullptr) :
+        QObject(parent),
         m_parent(parent),
         m_webView(new QWebView(parent)),
         m_webPage(new MyWebPage(parent)),
@@ -68,12 +71,12 @@ class EditorImpl: public QObject
         m_webView->setObjectName("webview");
 
         // scale qwebview font sizes by dpi (https://stackoverflow.com/questions/2019716/differing-dpi-font-sizes-in-qwebview-compared-to-all-other-qwidgets)
-       auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
-       std::cout << "setting text size multiplier to " << factor << std::endl;
-       m_webView->setTextSizeMultiplier(factor);
+        auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
+        std::cout << "setting text size multiplier to " << factor << std::endl;
+        m_webView->setTextSizeMultiplier(factor);
     }
 
-    ~EditorImpl() {};
+    ~EditorImpl() = default;
 
     QVariant executeJavaScript(const QString &code)
     {

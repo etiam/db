@@ -139,13 +139,13 @@ CallStack::keyPressEvent(QKeyEvent *event)
         // move up or down then load the stack frame of the moved to row
         case Qt::Key_Up:
         case Qt::Key_Down:
-            {
+        {
             QTreeView::keyPressEvent(event);
 
             const auto row = currentIndex().row();
             loadSourceAtRow(row);
             break;
-            }
+        }
 
         // make the stack frame at the current row the current frame
         case Qt::Key_Enter:
