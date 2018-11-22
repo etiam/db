@@ -194,7 +194,7 @@ MainWindow::toggleTab(QWidget *tab)
     if (it != std::end(tabs))
         m_bottomTabWidget->removeTab(it - std::begin(tabs));
     else
-        m_bottomTabWidget->insertTab(m_bottomTabWidget->count(), tab, tab->property("tabname").toString());
+        m_bottomTabWidget->insertTab(m_bottomTabWidget->count(), tab, tab->objectName());
 }
 
 void
@@ -218,8 +218,7 @@ MainWindow::writeSettings() const
     // save index of bottomdock's tabs
     for (const auto child : findChildren<QWidget *>())
     {
-        auto tabname = child->property("tabname");
-        if (tabname.isValid())
+        if (child->property("istab").isValid())
         {
             m_settings->setValue("MainWindow/BottomDock/TabOrder/" + child->objectName(), m_bottomTabWidget->indexOf(child));
         }
@@ -270,32 +269,32 @@ MainWindow::createDocks()
     // add individual tab widgets
     m_gdbConsoleTab = new GdbConsole(this);
     m_gdbConsoleTab->setObjectName("Gdb");
-    m_gdbConsoleTab->setProperty("tabname", tr("Gdb"));
+    m_gdbConsoleTab->setProperty("istab", true);
     tabs.push_back(m_gdbConsoleTab);
 
     m_programOutputTab = new Output(this);
     m_programOutputTab->setObjectName("Output");
-    m_programOutputTab->setProperty("tabname", "Output");
+    m_programOutputTab->setProperty("istab", true);
     tabs.push_back(m_programOutputTab);
 
     m_callStackTab = new CallStack(this);
     m_callStackTab->setObjectName("CallStack");
-    m_callStackTab->setProperty("tabname", tr("Call Stack"));
+    m_callStackTab->setProperty("istab", true);
     tabs.push_back(m_callStackTab);
 
     m_breakPointsTab = new BreakPoints(this);
     m_breakPointsTab->setObjectName("BreakPoints");
-    m_breakPointsTab->setProperty("tabname", tr("Break Points"));
+    m_breakPointsTab->setProperty("istab", true);
     tabs.push_back(m_breakPointsTab);
 
     m_consoleOutputTab = new ColoredOutput(this);
     m_consoleOutputTab->setObjectName("Console");
-    m_consoleOutputTab->setProperty("tabname", tr("Console"));
+    m_consoleOutputTab->setProperty("istab", true);
     tabs.push_back(m_consoleOutputTab);
 
     m_variablesTab = new Variables(this);
     m_variablesTab->setObjectName(tr("Variables"));
-    m_variablesTab->setProperty("tabname", m_variablesTab->objectName());
+    m_variablesTab->setProperty("istab", true);
     tabs.push_back(m_variablesTab);
 
     // sort tabs by settings index value
@@ -305,7 +304,7 @@ MainWindow::createDocks()
     for (const auto &tab : tabs)
     {
         if (settingsIndex(tab) != -1)
-            m_bottomTabWidget->addTab(tab, tab->property("tabname").toString());
+            m_bottomTabWidget->addTab(tab, tab->objectName());
     }
 
     // signal connections
