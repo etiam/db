@@ -60,8 +60,10 @@ Main::Main(int &argc, char *argv[])
 
     // create a MainWindow
     m_mainWindow = std::make_unique<MainWindow>();
-    m_mainWindow->setObjectName("mainwindow");
     m_mainWindow->show();
+
+    // capture all events to enable global hotkeys
+    m_app->installEventFilter(m_mainWindow.get());
 }
 
 Main::~Main()

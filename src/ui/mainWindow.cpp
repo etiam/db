@@ -25,6 +25,10 @@
 #include <QStatusBar>
 #include <QLabel>
 #include <QTimer>
+#include <QKeyEvent>
+#include <QEvent>
+
+#include "fmt/format.h"
 
 #include "core/signals.h"
 #include "core/global.h"
@@ -126,6 +130,34 @@ MainWindow::~MainWindow()
 {
     // save gui settings
     writeSettings();
+}
+
+bool
+MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        auto keyevent = static_cast<QKeyEvent *>(event);
+        if ((keyevent->modifiers() & Qt::ControlModifier))
+        {
+            if (keyevent->key() == Qt::Key_Right)
+            {
+                auto count = m_bottomTabWidget->count();
+                auto index = m_bottomTabWidget->currentIndex();
+                m_bottomTabWidget->setCurrentIndex((index+1) % count);
+                return true;
+            }
+            else if (keyevent->key() == Qt::Key_Left)
+            {
+                auto count = m_bottomTabWidget->count();
+                auto index = m_bottomTabWidget->currentIndex();
+                m_bottomTabWidget->setCurrentIndex((index+count-1) % count);
+                return true;
+            }
+        }
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 
 void
@@ -330,7 +362,7 @@ MainWindow::createViewMenu()
     // function to create action from tab widget and add to view menu
     auto addAction = [&](QWidget *tabwidget)
     {
-        auto name = tabwidget->property("tabname").toString();
+        auto name = tabwidget->objectName();
         auto action = new QAction(name, this);
         action->setStatusTip(tr("Show ") + name + tr(" tab"));
         action->setCheckable(true);

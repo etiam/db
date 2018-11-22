@@ -44,6 +44,8 @@ public:
     ~MainWindow();
 
 private:
+    bool eventFilter(QObject *object, QEvent *event);
+
     // toggle the visibility of tab
     void toggleTab(QWidget *tab);
 
