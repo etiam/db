@@ -50,8 +50,6 @@ infoline(const Gdb::Result &result, int token, boost::any data)
     {
         auto symbolname = boost::any_cast<std::string>(data);
 
-        std::cout << "FOO " << symbolname << " " << smatch[3] << std::endl;
-
         if (symbolname == smatch[3].str())
         {
             match = true;
@@ -62,20 +60,16 @@ infoline(const Gdb::Result &result, int token, boost::any data)
             const auto func = smatch[3].str();
             auto filename = smatch[2].str();
 
-            // if path is relative, convert to absolute based on buildpath
-            auto rel = !boost::filesystem::path(filename).is_absolute();
-            if (rel)
-            {
-                auto parpath = Core::state()->vars().get<std::string>("buildpath");
-                filename = boost::filesystem::canonical(boost::filesystem::path(parpath) / boost::filesystem::path(filename)).string();
-            }
+            // get fullname from filename
+            const auto &sourcefiles = Core::state()->sourceFiles();
+            auto fullname = sourcefiles.at(filename);
 
-            const auto location = Core::Location({func, filename, line});
+            const auto location = Core::Location({func, fullname, line});
 
             // if the editor has not displayed anything yet load filename and set the cursor
             if(!vars.has("initialdisplay") || !vars.get<bool>("initialdisplay"))
             {
-                Core::Signals::loadEditorSource.emit(boost::filesystem::canonical(filename).string());
+                Core::Signals::loadEditorSource.emit(boost::filesystem::canonical(fullname).string());
                 Core::Signals::setCursorLocation.emit(location);
                 vars.set("initialdisplay", true);
             }
