@@ -16,12 +16,16 @@
 
 #include <boost/any.hpp>
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/python.hpp>
 
 #include <QFile>
 #include <Python.h>
 #include <marshal.h>
+
+#include "fmt/format.h"
+#include "fmt/ostream.h"
 
 #include "core/global.h"
 #include "core/signals.h"
@@ -84,6 +88,7 @@ class ControllerImpl
         boost::uuids::uuid uuid;
     };
 
+    std::mutex m_handlersLock;
     std::vector<HandlerData> m_handlers;
     std::unique_ptr<ResultReaderThread> m_readerThread;
 };
@@ -217,31 +222,41 @@ void
 ControllerImpl::resultHandler(const Result &result)
 {
     static auto verbose = Core::state()->vars().has("verbose");
+
+    // since m_handlers can get modified inside the loop, store the uuid(s)
+    // of the matched handler(s) to possibly delete later.
+    std::vector<boost::uuids::uuid> uuids;
     bool match = false;
 
-    // since m_handlers can get modified inside the loop, store the uuid
-    // of the matched handler to possibly delete it later.  so can't use range-for.
-    boost::uuids::uuid uuid;
-    for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
+    // make a copy of m_handlers since m_handlers may get modified inside the loop
+    std::vector<HandlerData> handlers;
     {
-        uuid = it->uuid;
-        auto res = it->handler(result, it->token, it->data);
+    std::unique_lock<std::mutex> locker(m_handlersLock);
+    handlers = m_handlers;
+    }
+
+    for (const auto &handler : handlers)
+    {
+        Controller::HandlerReturn res;
+        res = handler.handler(result, handler.token, handler.data);
+
         if (res.matched)
         {
-            if (verbose)
-                std::cout << "handler \"" << res.name << "\" matched (" << res.type << ")" << std::endl;
             match = true;
+            if (!handler.persistent)
+                uuids.push_back(handler.uuid);
+            if (verbose)
+                fmt::print("handler \"{0}\" matched ({1})\n", res.name, res.type);
         }
     }
 
+    auto removeexpired = [&](const HandlerData &h)
+        { return std::find(std::begin(uuids), std::end(uuids), h.uuid) != std::end(uuids) && !h.persistent; };
+
     if (match)
     {
-        // remove matched handler if non-persistent
-        for (auto it=std::begin(m_handlers); it != std::end(m_handlers); ++it)
-        {
-            if (uuid == it->uuid && !it->persistent)
-                m_handlers.erase(it);
-        }
+        std::unique_lock<std::mutex> locker(m_handlersLock);
+        m_handlers.erase(std::remove_if(std::begin(m_handlers), std::end(m_handlers), removeexpired), std::end(m_handlers));
     }
     else
     {
@@ -257,9 +272,6 @@ ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFu
     if (!m_initialized)
         initialize();
 
-    std::stringstream stream;
-    stream << m_token << "-" << command;
-
     // store handler data
     if (handler != nullptr)
         addHandler(handler, 0, false, data);
@@ -267,7 +279,8 @@ ControllerImpl::executeCommand(const std::string &command, Controller::HandlerFu
     // acquire python GIL
     auto gstate = PyGILState_Ensure();
 
-    auto args = Py_BuildValue("(s)", stream.str().c_str());
+    auto cmd = fmt::format("{0}-{1}", m_token, command);
+    auto args = Py_BuildValue("(s)", cmd.c_str()); //stream.str().c_str());
     auto kw = Py_BuildValue("{s:i,s:i}", "verbose", m_verbose, "read_response", false);
     PyObject_Call(m_writeMethod, args, kw);
 
@@ -285,11 +298,16 @@ ControllerImpl::addHandler(Controller::HandlerFunc handler, int priority, bool p
 {
     static boost::uuids::random_generator uuid_gen;
 
+    auto uuid = uuid_gen();
+
+    {
+    std::unique_lock<std::mutex> locker(m_handlersLock);
     // persistent handlers don't receive valid tokens so set to 0
     if (persistent)
-        m_handlers.push_back({handler, 0, priority, persistent, data, uuid_gen()});
+        m_handlers.push_back({handler, 0, priority, persistent, data, uuid});
     else
-        m_handlers.push_back({handler, m_token, priority, persistent, data, uuid_gen()});
+        m_handlers.push_back({handler, m_token, priority, persistent, data, uuid});
+    }
 
     // sort handlers based on priority
     std::sort(std::begin(m_handlers), std::end(m_handlers),
