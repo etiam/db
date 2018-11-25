@@ -46,6 +46,28 @@ protected:
     }
 };
 
+class MyWebView : public QWebView
+{
+public:
+    explicit MyWebView(QWidget *parent = nullptr) : QWebView(parent)
+    {
+        setObjectName("webview");
+    }
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override
+    {
+        switch (event->key())
+        {
+            case Qt::Key_R:
+                break;
+
+            default:
+                return QWebView::keyPressEvent(event);
+        }
+    }
+};
+
 // TODO : combine EditorImpl into Editor
 
 // EditorImpl
@@ -56,7 +78,7 @@ class EditorImpl: public QObject
     explicit EditorImpl(Editor *parent = nullptr) :
         QObject(parent),
         m_parent(parent),
-        m_webView(new QWebView(parent)),
+        m_webView(new MyWebView(parent)),
         m_webPage(new MyWebPage(parent)),
         m_layout(new QVBoxLayout(parent))
     {
@@ -68,7 +90,6 @@ class EditorImpl: public QObject
         m_layout->setMargin(2);
 
         m_webView->setPage(m_webPage);
-        m_webView->setObjectName("webview");
 
         // scale qwebview font sizes by dpi (https://stackoverflow.com/questions/2019716/differing-dpi-font-sizes-in-qwebview-compared-to-all-other-qwidgets)
         auto factor = QApplication::desktop()->screen()->logicalDpiX() / 96.0;
@@ -153,13 +174,6 @@ Editor::Editor(QMainWindow *parent) :
 
     // use vim keyboard handler
     m_impl->executeJavaScript("editor.setKeyboardHandler(\"ace/keyboard/vim\")");
-
-//    m_impl->executeJavaScript("var dom = require(\"../lib/dom\"); dom.importCssString(\".normal-mode .ace_cursor{\
-//      border: 1px solid white;\
-//      background-color: white;\
-//      opacity: 0.5;\
-//    }\", \"vimMode\")");
-
 
     // syntax highlighting
     setHighlightMode("c_cpp");
